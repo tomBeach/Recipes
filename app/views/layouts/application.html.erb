@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Recipes 2</title>
+	<%= csrf_meta_tags %>
+	<%= csp_meta_tag %>
+
+	<%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+	<%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+		<!-- ======= header ======= -->
+        <div id="header">
+			<div id="mainTitle">
+	            <h1>Recipes 2</h1>
+	        </div>
+        </div>
+
+		<!-- ======= menu ======= -->
+        <div class="menuBox">
+			<%= link_to "Home", "/home" %>
+            <% if !current_user %>
+                <%= link_to "Sign up", new_user_registration_path %>
+                <%= link_to "Sign in", new_user_session_path %>
+            <% else %>
+				<% path = request.path %>
+				<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
+				<div id="menuSpacer1">
+					<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>
+				</div>
+				<%= link_to "Import Recipes", import_recipes_path, id: "import" %>
+				<%= link_to "Get All Recipes", get_recipes_path, id: "getAllRecipes", remote: true %>
+				<%= link_to "Categories", categories_path, id: "categories" %>
+            <% end %>
+        </div>
+
+		<% menu_types = ["Recipe Type", "meat", "seafood", "vegetarian", "dessert", "soups/stews"] %>
+
+
+		<div class="menuBox">
+			<div id="menuSpacer2">search</div>
+			<input id="search" type="text" name="search" value="garlic">
+			<%= link_to "Recipes", search_recipes_path, id: "searchRecipes", remote: false %>
+			<%= link_to "Ingredients", search_ingredients_path, id: "searchIngredients", remote: false %>
+			<%= select_tag "searchType", options_for_select(menu_types), remote: true %>
+		</div>
+
+		<!-- ======= yield ======= -->
+        <div id="yieldBox">
+            <%= yield %>
+        </div>
+
+		<!-- ======= footer ======= -->
+        <div id="footer">
+			<p id="feedback">
+				<% if current_user %>
+					<span>welcome </span>
+					<span id="message"><%= current_user.username %></span>
+				<% end %>
+				<span id="notice"></span>
+			</p>
+        </div>
+    </div>
+
+</body>
+</html>

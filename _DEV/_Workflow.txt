@@ -1,0 +1,87 @@
+
+
+// ======= ======= ======= Workflow ======= ======= =======
+// ======= ======= ======= Workflow ======= ======= =======
+// ======= ======= ======= Workflow ======= ======= =======
+
+
+// ======= ======= ======= infinite loops ======= ======= =======
+• terminal window
+$ top			// show largest processes
+$ kill 1739		// normal kill process (by process number e.g. 1739)
+$ kill -9 1739	// force kill process
+$ q				// return to normal command line
+
+<%= form_with(model: category, local: true) do |form| %>
+
+
+// ======= ======= ======= modify table ======= ======= =======
+ALTER TABLE categories DROP COLUMN recipe_nation;
+ALTER TABLE categories DROP COLUMN recipe_id;
+rails g migration AddCategoryToRecipe category_id:integer
+
+
+// ======= ======= ======= recipe_type setup ======= ======= =======
+rails g model Category recipe:references recipe_type:string recipe_nation:string
+rails g scaffold_controller Category
+
+
+
+// ======= ======= ======= sql/active record statements ======= ======= =======
+• overview (where clause)
+https://www.rubyguides.com/2019/07/rails-where-method/
+
+
+// ======= ======= ======= psql: duplicate database ======= ======= =======
+• copy database within the same server
+
+	CREATE DATABASE recipes_dev WITH TEMPLATE rails_devise_javascript_dev;
+	CREATE DATABASE recipes_test WITH TEMPLATE rails_devise_javascript_test;
+
+
+// ======= ======= ======= psql: rename database ======= ======= =======
+• Disconnect from the database that you want to rename and connect to a different database.
+• Check and terminate all active connections to the database that you want to rename.
+• Use the ALTER DATABASE statement to rename the database to the new one.
+
+	ALTER DATABASE original_name RENAME TO new_name;
+	ALTER DATABASE recipes RENAME TO recipes_dev;
+
+
+// ======= ======= ======= Recipe table ======= ======= =======
+rails generate model Recipe
+	title:string
+	type:string
+
+rails generate model Recipe title:string type:string
+
+
+// ======= ======= ======= Ingredient table ======= ======= =======
+rails generate model Ingredient
+	recipe:references
+	ingredient:string
+
+rails generate model Ingredient recipe:references ingredient:string
+
+
+// ======= ======= ======= Instruction table ======= ======= =======
+rails generate model Instruction
+	recipe:references
+	instruction:string
+
+rails generate model Instruction recipe:references instruction:string
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ======= ======= ======= Workflow ======= ======= =======

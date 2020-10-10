@@ -1,0 +1,293 @@
+
+/* ======= ======= ======= general ======= ======= ======= */
+html, body {
+    height: 100%;
+    min-height: 100%;
+    box-sizing: border-box;
+}
+body {
+    font-family: "Ariel", sans-serif;
+}
+div {
+    box-sizing: border-box;
+}
+h1 {
+    margin: 0;
+}
+#wrapper {
+    width: 90%;
+	min-width: 900px;
+    margin: 0 auto;
+}
+
+/* ======= ======= ======= sections ======= ======= ======= */
+.section {
+    margin: 20px;
+    padding: 10px;
+}
+.container {
+	width: 720px;
+	padding: 10px;
+	background-color: #eeeeee;
+}
+#header {
+    width: 100%;
+    height: 60px;
+    background-color: #eee;
+    box-sizing: border-box;
+}
+#yieldBox {
+    width: 100%;
+    height: 560px;
+    padding: 1% 2%;
+    border: solid darkorange;
+    border-width: 2px;
+}
+#footer {
+    width: 100%;
+    height: 80px;
+    background-color: #eee;
+}
+#feedback {
+    display: inline-block;
+    margin: 5px 10px;
+	padding: 2%;
+}
+#notice {
+    float: right;
+	color: red;
+}
+#message {
+	color: gray;
+}
+.info {
+	margin: 20px;
+}
+#mainTitle {
+	padding-top: 10px;
+	text-align: center;
+    font-size: 18px;
+    color: navy;
+}
+
+/* ======= ======= ======= menu ======= ======= ======= */
+.menuBox {
+	height: 40px;
+    margin: 0;
+    padding: 10px;
+    background-color: lightsalmon;
+}
+.menuBox > a {
+    display: inline-block;
+	width: 14%;
+    min-width: 120px;
+    height: 24px;
+	padding: 0 10px;
+    text-align: center;
+    font-size: 16px;
+    line-height: 24px;
+    text-decoration: none;
+	border-radius: 5px;
+    background-color: orangered;
+    color: navy;
+}
+.menuBox > a:hover {
+    background-color: mediumslateblue;
+    color: white;
+}
+#menuSpacer1 {
+	display: inline;
+	width: 4%;
+	height: 24px;
+}
+#menuSpacer2 {
+	display: inline;
+	float:left;
+	margin: 0 5px 10px 10px;
+	width: 14%;
+	height: 24px;
+	text-align: right;
+	color: navy;
+}
+#search {
+	display: inline;
+	float: left;
+	margin: 0 10px 10px 10px;
+	padding: 5px;
+	width: 14%;
+}
+
+/* ======= ======= ======= recipe titles list ======= ======= ======= */
+.recipeTitle {
+	margin-top: 15px;
+    padding: 15px 10px 0 5px;
+	font-size: 24px;
+	color: mediumslateblue;
+}
+
+/* ======= ======= ======= show recipe ======= ======= ======= */
+#output {
+    height: 420px;
+	width: 100%;
+	margin-top: 20px;
+	border: 1px solid gray;
+	white-space: normal;
+	overflow-y: scroll;
+}
+#outputTitle {
+	float: left;
+	width: 60%;
+	height: 60px;
+	text-overflow: ellipsis;
+}
+#recipe_type_select {
+	float: right;
+	width: 22%;
+    min-width: 120px;
+    height: 24px;
+	margin-top: 10px;
+	padding: 0 10px;
+    font-size: 16px;
+	text-align-last:center;
+    line-height: 24px;
+	color: DodgerBlue;
+	border-radius: 5px;
+}
+.addEditDelete {
+	float: right;
+	width: 22%;
+    min-width: 120px;
+	margin-top: 10px;
+    height: 24px;
+	// padding: 0 10px;
+    text-align: center;
+    font-size: 16px;
+    line-height: 24px;
+    text-decoration: none;
+	border-radius: 5px;
+    background-color: orangered;
+    color: navy;
+}
+.addEditDelete:hover {
+    background-color: mediumslateblue;
+    color: white;
+}
+.recipeLabel {
+	margin-top: 5px;
+    padding: 5px 0 0 5px;
+	font-size: 16px;
+	color: orangered;
+}
+.ingredient, .instruction {
+	display: inline-block;
+	vertical-align: top;
+	margin: 0;
+	width: 80%;
+    padding: 5px 15px;
+	font-size: 16px;
+	color: navy;
+}
+.editItem {
+	margin-left: 9px;
+    padding: 4px;
+	width: 60%;
+	font-size: 16px;
+	color: navy;
+}
+.saveBtn, .cancelBtn {
+	display: inline;
+	width: 100px;
+    height: 60px;
+	margin: 0 10px;
+	padding: 5px 10px;
+    text-align: center;
+    font-size: 16px;
+    line-height: 24px;
+	border-radius: 3px;
+    background-color: DodgerBlue;
+    color: white;
+}
+.sequence {
+	display: inline-block;
+	width: 18px;
+	height: 14px;
+	margin-top: 2px;
+	margin-left: 10px;
+	text-align: right;
+	border-top-style: hidden;
+	border-right-style: hidden;
+	border-left-style: hidden;
+	border-bottom-style: hidden;
+	background-color: #eee;
+}
+
+/* ======= ======= ======= search ======= ======= ======= */
+.recipeLink {
+	margin: 10px;
+}
+.recipeLink > a {
+	margin: 10px;
+	font-size: 16px;
+	text-decoration: none;
+	color: navy;
+}
+.recipeLink > a:hover {
+    color: orangered;
+}
+.recipeType {
+	margin: 10px;
+	font-size: 16px;
+	color: navy;
+}
+#searchType {
+	display: inline;
+	width: 18%;
+    min-width: 120px;
+    height: 24px;
+	padding: 0 10px;
+    font-size: 16px;
+	text-align-last:center;
+    line-height: 24px;
+	color: white;
+	background-color: DodgerBlue;
+	border-radius: 5px;
+}
+
+/* ======= ======= ======= forms ======= ======= ======= */
+.dataRow {
+    height: 35px;
+}
+.formLabel {
+	display: inline-block;
+    height: 100%;
+    padding: 8px;
+    font-size: 0.8em;
+}
+.formValue {
+	display: inline-block;
+	width: 65%;
+    text-align: left;
+    vertical-align: text-top;
+    color: black;
+}
+.formButton, .formButtonFix {
+	display: inline-block;
+    min-width: 120px;
+    height: 24px;
+	padding: 0 10px;
+    text-align: center;
+    font-size: 16px;
+    line-height: 24px;
+    text-decoration: none;
+	border-radius: 5px;
+    background-color: orangered;
+    color: navy;
+}
+.formButtonFix {
+	width: 140px;
+	border: none;
+}
+.formValue > a:hover {
+    background-color: mediumslateblue;
+    color: white;
+}

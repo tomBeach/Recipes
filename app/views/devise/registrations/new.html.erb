@@ -1,0 +1,52 @@
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+	<%= render "devise/shared/error_messages", resource: resource %>
+
+	<div class="dataRow fR_1">
+        <h2 class="dataTitle">Sign Up</h2>
+    </div>
+
+    <div class="dataRow">
+        <div class="formLabel">firstname</div>
+        <div class="formValue"><%= f.text_field :firstname, class: "signinEntry", value: "Tom", autofocus: true %></div>
+    </div>
+    <div class="dataRow">
+        <div class="formLabel">lastname</div>
+        <div class="formValue"><%= f.text_field :lastname, class: "signinEntry", value: "Beach", autofocus: true %></div>
+    </div>
+    <div class="dataRow">
+        <div class="formLabel">username</div>
+        <div class="formValue"><%= f.text_field :username, class: "signinEntry", value: "teb", autofocus: true %></div>
+    </div>
+    <div class="dataRow">
+        <div class="formLabel">email</div>
+        <div class="formValue"><%= f.email_field :email, class: "signinEntry", value: "tbeach2k@gmail.com", autofocus: true %></div>
+    </div>
+    <div class="dataRow">
+        <div class="formLabel">password</div>
+        <div class="formValue">
+            <span>
+                <%= f.password_field :password, class: "signinEntry", value: "teb123", autocomplete: "off" %>
+                <i>6 characters minimum</i>
+            </span>
+        </div>
+    </div>
+    <div class="dataRow">
+        <div class="formLabel">password confirm</div>
+        <div class="formValue"><%= f.password_field :password_confirmation, class: "signinEntry", value: "teb123", autocomplete: "off" %></div>
+    </div>
+    <div class="dataRow">
+        <div class="formLabel">&nbsp;</div>
+        <div class="formValue"><%= f.submit "Sign Up", id: "signup", class: "formBtn formBtn_green" %></div>
+    </div>
+
+    <div id="newUserSpacer" class="dataSpacer">
+        &nbsp;
+    </div>
+
+    <div class="buttonRow">
+        <%= link_to "Back", request.referer.present? ? request.referer : "/home", class: "formLink" %>
+    </div>
+
+<% end %>
+
+<%= render "devise/shared/links" %>

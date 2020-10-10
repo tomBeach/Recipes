@@ -1,0 +1,55 @@
+
+<%# ======= menu data ======= %>
+<% recipe_types = ["meat", "seafood", "vegetarian", "dessert", "soups/stews"] %>
+<% puts "@recipe.recipe_type: #{@recipe.recipe_type}" %>
+<% if @recipe.recipe_type == "recipe_type" %>
+	<% recipe_types.push("no type selected") %>
+	<% recipe_type = "no type selected" %>
+<% else %>
+	<% recipe_type = @recipe.recipe_type %>
+<% end %>
+
+<% ingredients_sorted = @recipe.ingredients.sort_by { |ingredient| ingredient["sequence"] } %>
+<% puts "ingredients_sorted: #{ingredients_sorted}" %>
+<% instructions_sorted = @recipe.instructions.sort_by { |instruction| instruction["sequence"] } %>
+<% puts "instructions_sorted: #{instructions_sorted}" %>
+
+<%# ======= recipe data => javascript ======= %>
+<%= content_tag :div, id: "recipeId", data: {recipeId: @recipe.id} do %>
+<% end %>
+<%= content_tag :div, id: "typeData", data: {recipe_type: @recipe.recipe_type} do %>
+<% end %>
+<%= content_tag :div, id: "titleData", data: {recipe: @recipe.title} do %>
+<% end %>
+<%= content_tag :div, id: "ingredientsData", data: {ingredients: ingredients_sorted} do %>
+<% end %>
+<%= content_tag :div, id: "instructionsData", data: {instructions: instructions_sorted} do %>
+<% end %>
+
+<h2 id="outputTitle"><%= @recipe.title %></h2>
+<div id="editSaveBox">
+	<%= select_tag "recipe_type_select", options_for_select(recipe_types, recipe_type), remote: true %>
+	<%= link_to "Auto Sequence", "", id: "autoSequence", class: "addEditDelete", remote: true %>
+	<%= link_to "Save Changes", save_recipe_path, id: "saveRecipe", class: "addEditDelete", remote: true %>
+</div>
+
+
+<div id="output">
+
+	<p class='recipeLabel'>ingredients</p>
+	<% ingredients_sorted.each_with_index do |next_ingredient, index| %>
+		<div class="recipeLine">
+			<input type="text" id="ingrSeq_<%= next_ingredient.id %>" class="sequence" name="seq" value="<%= next_ingredient.sequence %>">
+			<p class="ingredient" id="ingredient_<%= next_ingredient.id %>"><%= next_ingredient.ingredient %></p>
+		</div>
+	<% end %>
+
+	<p class='recipeLabel'>instructions</p>
+	<% instructions_sorted.each_with_index do |next_instruction, index| %>
+		<div class="recipeLine">
+			<input type="text" id="instSeq_<%= next_instruction.id %>" class="sequence" name="seq" value="<%= next_instruction.sequence %>">
+			<p class="instruction" id="instruction_<%= next_instruction.id %>"><%= next_instruction.instruction %></p>
+		</div>
+	<% end %>
+
+</div>
