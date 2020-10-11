@@ -5,6 +5,14 @@
 // ======= ======= ======= Workflow ======= ======= =======
 
 
+// ======= ======= ======= database re-design ======= ======= =======
+rails g model Category category:string
+rails g model Nationality nationality:string
+rails g model Recipe title:string category:references nationality:references
+rails g model Ingredient recipe:references ingredient:string
+rails g model Instruction recipe:references instruction:string
+
+
 // ======= ======= ======= infinite loops ======= ======= =======
 • terminal window
 $ top			// show largest processes
@@ -19,12 +27,16 @@ $ q				// return to normal command line
 ALTER TABLE categories DROP COLUMN recipe_nation;
 ALTER TABLE categories DROP COLUMN recipe_id;
 rails g migration AddCategoryToRecipe category_id:integer
+rails g migration AddNationalityToRecipe nationality_id:integer
+
+rails g model Nationality nationality:string
+rails g migration AddCategoryToRecipe category:references
+rails g migration AddNationalityToRecipe nationality:references
 
 
 // ======= ======= ======= recipe_type setup ======= ======= =======
 rails g model Category recipe:references recipe_type:string recipe_nation:string
 rails g scaffold_controller Category
-
 
 
 // ======= ======= ======= sql/active record statements ======= ======= =======
