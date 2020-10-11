@@ -19,6 +19,50 @@ $(document).on('turbolinks:load', function() {
 	// ======= initialize variables =======
 	var recipesArray = [];
 
+
+	// ======= activateMainMenu =======
+    function activateMainMenu() {
+		console.log("== activateMainMenu ==");
+
+		$('#getAllRecipes').click(function(e) {
+			console.log("== click: getAllRecipes ==");
+			e.preventDefault();
+			getAllRecipes();
+			toggleEditButons("hide");
+			e.stopPropagation();
+		});
+
+		$('#searchRecipes').click(function(e) {
+			console.log("== click: searchRecipes ==");
+			e.preventDefault();
+			var searchString = $('#search').val();
+			searchRecipes(searchString);
+			toggleEditButons("hide");
+	    });
+
+		$('#searchIngredients').click(function(e) {
+			console.log("== click: searchIngredients ==");
+			e.preventDefault();
+			var searchString = $('#search').val();
+			searchIngredients(searchString);
+			toggleEditButons("hide");
+	    });
+
+		$('#searchType').change(function(e) {
+			console.log("== change: searchType ==");
+			e.preventDefault();
+			var searchSelect = $('#searchType option:selected').text();
+			console.log("searchSelect: ", searchSelect);
+			searchType(searchSelect);
+			toggleEditButons("hide");
+	    });
+
+	}
+
+	// ======= ======= ======= EDIT ======= ======= =======
+	// ======= ======= ======= EDIT ======= ======= =======
+	// ======= ======= ======= EDIT ======= ======= =======
+
 	// ======= activateEditLinks =======
     function activateEditLinks() {
 		console.log("== activateEditLinks ==");
@@ -33,19 +77,23 @@ $(document).on('turbolinks:load', function() {
 		$('.ingredient, .instruction').on('click', editLink);
 
 		// == activate main edit options (recipe category, auto sequence, save)
-		$('#recipe_category_select').change(function(e) {
-			console.log("== change: recipe_category_select ==");
+		$('#category_select').change(function(e) {
+			console.log("== change: category_select ==");
 			e.preventDefault();
-			var categorySelect = $('#recipe_category_select option:selected').text();
-			$('#categoryData').data().recipe_category = categorySelect;
-		});
+			var category_id = $('#category_select option:selected').val();
+			console.log("category_id: ", category_id);
+			$('#categoryData').data().category_id = category_id;
+			console.log("$('#categoryData').data(): ", $('#categoryData').data());
+	    });
 
-		$('#autoSequence').click(function(e) {
-			console.log("== click: autoSequence ==");
+		$('#nationality_select').change(function(e) {
+			console.log("== change: nationality_select ==");
 			e.preventDefault();
-			autoSequence();
-			e.stopPropagation();
-		});
+			var nationality_id = $('#nationality_select option:selected').val();
+			console.log("nationality_id: ", nationality_id);
+			$('#nationalityData').data().nationality_id = nationality_id;
+			console.log("$('#nationalityData').data(): ", $('#nationalityData').data());
+	    });
 
 		$('#saveRecipe').click(function(e) {
 			console.log("== click: saveRecipe ==");
@@ -110,7 +158,7 @@ $(document).on('turbolinks:load', function() {
 			// == get database record stored in local div (data value)
 			var ingredientsData = $('#ingredientsData').data();
 			var instructionsData = $('#instructionsData').data();
-			var modifiedId = currentId.substr(currentId.length - 3);
+			var modifiedId = currentId.substr(currentId.length - 3);	// currentId == selected/active text element
 			var newText = $('#' + currentId).val();
 
 			// == save changes to local data
@@ -158,7 +206,7 @@ $(document).on('turbolinks:load', function() {
 		function saveRecipe() {
 			console.log("== saveRecipe ==");
 
-			var currentId = $('#recipeId').data().recipeId;
+			var currentId = $('#recipeId').data().recipeid;
 			var titleData = $('#titleData').data().title;
 			var ratingData = $('#ratingData').data().rating;
 			var categoryData = $('#categoryData').data().category_id;
@@ -166,14 +214,27 @@ $(document).on('turbolinks:load', function() {
 			var ingredientsData = $('#ingredientsData').data().ingredients;
 			var instructionsData = $('#instructionsData').data().instructions;
 
+			// == avoind null values (items not set by user)
+			if (!ratingData) {
+				ratingData = 0;
+			}
+			if (!categoryData) {
+				categoryData = 0;
+			}
+			if (!nationalityData) {
+				nationalityData = 0;
+			}
+
 			var recipeData = {
 				recipe_id:currentId,
-				recipe:titleData,
+				title:titleData,
 				rating:ratingData,
 				category_id:categoryData,
 				nationality_id:nationalityData,
 				ingredients:ingredientsData,
 				instructions:instructionsData};
+
+			console.log("recipeData: ", recipeData);
 
 			var url = "/save_recipe";
 			var jsonData = JSON.stringify(recipeData);
@@ -193,80 +254,12 @@ $(document).on('turbolinks:load', function() {
 				console.log("unknown:", unknown);
 			});
 		}
-
-		function autoSequence() {
-			console.log("== autoSequence ==");
-
-			var nextId, nextSequence;
-
-			// == get database record stored in local div (data value)
-			var ingredientsData = $('#ingredientsData').data();
-			var instructionsData = $('#instructionsData').data();
-
-			// == number ingredients automatically
-			for (var i = 0; i < ingredientsData.ingredients.length; i++) {
-				nextSeq = i + 1;
-				nextId = ingredientsData.ingredients[i].id;
-				nextSequence = parseInt($('#ingrSeq_' + nextId).val());
-				$('#ingrSeq_' + nextId).val(nextSeq);
-				ingredientsData.ingredients[i].sequence = nextSeq;
-			}
-
-			// == number ingredients automatically
-			for (var j = 0; j < instructionsData.instructions.length; j++) {
-				nextSeq = j + 1;
-				nextId = instructionsData.instructions[j].id;
-				nextSequence = parseInt($('#instSeq_' + nextId).val());
-				$('#instSeq_' + nextId).val(nextSeq);
-				instructionsData.instructions[j].sequence = nextSeq;
-			}
-	    }
-
-	}
-
-	// ======= activateMainMenu =======
-    function activateMainMenu() {
-		console.log("== activateMainMenu ==");
-
-		$('#getAllRecipes').click(function(e) {
-			console.log("== click: getAllRecipes ==");
-			e.preventDefault();
-			getAllRecipes();
-			toggleEditButons("hide");
-			e.stopPropagation();
-		});
-
-		$('#searchRecipes').click(function(e) {
-			console.log("== click: searchRecipes ==");
-			e.preventDefault();
-			var searchString = $('#search').val();
-			searchRecipes(searchString);
-			toggleEditButons("hide");
-	    });
-
-		$('#searchIngredients').click(function(e) {
-			console.log("== click: searchIngredients ==");
-			e.preventDefault();
-			var searchString = $('#search').val();
-			searchIngredients(searchString);
-			toggleEditButons("hide");
-	    });
-
-		$('#searchType').change(function(e) {
-			console.log("== change: searchType ==");
-			e.preventDefault();
-			var searchSelect = $('#searchType option:selected').text();
-			console.log("searchSelect: ", searchSelect);
-			searchType(searchSelect);
-			toggleEditButons("hide");
-	    });
-
 	}
 
 
-	// ======= ======= ======= retrieve recipe data ======= ======= =======
-	// ======= ======= ======= retrieve recipe data ======= ======= =======
-	// ======= ======= ======= retrieve recipe data ======= ======= =======
+	// ======= ======= ======= VIEW/SAVE ======= ======= =======
+	// ======= ======= ======= VIEW/SAVE ======= ======= =======
+	// ======= ======= ======= VIEW/SAVE ======= ======= =======
 
 	// ======= getAllRecipes =======
     function getAllRecipes() {
@@ -288,6 +281,69 @@ $(document).on('turbolinks:load', function() {
 			console.log("unknown:", unknown);
 		});
 	}
+
+	// ======= displayRecipeTitles =======
+	function displayRecipeTitles(jsonData) {
+		console.log("== displayRecipeTitles ==");
+
+		var nextId, nextRecipe, recipeHtml;
+		var recipeHtml = "";
+		var titleText = "All Recipes";
+		updateTitleText(titleText);
+		updateNoticeMessage(jsonData);
+
+		for (var k = 0; k < jsonData.recipeArray.length; k++) {
+			nextId = jsonData.recipeArray[k].id;
+			nextRating = jsonData.recipeArray[k].rating;
+			nextCategoryId = jsonData.recipeArray[k].category_id;
+			nextNationalityId = jsonData.recipeArray[k].nationality_id;
+			nextRecipe = jsonData.recipeArray[k].title;
+
+			if (nextCategoryId) {
+				var selectedCategory = jsonData.categoryObj[nextCategoryId];
+				console.log("selectedCategory: ", selectedCategory);
+			}
+			if (nextNationalityId) {
+				var selectedNationality = jsonData.nationalityObj[nextNationalityId];
+				console.log("selectedNationality: ", selectedNationality);
+			}
+
+			// == colorize type string
+			// switch(nextType) {
+			// 	case "meat":
+				typeStyle = "color:red";
+			// 	break;
+			// 	case "seafood":
+			// 	typeStyle = "color:blue";
+			// 	break;
+			// 	case "vegetarian":
+			// 	typeStyle = "color:green";
+			// 	break;
+			// 	case "dessert":
+			// 	typeStyle = "color:purple";
+			// 	break;
+			// 	case "soups/stews":
+			// 	typeStyle = "color:orange";
+			// 	break;
+			// 	case "recipe_type":
+			// 	typeStyle = "visibility:hidden";
+			// 	break;
+			// }
+
+			recipeHtml = recipeHtml + "<p>";
+			recipeHtml = recipeHtml + "<span class='recipeType' style='" + typeStyle + ";'>";
+			recipeHtml = recipeHtml + nextCategoryId + "</span>";
+			recipeHtml = recipeHtml + "<span class='recipeLink'>";
+			recipeHtml = recipeHtml + "<a href='/show_recipe/" + nextId + "'>" + nextRecipe;
+			recipeHtml = recipeHtml + "</a></span></p>";
+		}
+		$('#output').html(recipeHtml);
+	}
+
+
+	// ======= ======= ======= SEARCH ======= ======= =======
+	// ======= ======= ======= SEARCH ======= ======= =======
+	// ======= ======= ======= SEARCH ======= ======= =======
 
 	// ======= searchRecipes =======
     function searchRecipes(searchString) {
@@ -360,11 +416,6 @@ $(document).on('turbolinks:load', function() {
 		});
 	}
 
-
-	// ======= ======= ======= display data ======= ======= =======
-	// ======= ======= ======= display data ======= ======= =======
-	// ======= ======= ======= display data ======= ======= =======
-
 	// ======= displaySearchResults =======
 	function displaySearchResults(jsonData, type) {
 		console.log("== displaySearchResults ==");
@@ -398,110 +449,10 @@ $(document).on('turbolinks:load', function() {
 		$('#output').html(recipeHtml);
 	}
 
-	// ======= displayRecipeTitles =======
-	function displayRecipeTitles(jsonData) {
-		console.log("== displayRecipeTitles ==");
 
-		var nextId, nextRecipe, recipeHtml;
-		var recipeHtml = "";
-		var titleText = "All Recipes";
-		updateTitleText(titleText);
-		updateNoticeMessage(jsonData);
-
-		for (var i = 0; i < jsonData.recipeArray.length; i++) {
-			nextId = jsonData.recipeArray[i].id;
-			nextRating = jsonData.recipeArray[i].rating;
-			nextCategoryId = jsonData.recipeArray[i].category_id;
-			nextNationalityId = jsonData.recipeArray[i].nationality_id;
-			nextRecipe = jsonData.recipeArray[i].title;
-
-			// == colorize type string
-			// switch(nextType) {
-			// 	case "meat":
-				typeStyle = "color:red";
-			// 	break;
-			// 	case "seafood":
-			// 	typeStyle = "color:blue";
-			// 	break;
-			// 	case "vegetarian":
-			// 	typeStyle = "color:green";
-			// 	break;
-			// 	case "dessert":
-			// 	typeStyle = "color:purple";
-			// 	break;
-			// 	case "soups/stews":
-			// 	typeStyle = "color:orange";
-			// 	break;
-			// 	case "recipe_type":
-			// 	typeStyle = "visibility:hidden";
-			// 	break;
-			// }
-
-			recipeHtml = recipeHtml + "<p>";
-			recipeHtml = recipeHtml + "<span class='recipeType' style='" + typeStyle + ";'>";
-			recipeHtml = recipeHtml + nextCategoryId + "</span>";
-			recipeHtml = recipeHtml + "<span class='recipeLink'>";
-			recipeHtml = recipeHtml + "<a href='/show_recipe/" + nextId + "'>" + nextRecipe;
-			recipeHtml = recipeHtml + "</a></span></p>";
-		}
-		$('#output').html(recipeHtml);
-	}
-
-	// ======= displayRecipeData =======
-    function displayRecipeData(recipeData) {
-        console.log("== displayRecipeData ==");
-
-		var nextRecipe, nextTitle, nextIngredients, nextInstructions;
-		var nextQuantity, nextUnits, nextIngredient, nextText, nextHtml;
-		var nextInstruction, nextDuration, nextDurUnits;
-		var recipeHtml = "";
-
-		for (var i = 0; i < recipeData.length; i++) {
-			nextRecipe = recipeData[i];
-			nextTitle = recipeData[i].recipe;
-			nextIngredients = recipeData[i].ingredients;
-			nextInstructions = recipeData[i].instructions;
-
-			// == recipe title
-			recipeHtml = recipeHtml + "<p class='recipeTitle'>" + nextTitle + "</p>";
-
-			// == ingredients label
-			recipeHtml = recipeHtml + "<p class='recipeLabel'>ingredients</p>";
-
-			// == ingredients lines: ingredientObj = {quantity:___, units:___, ingredient:___};
-			for (var j = 0; j < nextIngredients.length; j++) {
-				nextQuantity = nextIngredients[j].quantity;
-				nextUnits = nextIngredients[j].units;
-				nextIngredient = nextIngredients[j].ingredient;
-
-				// == eliminate ingredients without quantities/units
-				if (nextQuantity == null) {
-					nextQuantity = "";
-				}
-				if (nextUnits == null) {
-					nextUnits = "";
-				}
-
-				nextText = (nextQuantity + " " + nextUnits + " " + nextIngredient).trim()
-				nextHtml = "<p class='ingredient'>" + nextText + "</p>";
-				recipeHtml = recipeHtml + nextHtml;
-			}
-
-			recipeHtml = recipeHtml + "<p class='recipeLabel'>instructions</p>";
-
-			// instructionObj = {instruction:___, duration:___, durUnits:___};
-			for (var k = 0; k < nextInstructions.length; k++) {
-				nextInstruction = nextInstructions[k].instruction;
-				nextDuration = nextInstructions[k].duration;
-				nextDurUnits = nextInstructions[k].durUnits;
-				nextHtml = "<p class='instruction'>" + nextInstruction + "</p>";
-				recipeHtml = recipeHtml + nextHtml;
-			}
-		}
-		$('#output').html(recipeHtml);
-		$('#inputfile').remove();
-		updateTitleText("Imported Recipes");
-	}
+	// ======= ======= ======= RECIPE FILES ======= ======= =======
+	// ======= ======= ======= RECIPE FILES ======= ======= =======
+	// ======= ======= ======= RECIPE FILES ======= ======= =======
 
 	// ======= loadFileReader =======
     function loadFileReader() {
@@ -831,6 +782,62 @@ $(document).on('turbolinks:load', function() {
 
 	}
 
+	// ======= displayRecipeData =======
+    function displayRecipeData(recipeData) {
+        console.log("== displayRecipeData ==");
+
+		var nextRecipe, nextTitle, nextIngredients, nextInstructions;
+		var nextQuantity, nextUnits, nextIngredient, nextText, nextHtml;
+		var nextInstruction, nextDuration, nextDurUnits;
+		var recipeHtml = "";
+
+		for (var i = 0; i < recipeData.length; i++) {
+			nextRecipe = recipeData[i];
+			nextTitle = recipeData[i].recipe;
+			nextIngredients = recipeData[i].ingredients;
+			nextInstructions = recipeData[i].instructions;
+
+			// == recipe title
+			recipeHtml = recipeHtml + "<p class='recipeTitle'>" + nextTitle + "</p>";
+
+			// == ingredients label
+			recipeHtml = recipeHtml + "<p class='recipeLabel'>ingredients</p>";
+
+			// == ingredients lines: ingredientObj = {quantity:___, units:___, ingredient:___};
+			for (var j = 0; j < nextIngredients.length; j++) {
+				nextQuantity = nextIngredients[j].quantity;
+				nextUnits = nextIngredients[j].units;
+				nextIngredient = nextIngredients[j].ingredient;
+
+				// == eliminate ingredients without quantities/units
+				if (nextQuantity == null) {
+					nextQuantity = "";
+				}
+				if (nextUnits == null) {
+					nextUnits = "";
+				}
+
+				nextText = (nextQuantity + " " + nextUnits + " " + nextIngredient).trim()
+				nextHtml = "<p class='ingredient'>" + nextText + "</p>";
+				recipeHtml = recipeHtml + nextHtml;
+			}
+
+			recipeHtml = recipeHtml + "<p class='recipeLabel'>instructions</p>";
+
+			// instructionObj = {instruction:___, duration:___, durUnits:___};
+			for (var k = 0; k < nextInstructions.length; k++) {
+				nextInstruction = nextInstructions[k].instruction;
+				nextDuration = nextInstructions[k].duration;
+				nextDurUnits = nextInstructions[k].durUnits;
+				nextHtml = "<p class='instruction'>" + nextInstruction + "</p>";
+				recipeHtml = recipeHtml + nextHtml;
+			}
+		}
+		$('#output').html(recipeHtml);
+		$('#inputfile').remove();
+		updateTitleText("Imported Recipes");
+	}
+
 	// ======= saveRecipeFile =======
 	function saveRecipeFile(recipeData, e) {
 		console.log("== saveRecipeFile ==");
@@ -857,20 +864,20 @@ $(document).on('turbolinks:load', function() {
 	}
 
 
-	// ======= ======= ======= utilities ======= ======= =======
-	// ======= ======= ======= utilities ======= ======= =======
-	// ======= ======= ======= utilities ======= ======= =======
+	// ======= ======= ======= UTILITIES ======= ======= =======
+	// ======= ======= ======= UTILITIES ======= ======= =======
+	// ======= ======= ======= UTILITIES ======= ======= =======
 
 	function toggleEditButons(showOrHide) {
 		console.log("== toggleEditButons ==");
 
 		if (showOrHide == "hide") {
 			$('#category_select').hide();
-			$('#autoSequence').hide();
+			$('#nationality_select').hide();
 			$('#saveRecipe').hide();
 		} else {
 			$('#category_select').show();
-			$('#autoSequence').show();
+			$('#nationality_select').show();
 			$('#saveRecipe').show();
 		}
 	}

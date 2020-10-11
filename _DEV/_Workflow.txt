@@ -5,8 +5,30 @@
 // ======= ======= ======= Workflow ======= ======= =======
 
 
+// ======= ======= ======= add data ======= ======= =======
+INSERT INTO table_name(column1, column2, …) VALUES (value1, value2, …);
+INSERT INTO categories (category, created_at, updated_at) VALUES ('meat', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO categories (category, created_at, updated_at) VALUES ('seafood', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO categories (category, created_at, updated_at) VALUES ('dessert', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO categories (category, created_at, updated_at) VALUES ('soup/stew', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO categories (category, created_at, updated_at) VALUES ('vegetarian', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+Category.destroy_all
+Category.create([
+ { category:"meat" },
+ { category:"seafood" },
+ { category:"dessert" },
+ { category:"soup/stew" },
+ { category:"vegetarian" }
+])
+@categories = Category.all
+puts "@categories: #{@categories.inspect}"
+puts "Category.column_names: #{Category.column_names.inspect}"
+
+
 // ======= ======= ======= database re-design ======= ======= =======
 // == modify existing ==
+ALTER TABLE categories RENAME COLUMN recipe_type TO category;
 ALTER TABLE recipes RENAME COLUMN recipe_nation;
 ALTER TABLE recipes RENAME COLUMN column_name TO new_column_name;
 

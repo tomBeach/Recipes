@@ -1,11 +1,11 @@
 
 <%# ======= category and nationality options ======= %>
-<% categories = [] %>
+<% category_ids = [] %>
 <% @categories.each_with_index do |category, index| %>
     <% category_ids << [category.category, category[:id]] %>
 <% end %>
 
-<% nationalities = [] %>
+<% nationality_ids = [] %>
 <% @nationalities.each_with_index do |nationality, index| %>
     <% nationality_ids << [nationality.nationality, nationality[:id]] %>
 <% end %>
@@ -13,19 +13,22 @@
 <%# ======= selected category / nationality ======= %>
 <% puts "@recipe.category_id: #{@recipe.category_id}" %>
 <% if @recipe.category_id == nil %>
-	<% categories.push(["no category", nil]) %>
-	<% category = "no category" %>
+	<% puts "no category" %>
+	<% category_ids.push(["no category", nil]) %>
+	<% category = ["no category", nil] %>
 <% else %>
 	<% category = @recipe.category_id %>
 <% end %>
+<% puts "category_ids: #{category_ids}" %>
 
 <% puts "@recipe.nationality_id: #{@recipe.nationality_id}" %>
 <% if @recipe.nationality_id == nil %>
-	<% nationalities.push(["no nationality", nil]) %>
-	<% nationality = "no nationality" %>
+	<% nationality_ids.push(["no nationality", nil]) %>
+	<% nationality = ["no nationality", nil] %>
 <% else %>
 	<% nationality = @recipe.nationality_id %>
 <% end %>
+<% puts "nationality_ids: #{nationality_ids}" %>
 
 <%# ======= sort ingredients/instructions by sequence ======= %>
 <% ingredients_sorted = @recipe.ingredients.sort_by { |ingredient| ingredient["sequence"] } %>
@@ -36,13 +39,13 @@
 <%# ======= recipe data => javascript ======= %>
 <%= content_tag :div, id: "recipeId", data: {recipeId: @recipe.id} do %>
 <% end %>
+<%= content_tag :div, id: "titleData", data: {title: @recipe.title} do %>
+<% end %>
 <%= content_tag :div, id: "ratingData", data: {rating: @recipe.rating} do %>
 <% end %>
 <%= content_tag :div, id: "categoryData", data: {category: @recipe.category_id} do %>
 <% end %>
 <%= content_tag :div, id: "nationalityData", data: {nationality: @recipe.nationality_id} do %>
-<% end %>
-<%= content_tag :div, id: "titleData", data: {recipe: @recipe.title} do %>
 <% end %>
 <%= content_tag :div, id: "ingredientsData", data: {ingredients: ingredients_sorted} do %>
 <% end %>
@@ -51,8 +54,8 @@
 
 <h2 id="outputTitle"><%= @recipe.title %></h2>
 <div id="editSaveBox">
-	<%= select_tag "category_select", options_for_select(categories, category), remote: true %>
-	<%= link_to "Auto Sequence", "", id: "autoSequence", class: "addEditDelete", remote: true %>
+	<%= select_tag "category_select", options_for_select(category_ids, category), class: "editSelect", remote: true %>
+	<%= select_tag "nationality_select", options_for_select(nationality_ids, nationality), class: "editSelect", remote: true %>
 	<%= link_to "Save Changes", save_recipe_path, id: "saveRecipe", class: "addEditDelete", remote: true %>
 </div>
 

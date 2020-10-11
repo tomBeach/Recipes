@@ -21,8 +21,6 @@ class HomeController < ApplicationController
     def get_recipes
         puts "\n******* get_recipes *******"
 
-		category_array = []
-		nationality_array = []
 		recipe_array = []
 		recipe_count = 0
 		recipe_data = {}
@@ -30,30 +28,31 @@ class HomeController < ApplicationController
 		@nationalities = Nationality.all
 		@recipes = Recipe.all
 
+		category_obj = {}
+		nationality_obj = {}
+
 		if @categories.length > 0
 			@categories.each do |next_category|
-				category_data = {id:next_category.id, category:next_category.category }
-				category_array.push(category_data)
+				category_obj[next_category.id] = next_category.category
 			end
 		end
-		
+
 		if @nationalities.length > 0
 			@nationalities.each do |next_nationality|
-				nationality_data = {id:next_nationality.id, nationality:next_nationality.nationality }
-				nationality_array.push(nationality_data)
+				nationality_obj[next_nationality.id] = next_nationality.nationality
 			end
 		end
 
 		if @recipes.length > 0
 			@recipes.each do |next_recipe|
 				recipe_data = {
-					id:next_recipe.id,
-					rating:next_recipe.rating,
-					category:next_recipe.category_id,
-					nationality:next_recipe.nationality_id,
-					title:next_recipe.title,
-					ingredients:next_recipe.ingredients,
-					instructions:next_recipe.instructions }
+					id: next_recipe.id,
+					rating: next_recipe.rating,
+					category_id: next_recipe.category_id,
+					nationality_id: next_recipe.nationality_id,
+					title: next_recipe.title,
+					ingredients: next_recipe.ingredients,
+					instructions: next_recipe.instructions }
 				recipe_array.push(recipe_data)
 				recipe_count = recipe_count + 1
 			end
@@ -65,7 +64,7 @@ class HomeController < ApplicationController
 
 		respond_to do |format|
 			format.json {
-				render json: {:message => message, :categoryArray => category_array, :nationalityArray => nationality_array, :recipeArray => recipe_array}
+				render json: {:message => message, :categoryObj => category_obj, :nationalityObj => nationality_obj, :recipeArray => recipe_array}
 			}
 		end
 	end
@@ -89,13 +88,21 @@ class HomeController < ApplicationController
 	# ======= save_recipe =======
     def save_recipe
         puts "\n******* save_recipe *******"
+		puts "params[:category_id]: #{params[:category_id]}"
+		puts "params[:nationality_id]: #{params[:nationality_id]}"
+
+		# == json data: recipe_id, recipe, rating, category_id, nationality_id, ingredients, instructions,
 
 		message = ""
+		recipe_fails_array = []
 		ingredient_fails_array = []
 		instruction_fails_array = []
 
 		recipe = Recipe.find(params[:recipe_id])
-		recipe.update(:recipe_type => params[:recipe_type])
+		if !recipe.update(:rating => params[:rating], :category_id => params[:category_id], :nationality_id => params[:nationality_id])
+			recipe_fails_array.push(params[:recipe_id])
+			puts "*** RECIPE UPDATE ERROR"
+		end
 
 		# == update ingredients
         params[:ingredients].each do |next_ingredient|
@@ -104,7 +111,7 @@ class HomeController < ApplicationController
 
 			if !ingredient.update(:ingredient => next_ingredient[:ingredient], :sequence => next_ingredient[:sequence])
 				ingredient_fails_array.push(ingredient_id)
-				puts "*** UPDATE ERROR"
+				puts "*** INGREDIENT UPDATE ERROR"
 			end
         end
 
@@ -115,11 +122,11 @@ class HomeController < ApplicationController
 
 			if !instruction.update(:instruction => next_instruction[:instruction], :sequence => next_instruction[:sequence])
 				instruction_fails_array.push(instruction_id)
-				puts "*** UPDATE ERROR"
+				puts "*** INSTRUCTION UPDATE ERROR"
 			end
         end
 
-		if ingredient_fails_array.length > 0 ||instruction_fails_array.length > 0
+		if ingredient_fails_array.length > 0 || instruction_fails_array.length > 0 || recipe_fails_array.length > 0
 			message = "One or more changes were not saved."
 		else
 			message = "Changes were saved successfully."
@@ -127,7 +134,7 @@ class HomeController < ApplicationController
 
 		respond_to do |format|
 			format.json {
-				render json: {:message => message, :ingredient_fails_array => ingredient_fails_array, :instruction_fails_array => instruction_fails_array}
+				render json: {:message => message, :recipe_fails_array => recipe_fails_array, :ingredient_fails_array => ingredient_fails_array, :instruction_fails_array => instruction_fails_array}
 			}
 		end
     end
