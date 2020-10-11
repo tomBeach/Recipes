@@ -3,6 +3,9 @@ class HomeController < ApplicationController
 	# ======= index =======
 	def index
 		puts "\n******* index *******"
+
+		@categories = Category.all
+		@nationalities = Nationality.all
 		if current_user
 			puts "** current_user: #{current_user}"
 		else
@@ -13,11 +16,6 @@ class HomeController < ApplicationController
 	# ======= ======= ======= RECIPES ======= ======= =======
     # ======= ======= ======= RECIPES ======= ======= =======
     # ======= ======= ======= RECIPES ======= ======= =======
-
-	# ======= import_recipes =======
-    def import_recipes
-        puts "\n******* import_recipes *******"
-    end
 
 	# ======= get_recipes =======
     def get_recipes
@@ -46,6 +44,21 @@ class HomeController < ApplicationController
 			}
 		end
 	end
+
+	# ======= show_recipe =======
+    def show_recipe
+        puts "\n******* show_recipe *******"
+		puts "params: #{params}"
+
+		@categories = Category.all
+		@recipe = Recipe.find(params[:id])
+		puts "@recipe: #{@recipe}"
+
+    end
+
+	# ======= ======= ======= EDIT ======= ======= =======
+    # ======= ======= ======= EDIT ======= ======= =======
+    # ======= ======= ======= EDIT ======= ======= =======
 
 	# ======= save_recipe =======
     def save_recipe
@@ -93,15 +106,9 @@ class HomeController < ApplicationController
 		end
     end
 
-	# ======= show_recipe =======
-    def show_recipe
-        puts "\n******* show_recipe *******"
-		puts "params: #{params}"
-
-		@recipe = Recipe.find(params[:id])
-		puts "@recipe: #{@recipe}"
-
-    end
+	# ======= ======= ======= SEARCH ======= ======= =======
+    # ======= ======= ======= SEARCH ======= ======= =======
+    # ======= ======= ======= SEARCH ======= ======= =======
 
 	# ======= search_ingredients =======
     def search_ingredients
@@ -179,17 +186,17 @@ class HomeController < ApplicationController
 		end
 	end
 
-	# ======= search_type =======
-    def search_type
-        puts "\n******* search_type *******"
+	# ======= search_category =======
+    def search_category
+        puts "\n******* search_category *******"
 		puts "params[:_json]: #{params[:_json]}"
 
 		recipe_count = 0
 		recipe_array = []
-		search_term = params[:_json]
+		which_category = params[:_json]
 
 		# == search for titles containing search string (case insensitive)
-		@recipes = Recipe.where(:recipe_type => search_term)
+		@recipes = Recipe.where(:category_id => which_category)
 
 		if @recipes.length > 0
 			@recipes.each do |next_recipe|
@@ -202,16 +209,25 @@ class HomeController < ApplicationController
 		end
 
 		if recipe_count > 1 || recipe_count == 0
-			message = recipe_count.to_s + " " + search_term + " type recipes were found."
+			message = recipe_count.to_s + " " + which_category + " type recipes were found."
 		else
-			message = "No " + search_term + " type recipes were found."
+			message = "No " + which_category + " type recipes were found."
 		end
 
 		respond_to do |format|
 			format.json {
-				render json: {:message => message, :search => search_term, :output => recipe_array}
+				render json: {:message => message, :search => which_category, :output => recipe_array}
 			}
 		end
+    end
+
+	# ======= ======= ======= RECIPE FILES ======= ======= =======
+    # ======= ======= ======= RECIPE FILES ======= ======= =======
+    # ======= ======= ======= RECIPE FILES ======= ======= =======
+
+	# ======= import_recipes =======
+    def import_recipes
+        puts "\n******* import_recipes *******"
     end
 
 	# ======= save_recipe_file =======
@@ -318,33 +334,6 @@ class HomeController < ApplicationController
 			}
 		end
     end
-
-
-	# ======= ======= ======= JSON ======= ======= =======
-    # ======= ======= ======= JSON ======= ======= =======
-    # ======= ======= ======= JSON ======= ======= =======
-
-	# ======= add_json_data =======
-	def add_json_data
-		puts "\n******* add_json_data *******"
-	end
-
-	# ======= save_json_data =======
-	def save_json_data
-		puts "\n******* save_json_data *******"
-		puts "params.inspect: #{params.inspect}"
-		puts "params[:home]: #{params[:home]}"
-
-		permitted_params = json_params
-        puts "permitted_params: #{permitted_params.inspect}"
-
-        respond_to do |format|
-            format.json {
-                render json: { :returned_data => permitted_params }
-            }
-        end
-
-	end
 
 	private
 		def recipe_params

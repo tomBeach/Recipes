@@ -14,16 +14,13 @@ Rails.application.routes.draw do
 	post "/save_recipe_file" => "home#save_recipe_file"
 	post "/search_recipes" => "home#search_recipes"
 	post "/search_ingredients" => "home#search_ingredients"
-	post "/search_type" => "home#search_type"
+	post "/search_category" => "home#search_category"
 	post "/get_recipes" => "home#get_recipes"
 	post "/save_recipe" => "home#save_recipe"
 	get "/show_recipe/:id" => "home#show_recipe"
 
 	# == categories
 	resources :categories
-
-	# == data
-	post "/save_json_data" => "home#save_json_data"
-	get "/add_json_data" => "home#add_json_data"
+	resources :nationalities
 
 end

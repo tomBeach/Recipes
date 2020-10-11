@@ -331,7 +331,7 @@ $(document).on('turbolinks:load', function() {
     function searchType(searchString) {
 		console.log("== searchType ==");
 
-		var url = "/search_type";
+		var url = "/search_category";
 		var jsonData = JSON.stringify(searchString);
 
 		$.ajax({
