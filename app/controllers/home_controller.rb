@@ -21,14 +21,39 @@ class HomeController < ApplicationController
     def get_recipes
         puts "\n******* get_recipes *******"
 
+		category_array = []
+		nationality_array = []
 		recipe_array = []
 		recipe_count = 0
 		recipe_data = {}
+		@categories = Category.all
+		@nationalities = Nationality.all
 		@recipes = Recipe.all
+
+		if @categories.length > 0
+			@categories.each do |next_category|
+				category_data = {id:next_category.id, category:next_category.category }
+				category_array.push(category_data)
+			end
+		end
+		
+		if @nationalities.length > 0
+			@nationalities.each do |next_nationality|
+				nationality_data = {id:next_nationality.id, nationality:next_nationality.nationality }
+				nationality_array.push(nationality_data)
+			end
+		end
 
 		if @recipes.length > 0
 			@recipes.each do |next_recipe|
-				recipe_data = { id:next_recipe.id, title:next_recipe.title, recipe_type:next_recipe.recipe_type, ingredients:next_recipe.ingredients, instructions:next_recipe.instructions }
+				recipe_data = {
+					id:next_recipe.id,
+					rating:next_recipe.rating,
+					category:next_recipe.category_id,
+					nationality:next_recipe.nationality_id,
+					title:next_recipe.title,
+					ingredients:next_recipe.ingredients,
+					instructions:next_recipe.instructions }
 				recipe_array.push(recipe_data)
 				recipe_count = recipe_count + 1
 			end
@@ -40,7 +65,7 @@ class HomeController < ApplicationController
 
 		respond_to do |format|
 			format.json {
-				render json: {:message => message, :recipeArray => recipe_array}
+				render json: {:message => message, :categoryArray => category_array, :nationalityArray => nationality_array, :recipeArray => recipe_array}
 			}
 		end
 	end
@@ -51,6 +76,7 @@ class HomeController < ApplicationController
 		puts "params: #{params}"
 
 		@categories = Category.all
+		@nationalities = Nationality.all
 		@recipe = Recipe.find(params[:id])
 		puts "@recipe: #{@recipe}"
 

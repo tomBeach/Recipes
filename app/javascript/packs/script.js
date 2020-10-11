@@ -32,12 +32,12 @@ $(document).on('turbolinks:load', function() {
 		$('.ingredient, .instruction').on('mouseout', restoreLink);
 		$('.ingredient, .instruction').on('click', editLink);
 
-		// == activate main edit options (recipe type, auto sequence, save)
-		$('#recipe_type_select').change(function(e) {
-			console.log("== change: recipe_type_select ==");
+		// == activate main edit options (recipe category, auto sequence, save)
+		$('#recipe_category_select').change(function(e) {
+			console.log("== change: recipe_category_select ==");
 			e.preventDefault();
-			var typeSelect = $('#recipe_type_select option:selected').text();
-			$('#typeData').data().recipe_type = typeSelect;
+			var categorySelect = $('#recipe_category_select option:selected').text();
+			$('#categoryData').data().recipe_category = categorySelect;
 		});
 
 		$('#autoSequence').click(function(e) {
@@ -158,12 +158,22 @@ $(document).on('turbolinks:load', function() {
 		function saveRecipe() {
 			console.log("== saveRecipe ==");
 
-			var currentId = $('#recipeId').data().recipeid;
-			var typeData = $('#typeData').data().recipe_type;
-			var titleData = $('#titleData').data().recipe;
+			var currentId = $('#recipeId').data().recipeId;
+			var titleData = $('#titleData').data().title;
+			var ratingData = $('#ratingData').data().rating;
+			var categoryData = $('#categoryData').data().category_id;
+			var nationalityData = $('#nationalityData').data().nationality_id;
 			var ingredientsData = $('#ingredientsData').data().ingredients;
 			var instructionsData = $('#instructionsData').data().instructions;
-			var recipeData = {recipe_id:currentId, recipe:titleData, recipe_type:typeData, ingredients:ingredientsData, instructions:instructionsData};
+
+			var recipeData = {
+				recipe_id:currentId,
+				recipe:titleData,
+				rating:ratingData,
+				category_id:categoryData,
+				nationality_id:nationalityData,
+				ingredients:ingredientsData,
+				instructions:instructionsData};
 
 			var url = "/save_recipe";
 			var jsonData = JSON.stringify(recipeData);
@@ -400,35 +410,36 @@ $(document).on('turbolinks:load', function() {
 
 		for (var i = 0; i < jsonData.recipeArray.length; i++) {
 			nextId = jsonData.recipeArray[i].id;
-			nextType = jsonData.recipeArray[i].recipe_type;
+			nextRating = jsonData.recipeArray[i].rating;
+			nextCategoryId = jsonData.recipeArray[i].category_id;
+			nextNationalityId = jsonData.recipeArray[i].nationality_id;
 			nextRecipe = jsonData.recipeArray[i].title;
-			console.log("nextType: ", nextType);
 
 			// == colorize type string
-			switch(nextType) {
-				case "meat":
+			// switch(nextType) {
+			// 	case "meat":
 				typeStyle = "color:red";
-				break;
-				case "seafood":
-				typeStyle = "color:blue";
-				break;
-				case "vegetarian":
-				typeStyle = "color:green";
-				break;
-				case "dessert":
-				typeStyle = "color:purple";
-				break;
-				case "soups/stews":
-				typeStyle = "color:orange";
-				break;
-				case "recipe_type":
-				typeStyle = "visibility:hidden";
-				break;
-			}
+			// 	break;
+			// 	case "seafood":
+			// 	typeStyle = "color:blue";
+			// 	break;
+			// 	case "vegetarian":
+			// 	typeStyle = "color:green";
+			// 	break;
+			// 	case "dessert":
+			// 	typeStyle = "color:purple";
+			// 	break;
+			// 	case "soups/stews":
+			// 	typeStyle = "color:orange";
+			// 	break;
+			// 	case "recipe_type":
+			// 	typeStyle = "visibility:hidden";
+			// 	break;
+			// }
 
 			recipeHtml = recipeHtml + "<p>";
 			recipeHtml = recipeHtml + "<span class='recipeType' style='" + typeStyle + ";'>";
-			recipeHtml = recipeHtml + nextType + "</span>";
+			recipeHtml = recipeHtml + nextCategoryId + "</span>";
 			recipeHtml = recipeHtml + "<span class='recipeLink'>";
 			recipeHtml = recipeHtml + "<a href='/show_recipe/" + nextId + "'>" + nextRecipe;
 			recipeHtml = recipeHtml + "</a></span></p>";
@@ -447,7 +458,6 @@ $(document).on('turbolinks:load', function() {
 
 		for (var i = 0; i < recipeData.length; i++) {
 			nextRecipe = recipeData[i];
-			nextType = recipeData[i].recipe_type;
 			nextTitle = recipeData[i].recipe;
 			nextIngredients = recipeData[i].ingredients;
 			nextInstructions = recipeData[i].instructions;
@@ -855,11 +865,11 @@ $(document).on('turbolinks:load', function() {
 		console.log("== toggleEditButons ==");
 
 		if (showOrHide == "hide") {
-			$('#recipe_type_select').hide();
+			$('#category_select').hide();
 			$('#autoSequence').hide();
 			$('#saveRecipe').hide();
 		} else {
-			$('#recipe_type_select').show();
+			$('#category_select').show();
 			$('#autoSequence').show();
 			$('#saveRecipe').show();
 		}
