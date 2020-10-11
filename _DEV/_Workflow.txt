@@ -6,6 +6,18 @@
 
 
 // ======= ======= ======= database re-design ======= ======= =======
+// == modify existing ==
+ALTER TABLE recipes RENAME COLUMN recipe_nation;
+ALTER TABLE recipes RENAME COLUMN column_name TO new_column_name;
+
+
+rails g model Nationality nationality:string
+rails g migration AddRatingToRecipe rating:integer
+rails g migration AddCategoryToRecipe category:references
+rails g migration AddNationalityToRecipe nationality:references
+rails g migration DropTypeFromRecipe recipe_type:string
+
+// == rebuild from scratch ==
 rails g model Category category:string
 rails g model Nationality nationality:string
 rails g model Recipe title:string category:references nationality:references
@@ -28,10 +40,6 @@ ALTER TABLE categories DROP COLUMN recipe_nation;
 ALTER TABLE categories DROP COLUMN recipe_id;
 rails g migration AddCategoryToRecipe category_id:integer
 rails g migration AddNationalityToRecipe nationality_id:integer
-
-rails g model Nationality nationality:string
-rails g migration AddCategoryToRecipe category:references
-rails g migration AddNationalityToRecipe nationality:references
 
 
 // ======= ======= ======= recipe_type setup ======= ======= =======
