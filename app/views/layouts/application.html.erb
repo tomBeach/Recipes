@@ -11,16 +11,15 @@
 
 <body>
 
-	<!-- ======= categories selectbox ======= -->
-	<% category_ids = [[nil, nil]] %>
-	<% @categories.each_with_index do |category, index| %>
-	    <% category_ids << [category[:category], category[:id]] %>
+	<%# ======= category and nationality options ======= %>
+	<% category_ids = [["", nil]] %>
+	<% @categories.each do |category| %>
+	    <% category_ids << [category.category, category[:id]] %>
 	<% end %>
 
-	<!-- ======= nationalities selectbox ======= -->
-	<% nationality_ids = [[nil, nil]] %>
+	<% nationality_ids = [["", nil]] %>
 	<% @nationalities.each_with_index do |nationality, index| %>
-	    <% nationality_ids << [nationality[:nationality], nationality[:id]] %>
+	    <% nationality_ids << [nationality.nationality, nationality[:id]] %>
 	<% end %>
 
     <div id="wrapper">
@@ -50,15 +49,13 @@
             <% end %>
         </div>
 
-		<% categories = ["Recipe Type", "meat", "seafood", "vegetarian", "dessert", "soups/stews"] %>
-
 		<div class="menuBox">
 			<div id="menuSpacer2">search</div>
 			<input id="search" type="text" name="search" value="garlic">
 			<%= link_to "Recipes", search_recipes_path, id: "searchRecipes", remote: false %>
 			<%= link_to "Ingredients", search_ingredients_path, id: "searchIngredients", remote: false %>
-			<%= select_tag "searchCategory", options_for_select(category_ids), remote: true %>
-			<%= select_tag "searchNationality", options_for_select(nationality_ids), remote: true %>
+			<%= select_tag "category_select", options_for_select(category_ids), class: "menuSelect", remote: true %>
+			<%= select_tag "nationality_select", options_for_select(nationality_ids), class: "menuSelect", remote: true %>
 		</div>
 
 		<!-- ======= yield ======= -->

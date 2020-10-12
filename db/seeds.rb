@@ -6,6 +6,7 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
+# == meat, seafood, dessert, soup_stew, vegetarian
 Category.destroy_all
 Category.create([
  { category:"meat" },
@@ -18,6 +19,7 @@ Category.create([
 puts "@categories: #{@categories.inspect}"
 puts "Category.column_names: #{Category.column_names.inspect}"
 
+# ==  Thai,  Indian,  French,  Mexican,  Chinese,  Caribbean,  Middle Eastern,  American
 Nationality.destroy_all
 Nationality.create([
  { nationality:"Thai" },

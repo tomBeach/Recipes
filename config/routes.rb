@@ -15,6 +15,7 @@ Rails.application.routes.draw do
 	post "/search_recipes" => "home#search_recipes"
 	post "/search_ingredients" => "home#search_ingredients"
 	post "/search_category" => "home#search_category"
+	post "/search_nationality" => "home#search_nationality"
 	post "/get_recipes" => "home#get_recipes"
 	post "/save_recipe" => "home#save_recipe"
 	get "/show_recipe/:id" => "home#show_recipe"

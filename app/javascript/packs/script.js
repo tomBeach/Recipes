@@ -48,13 +48,22 @@ $(document).on('turbolinks:load', function() {
 			toggleEditButons("hide");
 	    });
 
-		$('#searchType').change(function(e) {
-			console.log("== change: searchType ==");
+		$('#category_select').change(function(e) {
+			console.log("== change: category_select ==");
 			e.preventDefault();
-			var searchSelect = $('#searchType option:selected').text();
+			var searchSelect = $('#category_select option:selected').val();
 			console.log("searchSelect: ", searchSelect);
-			searchType(searchSelect);
-			toggleEditButons("hide");
+			searchCategory(searchSelect);
+			// toggleEditButons("hide");
+	    });
+
+		$('#nationality_select').change(function(e) {
+			console.log("== change: nationality_select ==");
+			e.preventDefault();
+			var searchSelect = $('#nationality_select option:selected').val();
+			console.log("searchSelect: ", searchSelect);
+			searchNationality(searchSelect);
+			// toggleEditButons("hide");
 	    });
 
 	}
@@ -286,9 +295,11 @@ $(document).on('turbolinks:load', function() {
 	function displayRecipeTitles(jsonData) {
 		console.log("== displayRecipeTitles ==");
 
-		var nextId, nextRecipe, recipeHtml;
+		var nextId, nextRecipe, recipeHtml, categoryStyle, nationalityStyle;
 		var recipeHtml = "";
 		var titleText = "All Recipes";
+		var selectedCategory = "";
+		var selectedNationality  = "";
 		updateTitleText(titleText);
 		updateNoticeMessage(jsonData);
 
@@ -300,39 +311,21 @@ $(document).on('turbolinks:load', function() {
 			nextRecipe = jsonData.recipeArray[k].title;
 
 			if (nextCategoryId) {
-				var selectedCategory = jsonData.categoryObj[nextCategoryId];
+				selectedCategory = jsonData.categoryObj[nextCategoryId];
+				categoryStyle = getCategoryStyle(selectedCategory);
 				console.log("selectedCategory: ", selectedCategory);
 			}
 			if (nextNationalityId) {
-				var selectedNationality = jsonData.nationalityObj[nextNationalityId];
+				selectedNationality = jsonData.nationalityObj[nextNationalityId];
+				nationalityStyle = getNationalityStyle(selectedNationality);
 				console.log("selectedNationality: ", selectedNationality);
 			}
 
-			// == colorize type string
-			// switch(nextType) {
-			// 	case "meat":
-				typeStyle = "color:red";
-			// 	break;
-			// 	case "seafood":
-			// 	typeStyle = "color:blue";
-			// 	break;
-			// 	case "vegetarian":
-			// 	typeStyle = "color:green";
-			// 	break;
-			// 	case "dessert":
-			// 	typeStyle = "color:purple";
-			// 	break;
-			// 	case "soups/stews":
-			// 	typeStyle = "color:orange";
-			// 	break;
-			// 	case "recipe_type":
-			// 	typeStyle = "visibility:hidden";
-			// 	break;
-			// }
-
 			recipeHtml = recipeHtml + "<p>";
-			recipeHtml = recipeHtml + "<span class='recipeType' style='" + typeStyle + ";'>";
-			recipeHtml = recipeHtml + nextCategoryId + "</span>";
+			recipeHtml = recipeHtml + "<span class='recipeType' style='" + categoryStyle + ";'>";
+			recipeHtml = recipeHtml + selectedCategory + "</span>";
+			recipeHtml = recipeHtml + "<span class='recipeType' style='" + nationalityStyle + ";'>";
+			recipeHtml = recipeHtml + selectedNationality + "</span>";
 			recipeHtml = recipeHtml + "<span class='recipeLink'>";
 			recipeHtml = recipeHtml + "<a href='/show_recipe/" + nextId + "'>" + nextRecipe;
 			recipeHtml = recipeHtml + "</a></span></p>";
@@ -393,11 +386,35 @@ $(document).on('turbolinks:load', function() {
 		});
 	}
 
-	// ======= searchType =======
-    function searchType(searchString) {
-		console.log("== searchType ==");
+	// ======= searchCategory =======
+    function searchCategory(searchString) {
+		console.log("== searchCategory ==");
+		console.log("searchString: ", searchString);
 
 		var url = "/search_category";
+		var jsonData = JSON.stringify(searchString);
+
+		$.ajax({
+		    url: url,
+			data: jsonData,
+		    method: "POST",
+			dataType: "json",
+			contentType: "application/json; charset=utf-8"
+		}).done(function(jsonData) {
+		    console.log("*** ajax success ***");
+		    console.dir(jsonData)
+			displaySearchResults(jsonData, "type");
+		}).fail(function(unknown){
+		    console.log("*** ajax fail ***");
+			console.log("unknown:", unknown);
+		});
+	}
+
+	// ======= searchNationality =======
+    function searchNationality(searchString) {
+		console.log("== searchNationality ==");
+
+		var url = "/search_nationality";
 		var jsonData = JSON.stringify(searchString);
 
 		$.ajax({
@@ -867,6 +884,69 @@ $(document).on('turbolinks:load', function() {
 	// ======= ======= ======= UTILITIES ======= ======= =======
 	// ======= ======= ======= UTILITIES ======= ======= =======
 	// ======= ======= ======= UTILITIES ======= ======= =======
+
+	function getCategoryStyle(selectedCategory) {
+		console.log("== getCategoryStyle ==");
+
+		// == colorize type string
+		switch(selectedCategory) {
+			case "meat":
+			typeStyle = "color:red";
+			break;
+			case "seafood":
+			typeStyle = "color:blue";
+			break;
+			case "vegetarian":
+			typeStyle = "color:green";
+			break;
+			case "dessert":
+			typeStyle = "color:purple";
+			break;
+			case "soups/stews":
+			typeStyle = "color:orange";
+			break;
+			default:
+			typeStyle = "visibility:hidden";
+			break;
+		}
+		return typeStyle;
+	}
+
+	function getNationalityStyle(selectedNationality) {
+		console.log("== getNationalityStyle ==");
+
+		// == colorize type string
+		switch(selectedNationality) {
+			case "Thai":
+			typeStyle = "color:red";
+			break;
+			case "Indian":
+			typeStyle = "color:CornflowerBlue";
+			break;
+			case "French":
+			typeStyle = "color:green";
+			break;
+			case "Mexican":
+			typeStyle = "color:purple";
+			break;
+			case "Chinese":
+			typeStyle = "color:orange";
+			break;
+			case "Caribbean":
+			typeStyle = "color:Aqua";
+			break;
+			case "Middle Eastern":
+			typeStyle = "color:DarkOrange";
+			break;
+			case "American":
+			typeStyle = "color:blue";
+			break;
+			default:
+			typeStyle = "visibility:hidden";
+			break;
+		}
+		return typeStyle;
+	}
 
 	function toggleEditButons(showOrHide) {
 		console.log("== toggleEditButons ==");

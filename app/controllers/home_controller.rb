@@ -4,8 +4,8 @@ class HomeController < ApplicationController
 	def index
 		puts "\n******* index *******"
 
-		@categories = Category.all
-		@nationalities = Nationality.all
+		# @categories = Category.all
+		# @nationalities = Nationality.all
 		if current_user
 			puts "** current_user: #{current_user}"
 		else
@@ -24,8 +24,8 @@ class HomeController < ApplicationController
 		recipe_array = []
 		recipe_count = 0
 		recipe_data = {}
-		@categories = Category.all
-		@nationalities = Nationality.all
+		# @categories = Category.all
+		# @nationalities = Nationality.all
 		@recipes = Recipe.all
 
 		category_obj = {}
@@ -198,7 +198,7 @@ class HomeController < ApplicationController
 
 		if @recipes.length > 0
 			@recipes.each do |next_recipe|
-				recipe_data = { id:next_recipe.id, title:next_recipe.title, type:next_recipe.recipe_type }
+				recipe_data = { id:next_recipe.id, title:next_recipe.title, rating:next_recipe.rating, category:next_recipe.category_id, nationality:next_recipe.nationality_id }
 				recipe_count = recipe_count + 1
 				recipe_array.push(recipe_data)
 			end
@@ -226,14 +226,15 @@ class HomeController < ApplicationController
 
 		recipe_count = 0
 		recipe_array = []
-		which_category = params[:_json]
+		which_category_id = params[:_json].to_i
+		which_category = Category.where(:id => which_category_id).first[:category]
 
 		# == search for titles containing search string (case insensitive)
-		@recipes = Recipe.where(:category_id => which_category)
+		@recipes = Recipe.where(:category_id => which_category_id)
 
 		if @recipes.length > 0
 			@recipes.each do |next_recipe|
-				recipe_data = { id:next_recipe.id, title:next_recipe.title, type:next_recipe.recipe_type }
+				recipe_data = { id:next_recipe.id, title:next_recipe.title, rating:next_recipe.rating, category_id:next_recipe.category_id, nationality_id:next_recipe.nationality_id }
 				recipe_count = recipe_count + 1
 				recipe_array.push(recipe_data)
 			end
@@ -250,6 +251,42 @@ class HomeController < ApplicationController
 		respond_to do |format|
 			format.json {
 				render json: {:message => message, :search => which_category, :output => recipe_array}
+			}
+		end
+    end
+
+	# ======= search_nationality =======
+    def search_nationality
+        puts "\n******* search_nationality *******"
+		puts "params[:_json]: #{params[:_json]}"
+
+		recipe_count = 0
+		recipe_array = []
+		which_nationality_id = params[:_json].to_i
+		which_nationality = Nationality.where(:id => which_nationality_id).first[:nationality]
+
+		# == search for titles containing search string (case insensitive)
+		@recipes = Recipe.where(:nationality_id => which_nationality_id)
+
+		if @recipes.length > 0
+			@recipes.each do |next_recipe|
+				recipe_data = { id:next_recipe.id, title:next_recipe.title, rating:next_recipe.rating, category_id:next_recipe.category_id, nationality_id:next_recipe.nationality_id }
+				recipe_count = recipe_count + 1
+				recipe_array.push(recipe_data)
+			end
+		else
+			puts "NO RECORDS"
+		end
+
+		if recipe_count > 1 || recipe_count == 0
+			message = recipe_count.to_s + " " + which_nationality + " type recipes were found."
+		else
+			message = "No " + which_nationality + " type recipes were found."
+		end
+
+		respond_to do |format|
+			format.json {
+				render json: {:message => message, :search => which_nationality, :output => recipe_array}
 			}
 		end
     end
