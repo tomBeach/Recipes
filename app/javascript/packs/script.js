@@ -29,7 +29,7 @@ $(document).on('turbolinks:load', function() {
 			console.log("== click: getAllRecipes ==");
 			e.preventDefault();
 			getAllRecipes();
-			// toggleEditButons("hide");
+			// toggleEditButtons("hide");
 			e.stopPropagation();
 		});
 
@@ -38,7 +38,7 @@ $(document).on('turbolinks:load', function() {
 			e.preventDefault();
 			var searchString = $('#search').val();
 			searchRecipes(searchString);
-			// toggleEditButons("hide");
+			// toggleEditButtons("hide");
 	    });
 
 		$('#searchIngredients').click(function(e) {
@@ -46,7 +46,7 @@ $(document).on('turbolinks:load', function() {
 			e.preventDefault();
 			var searchString = $('#search').val();
 			searchIngredients(searchString);
-			// toggleEditButons("hide");
+			// toggleEditButtons("hide");
 	    });
 
 		$('#category_select').change(function(e) {
@@ -55,7 +55,7 @@ $(document).on('turbolinks:load', function() {
 			var searchSelect = $('#category_select option:selected').val();
 			console.log("searchSelect: ", searchSelect);
 			searchCategory(searchSelect);
-			// toggleEditButons("hide");
+			// toggleEditButtons("hide");
 	    });
 
 		$('#nationality_select').change(function(e) {
@@ -64,7 +64,7 @@ $(document).on('turbolinks:load', function() {
 			var searchSelect = $('#nationality_select option:selected').val();
 			console.log("searchSelect: ", searchSelect);
 			searchNationality(searchSelect);
-			// toggleEditButons("hide");
+			// toggleEditButtons("hide");
 	    });
 
 	}
@@ -398,6 +398,7 @@ $(document).on('turbolinks:load', function() {
 		    console.log("*** ajax success ***");
 		    console.dir(jsonData)
 			displayRecipeTitles(jsonData)
+			toggleEditButtons("hide");
 			makeTitleText(jsonData, "all");
 			updateNoticeMessage(jsonData);
 		}).fail(function(unknown){
@@ -978,16 +979,16 @@ $(document).on('turbolinks:load', function() {
 		return typeStyle;
 	}
 
-	function toggleEditButons(showOrHide) {
-		console.log("== toggleEditButons ==");
+	function toggleEditButtons(showOrHide) {
+		console.log("== toggleEditButtons ==");
 
 		if (showOrHide == "hide") {
-			$('#category_select').hide();
-			$('#nationality_select').hide();
+			$('#category_edit_select').hide();
+			$('#nationality_edit_select').hide();
 			$('#saveRecipe').hide();
 		} else {
-			$('#category_select').show();
-			$('#nationality_select').show();
+			$('#category_edit_select').show();
+			$('#nationality_edit_select').show();
 			$('#saveRecipe').show();
 		}
 	}

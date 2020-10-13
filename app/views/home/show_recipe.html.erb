@@ -40,15 +40,15 @@
 
 
 <%# ======= recipe data => javascript ======= %>
-<%= content_tag :div, id: "recipeId", data: {recipeId: @recipe.id} do %>
+<%= content_tag :div, id: "recipeId", data: {recipeid: @recipe.id} do %>
 <% end %>
 <%= content_tag :div, id: "titleData", data: {title: @recipe.title} do %>
 <% end %>
 <%= content_tag :div, id: "ratingData", data: {rating: @recipe.rating} do %>
 <% end %>
-<%= content_tag :div, id: "categoryData", data: {categoryId: @recipe.category_id} do %>
+<%= content_tag :div, id: "categoryData", data: {categoryid: @recipe.category_id} do %>
 <% end %>
-<%= content_tag :div, id: "nationalityData", data: {nationalityId: @recipe.nationality_id} do %>
+<%= content_tag :div, id: "nationalityData", data: {nationalityid: @recipe.nationality_id} do %>
 <% end %>
 <%= content_tag :div, id: "ingredientsData", data: {ingredients: ingredients_sorted} do %>
 <% end %>

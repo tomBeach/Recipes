@@ -152,7 +152,14 @@ class HomeController < ApplicationController
 
 		if @recipes.length > 0
 			@recipes.each do |next_recipe|
-				recipe_data = { id:next_recipe.id, title:next_recipe.title, rating:next_recipe.rating, category:next_recipe.category_id, nationality:next_recipe.nationality_id }
+				recipe_data = {
+					id: next_recipe.id,
+					rating: next_recipe.rating,
+					category_id: next_recipe.category_id,
+					nationality_id: next_recipe.nationality_id,
+					title: next_recipe.title,
+					ingredients: next_recipe.ingredients,
+					instructions: next_recipe.instructions }
 				recipe_count = recipe_count + 1
 				recipe_array.push(recipe_data)
 			end
@@ -199,7 +206,14 @@ class HomeController < ApplicationController
 			puts "@target_ingredients.length: #{@target_ingredients.length}"
 
 			if @target_ingredients.length > 0
-				recipe_data = { id:next_recipe.id, title:next_recipe.title }
+				recipe_data = {
+					id: next_recipe.id,
+					rating: next_recipe.rating,
+					category_id: next_recipe.category_id,
+					nationality_id: next_recipe.nationality_id,
+					title: next_recipe.title,
+					ingredients: next_recipe.ingredients,
+					instructions: next_recipe.instructions }
 				recipe_count = recipe_count + 1
 				recipe_array.push(recipe_data)
 			else
@@ -243,7 +257,14 @@ class HomeController < ApplicationController
 
 		if @recipes.length > 0
 			@recipes.each do |next_recipe|
-				recipe_data = { id:next_recipe.id, title:next_recipe.title, rating:next_recipe.rating, category_id:next_recipe.category_id, nationality_id:next_recipe.nationality_id }
+				recipe_data = {
+					id: next_recipe.id,
+					rating: next_recipe.rating,
+					category_id: next_recipe.category_id,
+					nationality_id: next_recipe.nationality_id,
+					title: next_recipe.title,
+					ingredients: next_recipe.ingredients,
+					instructions: next_recipe.instructions }
 				recipe_count = recipe_count + 1
 				recipe_array.push(recipe_data)
 			end
@@ -287,7 +308,14 @@ class HomeController < ApplicationController
 
 		if @recipes.length > 0
 			@recipes.each do |next_recipe|
-				recipe_data = { id:next_recipe.id, title:next_recipe.title, rating:next_recipe.rating, category_id:next_recipe.category_id, nationality_id:next_recipe.nationality_id }
+				recipe_data = {
+					id: next_recipe.id,
+					rating: next_recipe.rating,
+					category_id: next_recipe.category_id,
+					nationality_id: next_recipe.nationality_id,
+					title: next_recipe.title,
+					ingredients: next_recipe.ingredients,
+					instructions: next_recipe.instructions }
 				recipe_count = recipe_count + 1
 				recipe_array.push(recipe_data)
 			end
