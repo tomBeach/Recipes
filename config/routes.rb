@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 	# == recipes
 	get "/import_recipes" => "home#import_recipes"
 	post "/save_recipe_file" => "home#save_recipe_file"
-	post "/search_recipes" => "home#search_recipes"
+	post "/search_titles" => "home#search_titles"
 	post "/search_ingredients" => "home#search_ingredients"
 	post "/search_category" => "home#search_category"
 	post "/search_nationality" => "home#search_nationality"

@@ -124,6 +124,13 @@ h1 {
 	font-size: 24px;
 	color: mediumslateblue;
 }
+.recipeType {
+	display: inline-block;
+	margin: 10px;
+	width: 14%;
+	font-size: 16px;
+	color: navy;
+}
 
 /* ======= ======= ======= show recipe ======= ======= ======= */
 #output {
@@ -235,7 +242,8 @@ h1 {
 
 /* ======= ======= ======= search ======= ======= ======= */
 .recipeLink {
-	margin: 10px;
+	display: inline-block;
+	margin: 4px;
 }
 .recipeLink > a {
 	margin: 10px;
@@ -245,11 +253,6 @@ h1 {
 }
 .recipeLink > a:hover {
     color: orangered;
-}
-.recipeType {
-	margin: 10px;
-	font-size: 16px;
-	color: navy;
 }
 #searchType {
 	display: inline;

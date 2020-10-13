@@ -10,6 +10,7 @@
     <% nationality_ids << [nationality.nationality, nationality[:id]] %>
 <% end %>
 
+
 <%# ======= selected category / nationality ======= %>
 <% puts "@recipe.category_id: #{@recipe.category_id}" %>
 <% if @recipe.category_id == nil %>
@@ -30,11 +31,13 @@
 <% end %>
 <% puts "nationality_ids: #{nationality_ids}" %>
 
+
 <%# ======= sort ingredients/instructions by sequence ======= %>
 <% ingredients_sorted = @recipe.ingredients.sort_by { |ingredient| ingredient["sequence"] } %>
 <% puts "ingredients_sorted: #{ingredients_sorted}" %>
 <% instructions_sorted = @recipe.instructions.sort_by { |instruction| instruction["sequence"] } %>
 <% puts "instructions_sorted: #{instructions_sorted}" %>
+
 
 <%# ======= recipe data => javascript ======= %>
 <%= content_tag :div, id: "recipeId", data: {recipeId: @recipe.id} do %>
@@ -43,21 +46,23 @@
 <% end %>
 <%= content_tag :div, id: "ratingData", data: {rating: @recipe.rating} do %>
 <% end %>
-<%= content_tag :div, id: "categoryData", data: {category: @recipe.category_id} do %>
+<%= content_tag :div, id: "categoryData", data: {categoryId: @recipe.category_id} do %>
 <% end %>
-<%= content_tag :div, id: "nationalityData", data: {nationality: @recipe.nationality_id} do %>
+<%= content_tag :div, id: "nationalityData", data: {nationalityId: @recipe.nationality_id} do %>
 <% end %>
 <%= content_tag :div, id: "ingredientsData", data: {ingredients: ingredients_sorted} do %>
 <% end %>
 <%= content_tag :div, id: "instructionsData", data: {instructions: instructions_sorted} do %>
 <% end %>
 
+
 <h2 id="outputTitle"><%= @recipe.title %></h2>
 <div id="editSaveBox">
-	<%= select_tag "category_select", options_for_select(category_ids, category), class: "editSelect", remote: true %>
-	<%= select_tag "nationality_select", options_for_select(nationality_ids, nationality), class: "editSelect", remote: true %>
+	<%= select_tag "category_edit_select", options_for_select(category_ids, category), class: "editSelect", remote: true %>
+	<%= select_tag "nationality_edit_select", options_for_select(nationality_ids, nationality), class: "editSelect", remote: true %>
 	<%= link_to "Save Changes", save_recipe_path, id: "saveRecipe", class: "addEditDelete", remote: true %>
 </div>
+
 
 <div id="output">
 

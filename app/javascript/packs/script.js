@@ -5,6 +5,7 @@ $(document).on('turbolinks:load', function() {
     var pathname = window.location.pathname;
 	var pathParts = pathname.split("/");
     var pathPartsCount = (pathname.split("/").length - 1);
+	console.log("pathParts: ", pathParts);
 
 	// ======= window conditionals =======
     if (pathname == "/import_recipes") {
@@ -28,7 +29,7 @@ $(document).on('turbolinks:load', function() {
 			console.log("== click: getAllRecipes ==");
 			e.preventDefault();
 			getAllRecipes();
-			toggleEditButons("hide");
+			// toggleEditButons("hide");
 			e.stopPropagation();
 		});
 
@@ -37,7 +38,7 @@ $(document).on('turbolinks:load', function() {
 			e.preventDefault();
 			var searchString = $('#search').val();
 			searchRecipes(searchString);
-			toggleEditButons("hide");
+			// toggleEditButons("hide");
 	    });
 
 		$('#searchIngredients').click(function(e) {
@@ -45,7 +46,7 @@ $(document).on('turbolinks:load', function() {
 			e.preventDefault();
 			var searchString = $('#search').val();
 			searchIngredients(searchString);
-			toggleEditButons("hide");
+			// toggleEditButons("hide");
 	    });
 
 		$('#category_select').change(function(e) {
@@ -68,6 +69,116 @@ $(document).on('turbolinks:load', function() {
 
 	}
 
+
+	// ======= ======= ======= SEARCH ======= ======= =======
+	// ======= ======= ======= SEARCH ======= ======= =======
+	// ======= ======= ======= SEARCH ======= ======= =======
+
+	// ======= searchRecipes =======
+    function searchRecipes(searchString) {
+		console.log("== searchRecipes ==");
+		console.log("searchString: ", searchString);
+
+		var titleTextArray;
+		var url = "/search_titles";
+		var jsonData = JSON.stringify(searchString);
+
+		$.ajax({
+		    url: url,
+			data: jsonData,
+		    method: "POST",
+			dataType: "json",
+			contentType: "application/json; charset=utf-8"
+		}).done(function(jsonData) {
+		    console.log("*** ajax success ***");
+		    console.dir(jsonData)
+			displayRecipeTitles(jsonData)
+			makeTitleText(jsonData, "title");
+			updateNoticeMessage(jsonData);
+		}).fail(function(unknown){
+		    console.log("*** ajax fail ***");
+			console.log("unknown:", unknown);
+		});
+	}
+
+	// ======= searchIngredients =======
+    function searchIngredients(searchString) {
+		console.log("== searchIngredients ==");
+		console.log("searchString: ", searchString);
+
+		var url = "/search_ingredients";
+		var jsonData = JSON.stringify(searchString);
+
+		$.ajax({
+		    url: url,
+			data: jsonData,
+		    method: "POST",
+			dataType: "json",
+			contentType: "application/json; charset=utf-8"
+		}).done(function(jsonData) {
+		    console.log("*** ajax success ***");
+		    console.dir(jsonData)
+			displayRecipeTitles(jsonData)
+			makeTitleText(jsonData, "ingredient");
+			updateNoticeMessage(jsonData);
+		}).fail(function(unknown){
+		    console.log("*** ajax fail ***");
+			console.log("unknown:", unknown);
+		});
+	}
+
+	// ======= searchCategory =======
+    function searchCategory(searchString) {
+		console.log("== searchCategory ==");
+		console.log("searchString: ", searchString);
+
+		var url = "/search_category";
+		var jsonData = JSON.stringify(searchString);
+
+		$.ajax({
+		    url: url,
+			data: jsonData,
+		    method: "POST",
+			dataType: "json",
+			contentType: "application/json; charset=utf-8"
+		}).done(function(jsonData) {
+		    console.log("*** ajax success ***");
+		    console.dir(jsonData)
+			displayRecipeTitles(jsonData)
+			makeTitleText(jsonData, "category");
+			updateNoticeMessage(jsonData);
+		}).fail(function(unknown){
+		    console.log("*** ajax fail ***");
+			console.log("unknown:", unknown);
+		});
+	}
+
+	// ======= searchNationality =======
+    function searchNationality(searchString) {
+		console.log("== searchNationality ==");
+
+		var url = "/search_nationality";
+		var jsonData = JSON.stringify(searchString);
+
+		$.ajax({
+		    url: url,
+			data: jsonData,
+		    method: "POST",
+			dataType: "json",
+			contentType: "application/json; charset=utf-8"
+		}).done(function(jsonData) {
+		    console.log("*** ajax success ***");
+		    console.dir(jsonData)
+			displayRecipeTitles(jsonData)
+			makeTitleText(jsonData, "nationality");
+			updateNoticeMessage(jsonData);
+		}).fail(function(unknown){
+		    console.log("*** ajax fail ***");
+			console.log("unknown:", unknown);
+		});
+	}
+
+
 	// ======= ======= ======= EDIT ======= ======= =======
 	// ======= ======= ======= EDIT ======= ======= =======
 	// ======= ======= ======= EDIT ======= ======= =======
@@ -86,21 +197,21 @@ $(document).on('turbolinks:load', function() {
 		$('.ingredient, .instruction').on('click', editLink);
 
 		// == activate main edit options (recipe category, auto sequence, save)
-		$('#category_select').change(function(e) {
-			console.log("== change: category_select ==");
+		$('#category_edit_select').change(function(e) {
+			console.log("== change: category_edit_select ==");
 			e.preventDefault();
-			var category_id = $('#category_select option:selected').val();
-			console.log("category_id: ", category_id);
-			$('#categoryData').data().category_id = category_id;
+			var category = $('#category_edit_select option:selected').text();
+			var categoryId = $('#category_edit_select option:selected').val();
+			$('#categoryData').data().categoryid = categoryId;
 			console.log("$('#categoryData').data(): ", $('#categoryData').data());
 	    });
 
-		$('#nationality_select').change(function(e) {
-			console.log("== change: nationality_select ==");
+		$('#nationality_edit_select').change(function(e) {
+			console.log("== change: nationality_edit_select ==");
 			e.preventDefault();
-			var nationality_id = $('#nationality_select option:selected').val();
-			console.log("nationality_id: ", nationality_id);
-			$('#nationalityData').data().nationality_id = nationality_id;
+			var nationality = $('#nationality_edit_select option:selected').text();
+			var nationalityId = $('#nationality_edit_select option:selected').val();
+			$('#nationalityData').data().nationalityid = nationalityId;
 			console.log("$('#nationalityData').data(): ", $('#nationalityData').data());
 	    });
 
@@ -218,20 +329,22 @@ $(document).on('turbolinks:load', function() {
 			var currentId = $('#recipeId').data().recipeid;
 			var titleData = $('#titleData').data().title;
 			var ratingData = $('#ratingData').data().rating;
-			var categoryData = $('#categoryData').data().category_id;
-			var nationalityData = $('#nationalityData').data().nationality_id;
+			var categoryData = $('#categoryData').data().categoryid;
+			var nationalityData = $('#nationalityData').data().nationalityid;
 			var ingredientsData = $('#ingredientsData').data().ingredients;
 			var instructionsData = $('#instructionsData').data().instructions;
+			console.log("categoryData: ", categoryData);
+			console.log("nationalityData: ", nationalityData);
 
 			// == avoind null values (items not set by user)
 			if (!ratingData) {
 				ratingData = 0;
 			}
-			if (!categoryData) {
-				categoryData = 0;
+			if (!categoryData.categoryId) {
+				categoryData.categoryId = 0;
 			}
-			if (!nationalityData) {
-				nationalityData = 0;
+			if (!nationalityData.nationalityId) {
+				nationalityData.nationalityId = 0;
 			}
 
 			var recipeData = {
@@ -284,7 +397,9 @@ $(document).on('turbolinks:load', function() {
 		}).done(function(jsonData) {
 		    console.log("*** ajax success ***");
 		    console.dir(jsonData)
-			displayRecipeTitles(jsonData);
+			displayRecipeTitles(jsonData)
+			makeTitleText(jsonData, "all");
+			updateNoticeMessage(jsonData);
 		}).fail(function(unknown){
 		    console.log("*** ajax fail ***");
 			console.log("unknown:", unknown);
@@ -295,175 +410,84 @@ $(document).on('turbolinks:load', function() {
 	function displayRecipeTitles(jsonData) {
 		console.log("== displayRecipeTitles ==");
 
-		var nextId, nextRecipe, recipeHtml, categoryStyle, nationalityStyle;
+		var nextId, nextTitle, recipeHtml, categoryStyle, nationalityStyle;
 		var recipeHtml = "";
-		var titleText = "All Recipes";
 		var selectedCategory = "";
 		var selectedNationality  = "";
-		updateTitleText(titleText);
-		updateNoticeMessage(jsonData);
 
-		for (var k = 0; k < jsonData.recipeArray.length; k++) {
-			nextId = jsonData.recipeArray[k].id;
-			nextRating = jsonData.recipeArray[k].rating;
-			nextCategoryId = jsonData.recipeArray[k].category_id;
-			nextNationalityId = jsonData.recipeArray[k].nationality_id;
-			nextRecipe = jsonData.recipeArray[k].title;
+		if (jsonData.recipeArray.length > 0) {
+			for (var k = 0; k < jsonData.recipeArray.length; k++) {
+				nextId = jsonData.recipeArray[k].id;
+				nextRating = jsonData.recipeArray[k].rating;
+				nextCategoryId = jsonData.recipeArray[k].category_id;
+				nextNationalityId = jsonData.recipeArray[k].nationality_id;
+				nextTitle = jsonData.recipeArray[k].title;
+				console.log("nextNationalityId: ", nextNationalityId);
+				console.log("nextCategoryId: ", nextCategoryId);
+				console.log("nextTitle: ", nextTitle);
 
-			if (nextCategoryId) {
-				selectedCategory = jsonData.categoryObj[nextCategoryId];
-				categoryStyle = getCategoryStyle(selectedCategory);
-				console.log("selectedCategory: ", selectedCategory);
+				if (nextCategoryId) {
+					selectedCategory = jsonData.categoryObj[nextCategoryId];
+					categoryStyle = getCategoryStyle(selectedCategory);
+					console.log("selectedCategory: ", selectedCategory);
+				} else {
+					selectedCategory = "";
+				}
+				if (nextNationalityId) {
+					selectedNationality = jsonData.nationalityObj[nextNationalityId];
+					nationalityStyle = getNationalityStyle(selectedNationality);
+					console.log("selectedNationality: ", selectedNationality);
+				} else {
+					selectedNationality = "";
+				}
+
+				recipeHtml = recipeHtml + "<div>";
+				recipeHtml = recipeHtml + "<div class='recipeType' style='" + categoryStyle + ";'>";
+				recipeHtml = recipeHtml + selectedCategory + "</div>";
+				recipeHtml = recipeHtml + "<div class='recipeType' style='" + nationalityStyle + ";'>";
+				recipeHtml = recipeHtml + selectedNationality + "</div>";
+				recipeHtml = recipeHtml + "<div class='recipeLink'>";
+				recipeHtml = recipeHtml + "<a href='/show_recipe/" + nextId + "'>" + nextTitle;
+				recipeHtml = recipeHtml + "</a></div></div>";
 			}
-			if (nextNationalityId) {
-				selectedNationality = jsonData.nationalityObj[nextNationalityId];
-				nationalityStyle = getNationalityStyle(selectedNationality);
-				console.log("selectedNationality: ", selectedNationality);
-			}
-
-			recipeHtml = recipeHtml + "<p>";
-			recipeHtml = recipeHtml + "<span class='recipeType' style='" + categoryStyle + ";'>";
-			recipeHtml = recipeHtml + selectedCategory + "</span>";
-			recipeHtml = recipeHtml + "<span class='recipeType' style='" + nationalityStyle + ";'>";
-			recipeHtml = recipeHtml + selectedNationality + "</span>";
-			recipeHtml = recipeHtml + "<span class='recipeLink'>";
-			recipeHtml = recipeHtml + "<a href='/show_recipe/" + nextId + "'>" + nextRecipe;
-			recipeHtml = recipeHtml + "</a></span></p>";
+		} else {
+			recipeHtml = "<p class='info'> Sorry... no results were returned from the database.</p>";
 		}
 		$('#output').html(recipeHtml);
 	}
 
+	// ======= makeTitleText =======
+	function makeTitleText(jsonData, type) {
+		console.log("== makeTitleText ==");
 
-	// ======= ======= ======= SEARCH ======= ======= =======
-	// ======= ======= ======= SEARCH ======= ======= =======
-	// ======= ======= ======= SEARCH ======= ======= =======
+		var titleText;
 
-	// ======= searchRecipes =======
-    function searchRecipes(searchString) {
-		console.log("== searchRecipes ==");
-		console.log("searchString: ", searchString);
-
-		var url = "/search_recipes";
-		var jsonData = JSON.stringify(searchString);
-
-		$.ajax({
-		    url: url,
-			data: jsonData,
-		    method: "POST",
-			dataType: "json",
-			contentType: "application/json; charset=utf-8"
-		}).done(function(jsonData) {
-		    console.log("*** ajax success ***");
-		    console.dir(jsonData)
-			displaySearchResults(jsonData, "title");
-		}).fail(function(unknown){
-		    console.log("*** ajax fail ***");
-			console.log("unknown:", unknown);
-		});
-	}
-
-	// ======= searchIngredients =======
-    function searchIngredients(searchString) {
-		console.log("== searchIngredients ==");
-		console.log("searchString: ", searchString);
-
-		var url = "/search_ingredients";
-		var jsonData = JSON.stringify(searchString);
-
-		$.ajax({
-		    url: url,
-			data: jsonData,
-		    method: "POST",
-			dataType: "json",
-			contentType: "application/json; charset=utf-8"
-		}).done(function(jsonData) {
-		    console.log("*** ajax success ***");
-		    console.dir(jsonData)
-			displaySearchResults(jsonData, "ingredient");
-		}).fail(function(unknown){
-		    console.log("*** ajax fail ***");
-			console.log("unknown:", unknown);
-		});
-	}
-
-	// ======= searchCategory =======
-    function searchCategory(searchString) {
-		console.log("== searchCategory ==");
-		console.log("searchString: ", searchString);
-
-		var url = "/search_category";
-		var jsonData = JSON.stringify(searchString);
-
-		$.ajax({
-		    url: url,
-			data: jsonData,
-		    method: "POST",
-			dataType: "json",
-			contentType: "application/json; charset=utf-8"
-		}).done(function(jsonData) {
-		    console.log("*** ajax success ***");
-		    console.dir(jsonData)
-			displaySearchResults(jsonData, "type");
-		}).fail(function(unknown){
-		    console.log("*** ajax fail ***");
-			console.log("unknown:", unknown);
-		});
-	}
-
-	// ======= searchNationality =======
-    function searchNationality(searchString) {
-		console.log("== searchNationality ==");
-
-		var url = "/search_nationality";
-		var jsonData = JSON.stringify(searchString);
-
-		$.ajax({
-		    url: url,
-			data: jsonData,
-		    method: "POST",
-			dataType: "json",
-			contentType: "application/json; charset=utf-8"
-		}).done(function(jsonData) {
-		    console.log("*** ajax success ***");
-		    console.dir(jsonData)
-			displaySearchResults(jsonData, "type");
-		}).fail(function(unknown){
-		    console.log("*** ajax fail ***");
-			console.log("unknown:", unknown);
-		});
-	}
-
-	// ======= displaySearchResults =======
-	function displaySearchResults(jsonData, type) {
-		console.log("== displaySearchResults ==");
-
-		var titleText, noResultsText, nextId, nextRecipe, recipeHtml;
-		var recipeHtml = "";
-
-		if (type == "title") {
-			titleText = "Recipes with '" + jsonData.search + "' in title";
-			noResultsText = "No recipes found with '" + jsonData.search + "' in the title.";
-		} else if (type == "ingredient") {
-			titleText = "Recipes with '" + jsonData.search + "' as an ingredient";
-			noResultsText = "No recipes found with '" + jsonData.search + "' as an ingredient.";
-		} else {
-			titleText = "Recipes classified as '" + jsonData.search + "'";
-			noResultsText = "No recipes classified as '" + jsonData.search + "' were found.";
-		}
-		updateTitleText(titleText);
-		updateNoticeMessage(jsonData);
-
-		if (jsonData.output.length > 0) {
-			for (var i = 0; i < jsonData.output.length; i++) {
-				nextId = jsonData.output[i].id;
-				nextRecipe = jsonData.output[i].title;
-				recipeHtml = recipeHtml + "<p class='recipeLink'><a href='/show_recipe/" + nextId + "'>" + nextRecipe + "</a></p>";
+		if (jsonData.recipeArray.length > 0) {
+			if (type == "title") {
+				titleText = "Recipes with '" + jsonData.search + "' in title";
+			} else if (type == "ingredient") {
+				titleText = "Recipes with '" + jsonData.search + "' as an ingredient";
+			} else if (type == "category") {
+				titleText = "Recipes in the '" + jsonData.search + "' category";
+			} else if (type == "nationality") {
+				titleText = "Recipes classified as '" + jsonData.search + "'";
+			} else if (type == "all") {
+				titleText = "All Database Recipes";
 			}
 		} else {
-			recipeHtml = "<p class='info'>" + noResultsText + "</p>";
+			if (type == "title") {
+				titleText = "No recipes found with '" + jsonData.search + "' in the title.";
+			} else if (type == "ingredient") {
+				titleText = "No recipes were found with '" + jsonData.search + "' as an ingredient.";
+			} else if (type == "category") {
+				titleText = "No recipes found in the '" + jsonData.search + "' category.";
+			} else if (type == "nationality") {
+				titleText = "No recipes classified as '" + jsonData.search + "' were found.";
+			} else if (type == "all") {
+				titleText = "All Database Recipes";
+			}
 		}
-
-		$('#output').html(recipeHtml);
+		$('#outputTitle').text(titleText);
 	}
 
 
@@ -902,7 +926,7 @@ $(document).on('turbolinks:load', function() {
 			case "dessert":
 			typeStyle = "color:purple";
 			break;
-			case "soups/stews":
+			case "soup/stew":
 			typeStyle = "color:orange";
 			break;
 			default:
@@ -940,6 +964,12 @@ $(document).on('turbolinks:load', function() {
 			break;
 			case "American":
 			typeStyle = "color:blue";
+			break;
+			case "Italian":
+			typeStyle = "color:SlateGray";
+			break;
+			case "Asian":
+			typeStyle = "color:Crimson";
 			break;
 			default:
 			typeStyle = "visibility:hidden";

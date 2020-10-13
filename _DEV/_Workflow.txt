@@ -12,6 +12,8 @@ INSERT INTO categories (category, created_at, updated_at) VALUES ('seafood', CUR
 INSERT INTO categories (category, created_at, updated_at) VALUES ('dessert', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO categories (category, created_at, updated_at) VALUES ('soup/stew', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO categories (category, created_at, updated_at) VALUES ('vegetarian', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO nationalities (nationality, created_at, updated_at) VALUES ('Italian', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO nationalities (nationality, created_at, updated_at) VALUES ('Asian', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 Category.destroy_all
 Category.create([
