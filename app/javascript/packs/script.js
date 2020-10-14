@@ -28,43 +28,65 @@ $(document).on('turbolinks:load', function() {
 		$('#getAllRecipes').click(function(e) {
 			console.log("== click: getAllRecipes ==");
 			e.preventDefault();
+			$('#category_select').val(0);
+			$('#nationality_select').val(0);
+			toggleEditButtons("hide");
 			getAllRecipes();
-			// toggleEditButtons("hide");
 			e.stopPropagation();
 		});
 
 		$('#searchRecipes').click(function(e) {
 			console.log("== click: searchRecipes ==");
 			e.preventDefault();
+			$('#category_select').val(0);
+			$('#nationality_select').val(0);
+			toggleEditButtons("hide");
 			var searchString = $('#search').val();
-			searchRecipes(searchString);
-			// toggleEditButtons("hide");
+			if (searchString.length == 0) {
+				makeTitleText("", "no search");
+			} else {
+				searchRecipes(searchString);
+			}
 	    });
 
 		$('#searchIngredients').click(function(e) {
 			console.log("== click: searchIngredients ==");
 			e.preventDefault();
+			$('#category_select').val(0);
+			$('#nationality_select').val(0);
+			toggleEditButtons("hide");
 			var searchString = $('#search').val();
-			searchIngredients(searchString);
-			// toggleEditButtons("hide");
+			if (searchString.length == 0) {
+				makeTitleText("", "no search");
+			} else {
+				searchIngredients(searchString);
+			}
 	    });
 
 		$('#category_select').change(function(e) {
 			console.log("== change: category_select ==");
 			e.preventDefault();
+			$('#nationality_select').val(0);
+			toggleEditButtons("hide");
 			var searchSelect = $('#category_select option:selected').val();
-			console.log("searchSelect: ", searchSelect);
-			searchCategory(searchSelect);
-			// toggleEditButtons("hide");
+			if (searchSelect.length == 0) {
+				makeTitleText("", "no search");
+			} else {
+				searchCategory(searchSelect);
+			}
 	    });
 
 		$('#nationality_select').change(function(e) {
 			console.log("== change: nationality_select ==");
 			e.preventDefault();
+			$('#category_select').val(0);
+			toggleEditButtons("hide");
 			var searchSelect = $('#nationality_select option:selected').val();
-			console.log("searchSelect: ", searchSelect);
-			searchNationality(searchSelect);
-			// toggleEditButtons("hide");
+			if (searchSelect.length == 0) {
+				makeTitleText("", "no search");
+			} else {
+				searchNationality(searchSelect);
+			}
 	    });
 
 	}
@@ -463,31 +485,37 @@ $(document).on('turbolinks:load', function() {
 
 		var titleText;
 
-		if (jsonData.recipeArray.length > 0) {
-			if (type == "title") {
-				titleText = "Recipes with '" + jsonData.search + "' in title";
-			} else if (type == "ingredient") {
-				titleText = "Recipes with '" + jsonData.search + "' as an ingredient";
-			} else if (type == "category") {
-				titleText = "Recipes in the '" + jsonData.search + "' category";
-			} else if (type == "nationality") {
-				titleText = "Recipes classified as '" + jsonData.search + "'";
-			} else if (type == "all") {
-				titleText = "All Database Recipes";
+		if (jsonData != "") {
+			if (jsonData.recipeArray.length > 0) {
+				if (type == "title") {
+					titleText = "Recipes with '" + jsonData.search + "' in title";
+				} else if (type == "ingredient") {
+					titleText = "Recipes with '" + jsonData.search + "' as an ingredient";
+				} else if (type == "category") {
+					titleText = "Recipes in the '" + jsonData.search + "' category";
+				} else if (type == "nationality") {
+					titleText = "Recipes classified as '" + jsonData.search + "'";
+				} else if (type == "all") {
+					titleText = "All Database Recipes";
+				}
+			} else {
+				if (type == "title") {
+					titleText = "No recipes found with '" + jsonData.search + "' in the title.";
+				} else if (type == "ingredient") {
+					titleText = "No recipes were found with '" + jsonData.search + "' as an ingredient.";
+				} else if (type == "category") {
+					titleText = "No recipes found in the '" + jsonData.search + "' category.";
+				} else if (type == "nationality") {
+					titleText = "No recipes classified as '" + jsonData.search + "' were found.";
+				} else if (type == "all") {
+					titleText = "All Database Recipes";
+				}
 			}
 		} else {
-			if (type == "title") {
-				titleText = "No recipes found with '" + jsonData.search + "' in the title.";
-			} else if (type == "ingredient") {
-				titleText = "No recipes were found with '" + jsonData.search + "' as an ingredient.";
-			} else if (type == "category") {
-				titleText = "No recipes found in the '" + jsonData.search + "' category.";
-			} else if (type == "nationality") {
-				titleText = "No recipes classified as '" + jsonData.search + "' were found.";
-			} else if (type == "all") {
-				titleText = "All Database Recipes";
-			}
+			titleText = "Please enter a search value";
+			$('#output').html("");
 		}
+
 		$('#outputTitle').text(titleText);
 	}
 
@@ -1006,7 +1034,7 @@ $(document).on('turbolinks:load', function() {
 	// ======= updateNoticeMessage =======
 	function updateNoticeMessage(jsonData) {
 		console.log("== updateNoticeMessage ==");
-		var htmlString = "<span> &nbsp;&nbsp; | &nbsp;&nbsp; </span>" + jsonData.message;
+		var htmlString = jsonData.message;
 		$('#notice').html(htmlString);
 	}
 

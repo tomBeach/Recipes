@@ -12,12 +12,12 @@
 <body>
 
 	<%# ======= category and nationality options ======= %>
-	<% category_ids = [["", nil]] %>
+	<% category_ids = [["category", nil]] %>
 	<% @categories.each do |category| %>
 	    <% category_ids << [category.category, category[:id]] %>
 	<% end %>
 
-	<% nationality_ids = [["", nil]] %>
+	<% nationality_ids = [["nationality", nil]] %>
 	<% @nationalities.each_with_index do |nationality, index| %>
 	    <% nationality_ids << [nationality.nationality, nationality[:id]] %>
 	<% end %>
@@ -32,30 +32,40 @@
         </div>
 
 		<!-- ======= menu ======= -->
-        <div class="menuBox">
-			<%= link_to "Home", "/home" %>
+        <div id="menuBox1">
+			<%= link_to "Home", "/home", class: "userBtn" %>
             <% if !current_user %>
-                <%= link_to "Sign up", new_user_registration_path %>
-                <%= link_to "Sign in", new_user_session_path %>
+                <%= link_to "Sign up", new_user_registration_path, class: "userBtn" %>
+                <%= link_to "Sign in", new_user_session_path, class: "userBtn" %>
             <% else %>
 				<% path = request.path %>
-				<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
+				<%= link_to "Sign out", destroy_user_session_path, class: "userBtn", :method => :delete %>
 				<div id="menuSpacer1">
 					<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>
 				</div>
-				<%= link_to "Import Recipes", import_recipes_path, id: "import" %>
-				<%= link_to "Get All Recipes", get_recipes_path, id: "getAllRecipes", remote: true %>
-				<%= link_to "Categories", categories_path, id: "categories" %>
+				<%= link_to "Import Recipes", import_recipes_path, id: "import", class: "mgmtBtn" %>
+				<%= link_to "Get All Recipes", get_recipes_path, id: "getAllRecipes", class: "mgmtBtn", remote: true %>
+				<%= link_to "Categories", categories_path, id: "categories", class: "mgmtBtn" %>
             <% end %>
         </div>
 
-		<div class="menuBox">
+		<div id="menuBox2">
 			<div id="menuSpacer2">search</div>
-			<input id="search" type="text" name="search" value="garlic">
-			<%= link_to "Recipes", search_titles_path, id: "searchRecipes", remote: false %>
-			<%= link_to "Ingredients", search_ingredients_path, id: "searchIngredients", remote: false %>
+			<input id="search" type="text" name="search">
+			<%= link_to "in recipe title", search_titles_path, id: "searchRecipes", remote: false %>
+			<%= link_to "in ingredients", search_ingredients_path, id: "searchIngredients", remote: false %>
 			<%= select_tag "category_select", options_for_select(category_ids), class: "menuSelect", remote: true %>
 			<%= select_tag "nationality_select", options_for_select(nationality_ids), class: "menuSelect", remote: true %>
+		</div>
+
+		<div id="menuBox3">
+			<div id="feedback">
+				<% if current_user %>
+					<p id="menuSpacer3">welcome </p>
+					<p id="message"><%= current_user.username %></p>
+				<% end %>
+				<p id="notice"></p>
+			</div>
 		</div>
 
 		<!-- ======= yield ======= -->
@@ -63,16 +73,6 @@
             <%= yield %>
         </div>
 
-		<!-- ======= footer ======= -->
-        <div id="footer">
-			<p id="feedback">
-				<% if current_user %>
-					<span>welcome </span>
-					<span id="message"><%= current_user.username %></span>
-				<% end %>
-				<span id="notice"></span>
-			</p>
-        </div>
     </div>
 
 </body>

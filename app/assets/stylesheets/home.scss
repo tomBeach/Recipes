@@ -38,30 +38,9 @@ h1 {
 }
 #yieldBox {
     width: 100%;
-    height: 560px;
-    padding: 1% 2%;
-    border: solid darkorange;
+    height: 640px;
+	border: solid LightSkyBlue;
     border-width: 2px;
-}
-#footer {
-    width: 100%;
-    height: 80px;
-    background-color: #eee;
-}
-#feedback {
-    display: inline-block;
-    margin: 5px 10px;
-	padding: 2%;
-}
-#notice {
-    float: right;
-	color: red;
-}
-#message {
-	color: gray;
-}
-.info {
-	margin: 20px;
 }
 #mainTitle {
 	padding-top: 10px;
@@ -71,15 +50,14 @@ h1 {
 }
 
 /* ======= ======= ======= menu ======= ======= ======= */
-.menuBox {
+#menuBox1, #menuBox2, #menuBox3 {
 	height: 40px;
     margin: 0;
-    padding: 10px;
-    background-color: lightsalmon;
+    padding: 8px;
 }
-.menuBox > a {
+#menuBox1 > a, #menuBox2 > a {
     display: inline-block;
-	width: 14%;
+	margin: 0 4px;
     min-width: 120px;
     height: 24px;
 	padding: 0 10px;
@@ -88,33 +66,105 @@ h1 {
     line-height: 24px;
     text-decoration: none;
 	border-radius: 5px;
-    background-color: orangered;
     color: navy;
 }
-.menuBox > a:hover {
+#menuBox1 > a {
+	width: 14%;
+	background-color: #66b3ff;
+}
+#menuBox1 > a:hover, #menuBox2 > a:hover {
     background-color: mediumslateblue;
     color: white;
 }
-#menuSpacer1 {
-	display: inline;
-	width: 4%;
-	height: 24px;
+#menuBox1 > .userBtn {
+	width: 8%;
+	background-color: #0073e6;
 }
-#menuSpacer2 {
+#menuBox1 {
+	background-color: DodgerBlue;
+}
+
+#menuBox2 {
+	background-color: DeepSkyBlue;
+}
+#menuBox2 > a {
+	width: 12%;
+	background-color: #00ace6;
+}
+
+#menuBox3 {
+	background-color: LightSkyBlue;
+}
+
+#search {
 	display: inline;
-	float:left;
-	margin: 0 5px 10px 10px;
-	width: 14%;
+	float: left;
+	height: 10px;
+	width: 12%;
+	margin: 0 10px 10px 10px;
+	padding: 5px;
+	border-radius: 5px;
+}
+.menuSelect {
+	display: inline;
+	width: 12%;
+    min-width: 120px;
+    height: 24px;
+	padding: 0 10px;
+    font-size: 16px;
+	text-align-last:center;
+    line-height: 24px;
+	color: DodgerBlue;
+	border-radius: 5px;
+}
+
+#menuSpacer1, #menuSpacer2, #menuSpacer3 {
+	display: inline;
+	margin: 0 5px 0px 10px;
+	padding: 0;
 	height: 24px;
 	text-align: right;
 	color: navy;
 }
-#search {
-	display: inline;
+#menuSpacer1 {
+	width: 4%;
+}
+#menuSpacer2 {
 	float: left;
-	margin: 0 10px 10px 10px;
-	padding: 5px;
-	width: 14%;
+	width: 8%;
+}
+#menuSpacer3 {
+	float: left;
+	width: 8%;
+}
+
+#feedback, #notice, #message {
+    display: inline-block;
+	margin: 0 4px;
+    // height: 24px;
+	padding: 0 10px;
+    line-height: 24px;
+}
+#feedback {
+	width: 100%;
+}
+#notice {
+	float: right;
+	color: red;
+}
+
+// #notice {
+// 	display: inline-block;
+//     float: right;
+// 	color: red;
+// }
+// #message {
+// 	display: inline-block;
+// 	color: gray;
+// }
+.info {
+	display: inline-block;
+	margin: 20px;
 }
 
 /* ======= ======= ======= recipe titles list ======= ======= ======= */
@@ -134,34 +184,29 @@ h1 {
 
 /* ======= ======= ======= show recipe ======= ======= ======= */
 #output {
-    height: 420px;
-	width: 100%;
-	margin-top: 20px;
+    height: 480px;
+	width: 96%;
+	margin: 20px;
 	border: 1px solid gray;
 	white-space: normal;
 	overflow-y: scroll;
 }
 #outputTitle {
 	float: left;
-	width: 60%;
+	width: 72%;
 	height: 60px;
+	margin: 0;
+	padding: 2%;
 	text-overflow: ellipsis;
 }
-.menuSelect {
+#editSaveBox {
 	float: right;
-	width: 16%;
-    min-width: 120px;
-    height: 24px;
-	padding: 0 10px;
-    font-size: 16px;
-	text-align-last:center;
-    line-height: 24px;
-	color: DodgerBlue;
-	border-radius: 5px;
+	width: 20%;
+	padding: 2%;
 }
 .editSelect {
 	float: right;
-	width: 22%;
+	width: 100%;
     min-width: 120px;
     height: 24px;
 	margin-top: 10px;
@@ -174,11 +219,10 @@ h1 {
 }
 .addEditDelete {
 	float: right;
-	width: 22%;
+	width: 100%;
     min-width: 120px;
 	margin-top: 10px;
     height: 24px;
-	// padding: 0 10px;
     text-align: center;
     font-size: 16px;
     line-height: 24px;
@@ -195,7 +239,7 @@ h1 {
 	margin-top: 5px;
     padding: 5px 0 0 5px;
 	font-size: 16px;
-	color: orangered;
+	color: #0073e6;
 }
 .ingredient, .instruction {
 	display: inline-block;
@@ -232,7 +276,7 @@ h1 {
 	height: 14px;
 	margin-top: 2px;
 	margin-left: 10px;
-	text-align: right;
+	text-align: center;
 	border-top-style: hidden;
 	border-right-style: hidden;
 	border-left-style: hidden;

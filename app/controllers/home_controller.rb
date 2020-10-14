@@ -137,9 +137,9 @@ class HomeController < ApplicationController
 		search = params[:_json].downcase
 
 		# == allow search to find singular version of search items
-		if search.last == "s"
-			search = search[0...-1]
-		end
+		# if search.last == "s"
+		# 	search = search[0...-1]
+		# end
 
 		recipe_array = []
 		recipe_count = 0
@@ -190,9 +190,9 @@ class HomeController < ApplicationController
 		search = params[:_json].downcase
 
 		# == allow search to find singular version of search items
-		if search.last == "s"
-			search = search[0...-1]
-		end
+		# if search.last == "s"
+		# 	search = search[0...-1]
+		# end
 
 		recipe_array = []
 		recipe_count = 0
