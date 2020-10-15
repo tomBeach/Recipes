@@ -409,7 +409,7 @@ $(document).on('turbolinks:load', function() {
     function getAllRecipes() {
 		console.log("== getAllRecipes ==");
 
-		var url = "/get_recipes";
+		var url = "/all_recipes";
 
 		$.ajax({
 		    url: url,

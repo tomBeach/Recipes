@@ -1,5 +1,9 @@
 class HomeController < ApplicationController
 
+	# ======= ======= ======= USERS ======= ======= =======
+    # ======= ======= ======= USERS ======= ======= =======
+    # ======= ======= ======= USERS ======= ======= =======
+
 	# ======= index =======
 	def index
 		puts "\n******* index *******"
@@ -17,44 +21,6 @@ class HomeController < ApplicationController
     # ======= ======= ======= RECIPES ======= ======= =======
     # ======= ======= ======= RECIPES ======= ======= =======
 
-	# ======= get_recipes =======
-    def get_recipes
-        puts "\n******* get_recipes *******"
-
-		recipe_array = []
-		recipe_count = 0
-		recipe_data = {}
-		category_obj = make_category_object
-		nationality_obj = make_nationality_object
-
-		search = "all"
-
-		@recipes = Recipe.all
-		if @recipes.length > 0
-			@recipes.each do |next_recipe|
-				recipe_data = {
-					id: next_recipe.id,
-					rating: next_recipe.rating,
-					category_id: next_recipe.category_id,
-					nationality_id: next_recipe.nationality_id,
-					title: next_recipe.title,
-					ingredients: next_recipe.ingredients,
-					instructions: next_recipe.instructions }
-				recipe_array.push(recipe_data)
-				recipe_count = recipe_count + 1
-			end
-			message = "Here are all " + recipe_count.to_s + " recipes from the database."
-		else
-			message = "No recipes were retrieved from the database."
-		end
-
-		respond_to do |format|
-			format.json {
-				render json: {:message => message, :search => search, :categoryObj => category_obj, :nationalityObj => nationality_obj, :recipeArray => recipe_array}
-			}
-		end
-	end
-
 	# ======= show_recipe =======
     def show_recipe
         puts "\n******* show_recipe *******"
@@ -66,6 +32,185 @@ class HomeController < ApplicationController
 		puts "@recipe: #{@recipe}"
 
     end
+
+	# ======= ======= ======= SEARCH ======= ======= =======
+    # ======= ======= ======= SEARCH ======= ======= =======
+    # ======= ======= ======= SEARCH ======= ======= =======
+
+	# ======= all_recipes =======
+	def all_recipes
+		puts "\n******* all_recipes *******"
+		get_recipe_data("all", "")
+	end
+
+	# ======= search_ingredients =======
+    def search_ingredients
+        puts "\n******* search_ingredients *******"
+		get_recipe_data("ingredients", params[:_json].downcase)
+	end
+
+	# ======= search_titles =======
+    def search_titles
+        puts "\n******* search_titles *******"
+		get_recipe_data("titles", params[:_json].downcase)
+	end
+
+	# ======= search_category =======
+    def search_category
+        puts "\n******* search_category *******"
+		get_recipe_data("category", params[:_json].to_i)
+	end
+
+	# ======= search_nationality =======
+    def search_nationality
+        puts "\n******* search_nationality *******"
+		get_recipe_data("nationality", params[:_json].to_i)
+	end
+
+	# ======= get_recipe_data =======
+    def get_recipe_data(search_type, search_term)
+        puts "\n******* get_recipe_data *******"
+		puts "search_type: #{search_type}"
+		puts "search_term: #{search_term}"
+
+		category_obj = make_category_object
+		nationality_obj = make_nationality_object
+
+		if search_type == "all"
+			recipes = Recipe.all
+			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			recipe_array = recipe_data[0]
+			message = recipe_data[1]
+		elsif search_type == "ingredients"
+			recipes = Recipe.all
+			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			recipe_array = recipe_data[0]
+			message = recipe_data[1]
+		elsif search_type == "titles"
+			recipes = Recipe.where("lower(title) LIKE ?", "%" + search_term + "%")
+			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			recipe_array = recipe_data[0]
+			message = recipe_data[1]
+		elsif search_type == "category"
+			recipes = Recipe.where(:category_id => search_term)
+			search_term = Category.where(:id => search_term).first[:category]		# convert category_id to category text
+			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			recipe_array = recipe_data[0]
+			message = recipe_data[1]
+		elsif search_type == "nationality"
+			recipes = Recipe.where(:nationality_id => search_term)
+			search_term = Nationality.where(:id => search_term).first[:nationality]	# convert nationality_id to nationality text
+			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			recipe_array = recipe_data[0]
+			message = recipe_data[1]
+		end
+
+		respond_to do |format|
+			format.json {
+				render json: {:message => message, :search => search_term, :categoryObj => category_obj, :nationalityObj => nationality_obj, :recipeArray => recipe_array}
+			}
+		end
+	end
+
+	# ======= make_recipe_array =======
+	def make_recipe_array(recipes, search_type, search_term)
+		puts "\n******* make_recipe_array *******"
+		puts "search_type: #{search_type}"
+		puts "search_term: #{search_term}"
+
+		recipe_array = []
+		recipe_count = 0
+		recipe_data = {}
+
+		if recipes.length > 0
+			recipes.each do |next_recipe|
+
+				if search_type == "ingredients"
+					target_ingredients = next_recipe.ingredients.where("ingredient LIKE ?", "%" + search_term + "%")
+					puts "target_ingredients.length: #{target_ingredients.length}"
+					if target_ingredients.length > 0
+						recipe_data = {
+							id: next_recipe.id,
+							rating: next_recipe.rating,
+							category_id: next_recipe.category_id,
+							nationality_id: next_recipe.nationality_id,
+							title: next_recipe.title,
+							ingredients: next_recipe.ingredients,
+							instructions: next_recipe.instructions }
+						recipe_count = recipe_count + 1
+						recipe_array.push(recipe_data)
+					else
+						puts "NO RECORDS"
+					end
+				else
+					recipe_data = {
+						id: next_recipe.id,
+						rating: next_recipe.rating,
+						category_id: next_recipe.category_id,
+						nationality_id: next_recipe.nationality_id,
+						title: next_recipe.title,
+						ingredients: next_recipe.ingredients,
+						instructions: next_recipe.instructions }
+					recipe_array.push(recipe_data)
+					recipe_count = recipe_count + 1
+				end
+			end
+		else
+			puts "NO RECORDS"
+		end
+		message = make_message_text(search_type, search_term, recipe_count)
+		return [recipe_array, message]
+	end
+
+	# ======= make_message_text =======
+    def make_message_text(search_type, search_term, recipe_count)
+        puts "\n******* make_message_text *******"
+		puts "search_type: #{search_type}"
+		puts "search_term: #{search_term}"
+		puts "recipe_count: #{recipe_count}"
+
+		if search_type == "all"
+			if recipe_count == 0
+				message = "No recipes were retrieved from the database."
+			elsif recipe_count > 0
+				message = "Here are all " + recipe_count.to_s + " recipes from the database."
+			end
+		elsif search_type == "ingredients"
+			if recipe_count == 0
+				message = "No recipes found with " + search_term + " as an ingredient."
+			elsif recipe_count == 1
+				message = recipe_count.to_s + " recipe found with " + search_term + " as an ingredient."
+			elsif recipe_count > 1
+				message = recipe_count.to_s + " recipes found with " + search_term + " as an ingredient."
+			end
+		elsif search_type == "titles"
+			if recipe_count == 0
+				message = "No recipes found with " + search_term + " in the title."
+			elsif recipe_count == 1
+				message = recipe_count.to_s + " recipe found with " + search_term + " in the title."
+			elsif recipe_count > 1
+				message = recipe_count.to_s + " recipes found with " + search_term + " in the title."
+			end
+		elsif search_type == "category"
+			if recipe_count == 0
+				message = "No " + search_term + " recipes were found."
+			elsif recipe_count == 1
+				message = recipe_count.to_s + " " + search_term + " recipe was found."
+			elsif recipe_count > 1
+				message = recipe_count.to_s + " " + search_term + " recipes were found."
+			end
+		elsif search_type == "nationality"
+			if recipe_count == 0
+				message = "No " + search_term + " recipes were found."
+			elsif recipe_count == 1
+				message = recipe_count.to_s + " " + search_term + " recipe was found."
+			elsif recipe_count > 1
+				message = recipe_count.to_s + " " + search_term + " recipes were found."
+			end
+		end
+		puts "message: #{message}"
+		return message
+	end
 
 	# ======= ======= ======= EDIT ======= ======= =======
     # ======= ======= ======= EDIT ======= ======= =======
@@ -125,219 +270,6 @@ class HomeController < ApplicationController
 		end
     end
 
-	# ======= ======= ======= SEARCH ======= ======= =======
-    # ======= ======= ======= SEARCH ======= ======= =======
-    # ======= ======= ======= SEARCH ======= ======= =======
-
-	# ======= search_titles =======
-    def search_titles
-        puts "\n******* search_titles *******"
-		puts "params[:_json]: #{params[:_json]}"
-
-		search = params[:_json].downcase
-
-		# == allow search to find singular version of search items
-		# if search.last == "s"
-		# 	search = search[0...-1]
-		# end
-
-		recipe_array = []
-		recipe_count = 0
-		recipe_data = {}
-		category_obj = make_category_object
-		nationality_obj = make_nationality_object
-
-		# == search for titles containing search string (case insensitive)
-		@recipes = Recipe.where("lower(title) LIKE ?", "%" + search + "%")
-
-		if @recipes.length > 0
-			@recipes.each do |next_recipe|
-				recipe_data = {
-					id: next_recipe.id,
-					rating: next_recipe.rating,
-					category_id: next_recipe.category_id,
-					nationality_id: next_recipe.nationality_id,
-					title: next_recipe.title,
-					ingredients: next_recipe.ingredients,
-					instructions: next_recipe.instructions }
-				recipe_count = recipe_count + 1
-				recipe_array.push(recipe_data)
-			end
-		else
-			puts "NO RECORDS"
-		end
-
-		if recipe_count == 0
-			message = "No recipes found with " + search + " in the title."
-		elsif recipe_count == 1
-			message = recipe_count.to_s + " recipe found with " + search + " in the title."
-		else
-			message = recipe_count.to_s + " recipes found with " + search + " in the title."
-		end
-
-		respond_to do |format|
-			format.json {
-				render json: {:message => message, :search => search, :categoryObj => category_obj, :nationalityObj => nationality_obj, :recipeArray => recipe_array}
-			}
-		end
-	end
-
-	# ======= search_ingredients =======
-    def search_ingredients
-        puts "\n******* search_ingredients *******"
-		puts "params[:_json]: #{params[:_json]}"
-
-		search = params[:_json].downcase
-
-		# == allow search to find singular version of search items
-		# if search.last == "s"
-		# 	search = search[0...-1]
-		# end
-
-		recipe_array = []
-		recipe_count = 0
-		recipe_data = {}
-		category_obj = make_category_object
-		nationality_obj = make_nationality_object
-
-		@recipes = Recipe.all
-		@recipes.each do |next_recipe|
-			@target_ingredients = next_recipe.ingredients.where("ingredient LIKE ?", "%" + search + "%")
-			puts "@target_ingredients.length: #{@target_ingredients.length}"
-
-			if @target_ingredients.length > 0
-				recipe_data = {
-					id: next_recipe.id,
-					rating: next_recipe.rating,
-					category_id: next_recipe.category_id,
-					nationality_id: next_recipe.nationality_id,
-					title: next_recipe.title,
-					ingredients: next_recipe.ingredients,
-					instructions: next_recipe.instructions }
-				recipe_count = recipe_count + 1
-				recipe_array.push(recipe_data)
-			else
-				puts "NO RECORDS"
-			end
-		end
-
-		if recipe_count == 0
-			message = "No recipes found with " + search + " as an ingredient."
-		elsif recipe_count == 1
-			message = recipe_count.to_s + " recipe found with " + search + " as an ingredient."
-		else
-			message = recipe_count.to_s + " recipes found with " + search + " as an ingredient."
-		end
-
-		respond_to do |format|
-			format.json {
-				render json: {:message => message, :search => search, :categoryObj => category_obj, :nationalityObj => nationality_obj, :recipeArray => recipe_array}
-			}
-		end
-    end
-
-	# ======= search_category =======
-    def search_category
-        puts "\n******* search_category *******"
-		puts "params[:_json]: #{params[:_json]}"
-
-		# == initialize collection variables
-		recipe_array = []
-		recipe_count = 0
-		recipe_data = {}
-		category_obj = make_category_object
-		nationality_obj = make_nationality_object
-
-		search = category_obj[params[:_json].to_i]
-		which_category_id = params[:_json].to_i
-		which_category = Category.where(:id => which_category_id).first[:category]
-
-		# == search for titles containing search string (case insensitive)
-		@recipes = Recipe.where(:category_id => which_category_id)
-
-		if @recipes.length > 0
-			@recipes.each do |next_recipe|
-				recipe_data = {
-					id: next_recipe.id,
-					rating: next_recipe.rating,
-					category_id: next_recipe.category_id,
-					nationality_id: next_recipe.nationality_id,
-					title: next_recipe.title,
-					ingredients: next_recipe.ingredients,
-					instructions: next_recipe.instructions }
-				recipe_count = recipe_count + 1
-				recipe_array.push(recipe_data)
-			end
-		else
-			puts "NO RECORDS"
-		end
-
-		if recipe_count == 0
-			message = "No " + which_category + " type recipes were found."
-		elsif recipe_count == 1
-			message = recipe_count.to_s + " " + which_category + " type recipe was found."
-		else
-			message = recipe_count.to_s + " " + which_category + " type recipes were found."
-		end
-
-		respond_to do |format|
-			format.json {
-				render json: {:message => message, :search => search, :categoryObj => category_obj, :nationalityObj => nationality_obj, :recipeArray => recipe_array}
-			}
-		end
-    end
-
-	# ======= search_nationality =======
-    def search_nationality
-        puts "\n******* search_nationality *******"
-		puts "params[:_json]: #{params[:_json]}"
-
-		# == initialize collection variables
-		recipe_array = []
-		recipe_count = 0
-		recipe_data = {}
-		category_obj = make_category_object
-		nationality_obj = make_nationality_object
-
-		search = nationality_obj[params[:_json].to_i]
-		which_nationality_id = params[:_json].to_i
-		which_nationality = Nationality.where(:id => which_nationality_id).first[:nationality]
-
-		# == search for titles containing search string (case insensitive)
-		@recipes = Recipe.where(:nationality_id => which_nationality_id)
-
-		if @recipes.length > 0
-			@recipes.each do |next_recipe|
-				recipe_data = {
-					id: next_recipe.id,
-					rating: next_recipe.rating,
-					category_id: next_recipe.category_id,
-					nationality_id: next_recipe.nationality_id,
-					title: next_recipe.title,
-					ingredients: next_recipe.ingredients,
-					instructions: next_recipe.instructions }
-				recipe_count = recipe_count + 1
-				recipe_array.push(recipe_data)
-			end
-		else
-			puts "NO RECORDS"
-		end
-
-		if recipe_count == 0
-			message = "No " + which_nationality + " recipes were found."
-		elsif recipe_count == 1
-			message = recipe_count.to_s + " " + which_nationality + " recipe was found."
-		else
-			message = recipe_count.to_s + " " + which_nationality + " recipes were found."
-		end
-
-		respond_to do |format|
-			format.json {
-				render json: {:message => message, :search => search, :categoryObj => category_obj, :nationalityObj => nationality_obj, :recipeArray => recipe_array}
-			}
-		end
-    end
-
 	# ======= ======= ======= RECIPE FILES ======= ======= =======
     # ======= ======= ======= RECIPE FILES ======= ======= =======
     # ======= ======= ======= RECIPE FILES ======= ======= =======
@@ -373,7 +305,7 @@ class HomeController < ApplicationController
 			# == no recipes with same title found
 			if recipe.length == 0
 				puts "NO RECORD"
-				@recipe = Recipe.create(:title => title, :recipe_type => "recipe_type")
+				@recipe = Recipe.create(:title => title)
 		        if @recipe.save
 					puts "RECIPE SAVED"
 					recipe_count = recipe_count + 1
