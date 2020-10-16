@@ -43,17 +43,21 @@
 				<div id="menuSpacer1">
 					<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>
 				</div>
-				<%= link_to "Import Recipes", import_recipes_path, id: "import", class: "mgmtBtn" %>
-				<%= link_to "Get All Recipes", all_recipes_path, id: "getAllRecipes", class: "mgmtBtn", remote: true %>
+				<%= link_to "Import Recipes", import_recipes_path, id: "import", class: "importBtn" %>
+				<%= link_to "Get All Recipes", all_recipes_path, id: "getAllRecipes", class: "importBtn", remote: true %>
+				<div id="menuSpacer1">
+					<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>
+				</div>
 				<%= link_to "Categories", categories_path, id: "categories", class: "mgmtBtn" %>
+				<%= link_to "Nationalities", nationalities_path, id: "nationalities", class: "mgmtBtn" %>
             <% end %>
         </div>
 
 		<div id="menuBox2">
 			<div id="menuSpacer2">search</div>
 			<input id="search" type="text" name="search">
-			<%= link_to "in recipe title", search_titles_path, id: "searchRecipes", remote: false %>
-			<%= link_to "in ingredients", search_ingredients_path, id: "searchIngredients", remote: false %>
+			<%= link_to "in recipe title", search_title_path, id: "searchTitles", remote: false %>
+			<%= link_to "in ingredients", search_ingredient_path, id: "searchIngredients", remote: false %>
 			<%= select_tag "category_select", options_for_select(category_ids), class: "menuSelect", remote: true %>
 			<%= select_tag "nationality_select", options_for_select(nationality_ids), class: "menuSelect", remote: true %>
 		</div>

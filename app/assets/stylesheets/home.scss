@@ -57,9 +57,9 @@ h1 {
 }
 #menuBox1 > a, #menuBox2 > a {
     display: inline-block;
-	margin: 0 4px;
-    min-width: 120px;
+	// min-width: 100px;
     height: 24px;
+	margin: 0 4px;
 	padding: 0 10px;
     text-align: center;
     font-size: 16px;
@@ -69,7 +69,7 @@ h1 {
     color: navy;
 }
 #menuBox1 > a {
-	width: 14%;
+	// width: 14%;
 	background-color: #66b3ff;
 }
 #menuBox1 > a:hover, #menuBox2 > a:hover {
@@ -77,6 +77,14 @@ h1 {
     color: white;
 }
 #menuBox1 > .userBtn {
+	width: 8%;
+	background-color: #0073e6;
+}
+#menuBox1 > .mgmtBtn {
+	width: 12%;
+	background-color: #0073e6;
+}
+#menuBox1 > .mgmtBtn {
 	width: 8%;
 	background-color: #0073e6;
 }

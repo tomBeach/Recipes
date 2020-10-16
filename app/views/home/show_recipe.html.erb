@@ -60,7 +60,7 @@
 <div id="editSaveBox">
 	<%= select_tag "category_edit_select", options_for_select(category_ids, category), class: "editSelect", remote: true %>
 	<%= select_tag "nationality_edit_select", options_for_select(nationality_ids, nationality), class: "editSelect", remote: true %>
-	<%= link_to "Save Changes", save_recipe_path, id: "saveRecipe", class: "addEditDelete", remote: true %>
+	<%= link_to "Save Changes", save_recipe_edits_path, id: "saveRecipe", class: "addEditDelete", remote: true %>
 </div>
 
 

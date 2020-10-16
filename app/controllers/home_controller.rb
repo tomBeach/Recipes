@@ -43,15 +43,15 @@ class HomeController < ApplicationController
 		get_recipe_data("all", "")
 	end
 
-	# ======= search_ingredients =======
-    def search_ingredients
-        puts "\n******* search_ingredients *******"
+	# ======= search_ingredient =======
+    def search_ingredient
+        puts "\n******* search_ingredient *******"
 		get_recipe_data("ingredients", params[:_json].downcase)
 	end
 
-	# ======= search_titles =======
-    def search_titles
-        puts "\n******* search_titles *******"
+	# ======= search_title =======
+    def search_title
+        puts "\n******* search_title *******"
 		get_recipe_data("titles", params[:_json].downcase)
 	end
 
@@ -216,9 +216,9 @@ class HomeController < ApplicationController
     # ======= ======= ======= EDIT ======= ======= =======
     # ======= ======= ======= EDIT ======= ======= =======
 
-	# ======= save_recipe =======
-    def save_recipe
-        puts "\n******* save_recipe *******"
+	# ======= save_recipe_edits =======
+    def save_recipe_edits
+        puts "\n******* save_recipe_edits *******"
 		puts "params[:category_id]: #{params[:category_id]}"
 		puts "params[:nationality_id]: #{params[:nationality_id]}"
 
