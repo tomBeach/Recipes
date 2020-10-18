@@ -1,4 +1,35 @@
-<p id="notice"><%= notice %></p>
 
-<%= link_to 'Edit', edit_category_path(@category) %> |
-<%= link_to 'Back', categories_path %>
+<h2 id="outputTitle">Category</h2>
+
+<div class="dataBox">
+
+    <table class="staticTable">
+        <thead>
+            <tr>
+                <th>category</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+    </table>
+
+    <table class="scrollTable">
+        <tbody>
+				<tr>
+					<td class="item"><%= @category[:category] %></td>
+					<td class="ED_link">&nbsp;</td>
+					<td class="ED_link">&nbsp;</td>
+				</tr>
+        </tbody>
+		<tr>
+			<td class="item">&nbsp;</td>
+			<td class="ED_link"><%= link_to "Back", request.referer.present? ? request.referer : "/home", class: "formLink" %></td>
+			<td class="ED_link">&nbsp;</td>
+		</tr>
+		<tr>
+			<td class="item">&nbsp;</td>
+			<td class="ED_link"><%= link_to 'Edit', edit_category_path(@category) %></td>
+			<td class="ED_link">&nbsp;</td>
+		</tr>
+    </table>
+</div>

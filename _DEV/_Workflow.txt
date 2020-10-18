@@ -34,7 +34,6 @@ ALTER TABLE categories RENAME COLUMN recipe_type TO category;
 ALTER TABLE recipes RENAME COLUMN recipe_nation;
 ALTER TABLE recipes RENAME COLUMN column_name TO new_column_name;
 
-
 rails g model Nationality nationality:string
 rails g migration AddRatingToRecipe rating:integer
 rails g migration AddCategoryToRecipe category:references

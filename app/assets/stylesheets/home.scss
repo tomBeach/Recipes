@@ -55,9 +55,17 @@ h1 {
     margin: 0;
     padding: 8px;
 }
+#menuBox1 {
+	background-color: DodgerBlue;
+}
+#menuBox2 {
+	background-color: DeepSkyBlue;
+}
+#menuBox3 {
+	background-color: LightSkyBlue;
+}
 #menuBox1 > a, #menuBox2 > a {
     display: inline-block;
-	// min-width: 100px;
     height: 24px;
 	margin: 0 4px;
 	padding: 0 10px;
@@ -88,20 +96,9 @@ h1 {
 	width: 8%;
 	background-color: #0073e6;
 }
-#menuBox1 {
-	background-color: DodgerBlue;
-}
-
-#menuBox2 {
-	background-color: DeepSkyBlue;
-}
 #menuBox2 > a {
 	width: 12%;
 	background-color: #00ace6;
-}
-
-#menuBox3 {
-	background-color: LightSkyBlue;
 }
 
 #search {
@@ -160,16 +157,6 @@ h1 {
 	float: right;
 	color: red;
 }
-
-// #notice {
-// 	display: inline-block;
-//     float: right;
-// 	color: red;
-// }
-// #message {
-// 	display: inline-block;
-// 	color: gray;
-// }
 .info {
 	display: inline-block;
 	margin: 20px;
@@ -321,40 +308,104 @@ h1 {
 }
 
 /* ======= ======= ======= forms ======= ======= ======= */
-.dataRow {
-    height: 35px;
+// .dataRow {
+//     height: 35px;
+// }
+// .formLabel {
+// 	display: inline-block;
+//     height: 100%;
+//     padding: 8px;
+//     font-size: 0.8em;
+// }
+// .formValue {
+// 	display: inline-block;
+// 	width: 65%;
+//     text-align: left;
+//     vertical-align: text-top;
+//     color: black;
+// }
+// .formButton, .formButtonFix {
+// 	display: inline-block;
+//     min-width: 120px;
+//     height: 24px;
+// 	padding: 0 10px;
+//     text-align: center;
+//     font-size: 16px;
+//     line-height: 24px;
+//     text-decoration: none;
+// 	border-radius: 5px;
+//     background-color: orangered;
+//     color: navy;
+// }
+// .formButtonFix {
+// 	width: 140px;
+// 	border: none;
+// }
+// .formValue > a:hover {
+//     background-color: mediumslateblue;
+//     color: white;
+// }
+
+/* ======= ======= ======= tables ======= ======= ======= */
+table, th, td {
+	border: 1px solid black;
 }
-.formLabel {
-	display: inline-block;
-    height: 100%;
+.AEDtable {
+	width: 90%;
+	margin: 10px;
+	border-collapse: collapse;
+}
+.AEDtable > tbody > tr > td {
+	padding: 5px;
+}
+.dataColumn {
+	width: 80%;
+}
+.btnColumn {
+	width: 20%;
+}
+.btnColumn {
+	width: 140px;
+}
+.btnColumn > a {
+	display: block;
+    height: 20px;
+	padding: 5px;
+    text-align: center;
+    font-size: 16px;
+    text-decoration: none;
+	border-radius: 2px;
+    background-color: Linen;
+    color: navy;
+}
+.btnColumn > a {
+	width: 80px;
+}
+.btnColumn > a {
+	width: 120px;
+}
+.btnColumn > a:hover {
+	background-color: mediumslateblue;
+    color: white;
+}
+.btnRow {
+	height: 40px;
+    margin: 0;
     padding: 8px;
-    font-size: 0.8em;
 }
-.formValue {
-	display: inline-block;
-	width: 65%;
-    text-align: left;
-    vertical-align: text-top;
-    color: black;
+.btnRow {
+	background-color: LightSkyBlue;
 }
-.formButton, .formButtonFix {
+.btnRow > td > a {
 	display: inline-block;
-    min-width: 120px;
     height: 24px;
+	margin: 0 4px;
 	padding: 0 10px;
     text-align: center;
     font-size: 16px;
     line-height: 24px;
     text-decoration: none;
 	border-radius: 5px;
-    background-color: orangered;
+	background-color: #0073e6;
     color: navy;
-}
-.formButtonFix {
-	width: 140px;
-	border: none;
-}
-.formValue > a:hover {
-    background-color: mediumslateblue;
-    color: white;
 }

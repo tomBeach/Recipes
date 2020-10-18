@@ -4,6 +4,7 @@ class CategoriesController < ApplicationController
 	# ======= index =======
 	# GET /categories
 	def index
+		puts "\n******* index *******"
 		@categories = Category.all
 	end
 
