@@ -1,24 +1,28 @@
 <h2 id="outputTitle">Categories</h2>
 
-<table class="AEDtable">
-	<thead>
-		<tr class="btnRow">
-			<th colspan="3"></th>
-		</tr>
-	</thead>
+<div id="output">
 
-	<tbody>
-		<% @categories.each do |category| %>
-			<tr>
-				<td class="dataColumn"><%= category[:category] %></td>
-				<td class="btnColumn"><%= link_to 'edit', edit_category_path(category) %></td>
-				<td class="btnColumn"><%= link_to 'delete', category, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+	<table class="AEDtable">
+		<thead>
+			<tr class="btnRow">
+				<th colspan="3"></th>
 			</tr>
-		<% end %>
-		<tr class="btnRow">
-			<td class="btnColumn"><%= link_to 'New Category', new_category_path %></td>
-			<td class="btnColumn"><%= link_to "Back", request.referer.present? ? request.referer : "/home", class: "formLink" %></td>
-			<td>&nbsp;</td>
-		</tr>
-	</tbody>
-</table>
+		</thead>
+
+		<tbody>
+			<% @categories.each do |category| %>
+				<tr>
+					<td class="dataColumn"><%= category[:category] %></td>
+					<td class="btnColumn"><%= link_to 'edit', edit_category_path(category) %></td>
+					<td class="btnColumn"><%= link_to 'delete', category, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+				</tr>
+			<% end %>
+			<tr class="btnRow">
+				<td class="btnColumn"><%= link_to 'New Category', new_category_path %></td>
+				<td class="btnColumn"><%= link_to "Back", request.referer.present? ? request.referer : "/home", class: "formLink" %></td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+
+</div>

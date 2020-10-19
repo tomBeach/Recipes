@@ -229,6 +229,16 @@ class HomeController < ApplicationController
 		ingredient_fails_array = []
 		instruction_fails_array = []
 
+		if params[:rating] == 0
+			params[:rating] = nil
+		end
+		if params[:category_id] == 0
+			params[:category_id] = nil
+		end
+		if params[:nationality_id] == 0
+			params[:nationality_id] = nil
+		end
+
 		recipe = Recipe.find(params[:recipe_id])
 		if !recipe.update(:rating => params[:rating], :category_id => params[:category_id], :nationality_id => params[:nationality_id])
 			recipe_fails_array.push(params[:recipe_id])

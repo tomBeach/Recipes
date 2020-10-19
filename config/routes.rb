@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+	# == devise
 	devise_for :users
 	devise_scope :user do
 		get '/users/sign_out' => 'devise/sessions#destroy'
@@ -8,6 +9,10 @@ Rails.application.routes.draw do
 	# == home
     get "/" => "home#index"
     get "/home" => "home#index"
+
+	# == categories
+	resources :categories
+	resources :nationalities
 
 	# == recipes
 	get "/import_recipes" => "home#import_recipes"
@@ -19,9 +24,5 @@ Rails.application.routes.draw do
 	post "/all_recipes" => "home#all_recipes"
 	post "/save_recipe_edits" => "home#save_recipe_edits"
 	get "/show_recipe/:id" => "home#show_recipe"
-
-	# == categories
-	resources :categories
-	resources :nationalities
 
 end

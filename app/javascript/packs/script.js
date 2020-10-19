@@ -235,7 +235,10 @@ $(document).on('turbolinks:load', function() {
 			// == get database record stored in local div (data value)
 			var ingredientsData = $('#ingredientsData').data();
 			var instructionsData = $('#instructionsData').data();
-			var modifiedId = currentId.substr(currentId.length - 3);	// currentId == selected/active text element
+
+			// == currentId format: category_XXXX or ingredient_XXXX (XXXX = database id)
+			var underscoreIndex = currentId.indexOf("_");
+			var modifiedId = currentId.substr(underscoreIndex + 1);		// currentId == selected/active text element
 			var newText = $('#' + currentId).val();
 
 			// == save changes to local data
@@ -290,16 +293,17 @@ $(document).on('turbolinks:load', function() {
 			var nationalityData = $('#nationalityData').data().nationalityid;
 			var ingredientsData = $('#ingredientsData').data().ingredients;
 			var instructionsData = $('#instructionsData').data().instructions;
+			console.log("$('#categoryData').data(): ", $('#categoryData').data());
 
 			// == avoind null values (items not set by user)
 			if (!ratingData) {
 				ratingData = 0;
 			}
-			if (!categoryData.categoryId) {
-				categoryData.categoryId = 0;
+			if (!categoryData.categoryid) {
+				categoryData.categoryid = 0;
 			}
-			if (!nationalityData.nationalityId) {
-				nationalityData.nationalityId = 0;
+			if (!nationalityData.nationalityid) {
+				nationalityData.nationalityid = 0;
 			}
 
 			var recipeData = {

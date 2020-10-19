@@ -11,7 +11,9 @@ class CategoriesController < ApplicationController
 	# ======= new =======
 	# GET /categories/new
 	def new
+		puts "\n******* new *******"
 		@category = Category.new
+		puts "@category.inspect: #{@category.inspect}"
 	end
 
 	# ======= create =======
@@ -19,7 +21,6 @@ class CategoriesController < ApplicationController
 	def create
 		puts "\n******* create *******"
 		puts "params.inspect: #{params.inspect}"
-		puts "params[:category][:recipe_type]: #{params[:category][:recipe_type]}"
 
 		@category = Category.new(category_params)
 
@@ -32,32 +33,14 @@ class CategoriesController < ApplicationController
                 format.html { render :new }
             end
         end
-
-
-		# okay_params = category_params
-		# puts "okay_params.inspect: #{okay_params.inspect}"
-		# puts "okay_params[:recipe_type]: #{okay_params[:recipe_type]}"
-		#
-		# @category = Category.create(:recipe_type => okay_params[:recipe_type])
-		# puts "@category.inspect: #{@category.inspect}"
-		# category_check = @category.find.last
-		#
-		# respond_to do |format|
-		# 	if @category.find.last
-		# 		puts "*** SAVED"
-		# 		# format.html { redirect_to @category, notice: 'Category was successfully created.' }
-		# 		format.html { "redirect_to @category, notice: 'Category was successfully created.'" }
-		# 	else
-		# 		puts "*** FAIL"
-		# 		format.html { render :new, notice: 'There was a problem in saving the category.'  }
-		# 	end
-		# end
 	end
 
-  # GET /categories/1
-  # GET /categories/1.json
-  def show
-  end
+	# ======= show =======
+	# GET /categories/1
+	def show
+		puts "\n******* show *******"
+		puts "params.inspect: #{params.inspect}"
+	end
 
   # GET /categories/1/edit
   def edit
@@ -98,7 +81,7 @@ class CategoriesController < ApplicationController
 		puts "\n******* category_params *******"
 		puts "params.inspect: #{params.inspect}"
 		puts "params[:category]: #{params[:category]}"
-		puts "params[:category][:recipe_type]: #{params[:category][:recipe_type]}"
-		params.require(:category).permit(:recipe_type)
+		puts "params[:category][:recipe_type]: #{params[:category][:category]}"
+		params.require(:category).permit(:category)
 	end
 end

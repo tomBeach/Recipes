@@ -348,24 +348,20 @@ h1 {
 
 /* ======= ======= ======= tables ======= ======= ======= */
 table, th, td {
-	border: 1px solid black;
+	border: 1px solid white;
 }
-.AEDtable {
+.AEDtable, .userTable {
 	width: 90%;
-	margin: 10px;
 	border-collapse: collapse;
 }
-.AEDtable > tbody > tr > td {
+.AEDtable > tbody > tr > td, .userTable > tbody > tr > td {
 	padding: 5px;
 }
 .dataColumn {
-	width: 80%;
+	width: 70%;
 }
 .btnColumn {
-	width: 20%;
-}
-.btnColumn {
-	width: 140px;
+	width: 15%;
 }
 .btnColumn > a {
 	display: block;
@@ -408,4 +404,69 @@ table, th, td {
 	border-radius: 5px;
 	background-color: #0073e6;
     color: navy;
+}
+
+/* ======= ======= ======= forms ======= ======= ======= */
+#formTitle {
+	width: 72%;
+	height: 60px;
+	margin: 0;
+	padding: 1%;
+	text-overflow: ellipsis;
+}
+.userInput {
+	width: 72%;
+	border-collapse: collapse;
+}
+.userInput > tbody > tr > td {
+	padding: 5px;
+}
+.field {
+	width: 100%;
+	height: 40px;
+    margin: 0;
+}
+.inputLabel {
+	display: inline-block;
+	width: 40%;
+	height: 100%;
+	padding: 10px;
+	text-align: right;
+}
+.inputText {
+	display: inline-block;
+	width: 40%;
+	height: 100%;
+	padding: 10px;
+}
+input[type=text], input[type=password], input[type=checkbox] {
+	height: 20px;
+}
+input[type=checkbox] {
+	margin: 0;
+	width: 40px;
+}
+input[type=submit], .field > div > a {
+    font-size: 16px;
+	text-align: center;
+	border-radius: 4px;
+    background-color: Linen;
+    color: navy;
+}
+input[type=submit] {
+	height: 32px;
+	width: 76%;
+	padding-top: 5px;
+	border: 0px;
+}
+.field > div > a {
+	display: block;
+    height: 24px;
+	width: 75%;
+	padding-top: 8px;
+    text-decoration: none;
+}
+input[type=submit]:hover, .field > div > a:hover {
+	background-color: mediumslateblue;
+    color: white;
 }

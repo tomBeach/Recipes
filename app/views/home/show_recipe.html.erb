@@ -17,6 +17,7 @@
 	<% puts "no category" %>
 	<% category_ids.push(["no category", nil]) %>
 	<% category = ["no category", nil] %>
+	<% @recipe.category_id = 0 %>
 <% else %>
 	<% category = @recipe.category_id %>
 <% end %>
@@ -26,6 +27,7 @@
 <% if @recipe.nationality_id == nil %>
 	<% nationality_ids.push(["no nationality", nil]) %>
 	<% nationality = ["no nationality", nil] %>
+	<% @recipe.nationality_id = 0 %>
 <% else %>
 	<% nationality = @recipe.nationality_id %>
 <% end %>

@@ -1,35 +1,28 @@
 
 <h2 id="outputTitle">Category</h2>
 
-<div class="dataBox">
+<div id="output">
 
-    <table class="staticTable">
-        <thead>
-            <tr>
-                <th>category</th>
-                <th>&nbsp;</th>
-                <th>&nbsp;</th>
-            </tr>
-        </thead>
-    </table>
+	<table class="AEDtable">
+		<thead>
+			<tr class="btnRow">
+				<th colspan="3"></th>
+			</tr>
+		</thead>
 
-    <table class="scrollTable">
-        <tbody>
-				<tr>
-					<td class="item"><%= @category[:category] %></td>
-					<td class="ED_link">&nbsp;</td>
-					<td class="ED_link">&nbsp;</td>
-				</tr>
-        </tbody>
-		<tr>
-			<td class="item">&nbsp;</td>
-			<td class="ED_link"><%= link_to "Back", request.referer.present? ? request.referer : "/home", class: "formLink" %></td>
-			<td class="ED_link">&nbsp;</td>
-		</tr>
-		<tr>
-			<td class="item">&nbsp;</td>
-			<td class="ED_link"><%= link_to 'Edit', edit_category_path(@category) %></td>
-			<td class="ED_link">&nbsp;</td>
-		</tr>
-    </table>
+		<tbody>
+			<tr>
+				<td class="dataColumn"><%= @category[:category] %></td>
+				<td class="btnColumn"><%= link_to 'edit', edit_category_path(@category) %></td>
+				<td class="btnColumn"><%= link_to 'delete', @category, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+			</tr>
+
+			<tr class="btnRow">
+				<td class="btnColumn"><%= link_to 'New Category', new_category_path %></td>
+				<td class="btnColumn"><%= link_to "Back", request.referer.present? ? request.referer : "/home", class: "formLink" %></td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
+	</table>
+
 </div>
