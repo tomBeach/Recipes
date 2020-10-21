@@ -188,23 +188,23 @@ h1 {
 }
 #outputTitle {
 	float: left;
-	width: 72%;
-	height: 60px;
-	margin: 0;
+	width: 98%;
+	height: 40px;
+	margin: 0 0 0 1%;
 	padding: 1%;
 	text-overflow: ellipsis;
 }
 #editSaveBox {
-	float: right;
-	width: 20%;
-	padding: 1%;
+	float: left;
+	width: 98%;
 }
 .editSelect {
-	float: right;
-	width: 100%;
+	float: left;
+	width: 12%;
     min-width: 120px;
+	max-width: 160px;
     height: 24px;
-	margin-top: 10px;
+	margin: 10px;
 	padding: 0 10px;
     font-size: 16px;
 	text-align-last:center;
@@ -213,10 +213,11 @@ h1 {
 	border-radius: 5px;
 }
 .addEditDelete {
-	float: right;
-	width: 100%;
+	float: left;
+	width: 12%;
     min-width: 120px;
-	margin-top: 10px;
+	max-width: 160px;
+	margin: 10px;
     height: 24px;
     text-align: center;
     font-size: 16px;
@@ -250,6 +251,16 @@ h1 {
     padding: 4px;
 	width: 60%;
 	font-size: 16px;
+	color: navy;
+}
+#editTitle {
+	height: 40px;
+	margin: 0 0 0 1%;
+	padding: 1%;
+	margin-left: 9px;
+	width: 60%;
+	font-size: 32px;
+	font-style: bold;
 	color: navy;
 }
 .saveBtn, .cancelBtn {

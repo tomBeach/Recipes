@@ -2,14 +2,12 @@ class CategoriesController < ApplicationController
   before_action :set_category, only: [:show, :edit, :update, :destroy]
 
 	# ======= index =======
-	# GET /categories
 	def index
 		puts "\n******* index *******"
 		@categories = Category.all
 	end
 
 	# ======= new =======
-	# GET /categories/new
 	def new
 		puts "\n******* new *******"
 		@category = Category.new
@@ -17,7 +15,6 @@ class CategoriesController < ApplicationController
 	end
 
 	# ======= create =======
-	# POST /categories
 	def create
 		puts "\n******* create *******"
 		puts "params.inspect: #{params.inspect}"
@@ -36,7 +33,6 @@ class CategoriesController < ApplicationController
 	end
 
 	# ======= show =======
-	# GET /categories/1
 	def show
 		puts "\n******* show *******"
 		puts "params.inspect: #{params.inspect}"
@@ -70,18 +66,17 @@ class CategoriesController < ApplicationController
     end
   end
 
-  private
-	# Use callbacks to share common setup or constraints between actions.
-	def set_category
-		@category = Category.find(params[:id])
-	end
+	private
+		# Use callbacks to share common setup or constraints between actions.
+		def set_category
+			puts "\n******* set_category *******"
+			@category = Category.find(params[:id])
+		end
 
-	# Only allow a list of trusted parameters through.
-	def category_params
-		puts "\n******* category_params *******"
-		puts "params.inspect: #{params.inspect}"
-		puts "params[:category]: #{params[:category]}"
-		puts "params[:category][:recipe_type]: #{params[:category][:category]}"
-		params.require(:category).permit(:category)
-	end
+		# Only allow a list of trusted parameters through.
+		def category_params
+			puts "\n******* category_params *******"
+			puts "params.inspect: #{params.inspect}"
+			params.require(:category).permit(:category)
+		end
 end

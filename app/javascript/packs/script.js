@@ -62,6 +62,19 @@ $(document).on('turbolinks:load', function() {
 			}
 	    });
 
+		$('#rating_select').change(function(e) {
+			console.log("== change: rating_select ==");
+			e.preventDefault();
+			$('#nationality_select').val(0);	// set to no selection
+			toggleEditButtons("hide");
+			var searchString = $('#rating_select option:selected').val();
+			if (searchString.length == 0) {
+				makeTitleText("", "no search");
+			} else {
+				searchRecipes(searchString, "rating");
+			}
+	    });
+
 		$('#category_select').change(function(e) {
 			console.log("== change: category_select ==");
 			e.preventDefault();
@@ -107,6 +120,9 @@ $(document).on('turbolinks:load', function() {
 			case "ingredient":
 			var url = "/search_ingredient";
 			break;
+			case "rating":
+			var url = "/search_rating";
+			break;
 			case "category":
 			var url = "/search_category";
 			break;
@@ -149,11 +165,23 @@ $(document).on('turbolinks:load', function() {
 		var currentText, currentHtml, currentId;
 
 		// == activate mouseovers, button actions
+		$('#outputTitle').on('mouseover', hiliteLink);
+		$('#outputTitle').on('mouseout', restoreLink);
+		$('#outputTitle').on('click', editTitle);
 		$('.ingredient, .instruction').on('mouseover', hiliteLink);
 		$('.ingredient, .instruction').on('mouseout', restoreLink);
 		$('.ingredient, .instruction').on('click', editLink);
 
 		// == activate main edit options (recipe category, auto sequence, save)
+		$('#rating_edit_select').change(function(e) {
+			console.log("== change: rating_edit_select ==");
+			e.preventDefault();
+			var rating = $('#rating_edit_select option:selected').text();
+			var ratingId = $('#rating_edit_select option:selected').val();
+			$('#ratingData').data().ratingid = ratingId;
+			console.log("$('#ratingData').data(): ", $('#ratingData').data());
+	    });
+
 		$('#category_edit_select').change(function(e) {
 			console.log("== change: category_edit_select ==");
 			e.preventDefault();
@@ -179,6 +207,13 @@ $(document).on('turbolinks:load', function() {
 			e.stopPropagation();
 		});
 
+		$('#deleteRecipe').click(function(e) {
+			console.log("== click: deleteRecipe ==");
+			e.preventDefault();
+			deleteRecipe($('#recipeId').data().recipeid);
+			e.stopPropagation();
+		});
+
 		// == recipe line behaviors
 		function hiliteLink() {
 			// console.log("== hiliteLink ==");
@@ -197,6 +232,56 @@ $(document).on('turbolinks:load', function() {
 		function restoreBtn() {
 			// console.log("== restoreBtn ==");
 			$(this).css('background-color', btnColor);
+		}
+
+		// == edit button behaviors
+		function editTitle() {
+			console.log("== editTitle ==");
+
+			// == set edit mode parameters for currently selected element
+			currentText = $(this).text();
+			currentHtml = $(this).html();
+			var currentId = $(this).attr('id');
+			var inputHtml = "<input type='text' id='editTitle' name='" + currentId + "' value='" + currentText + "'>";
+			var btnsHtml = "<div class='saveBtn'> save </div> <div class='cancelBtn'> cancel </div> ";
+			var editHtml = inputHtml + btnsHtml;
+			$(this).replaceWith(editHtml);
+			$('.saveBtn, .cancelBtn').on('mouseover', hiliteBtn);
+			$('.saveBtn, .cancelBtn').on('mouseout', restoreBtn);
+
+			$('.saveBtn').click(function(e) {
+				e.preventDefault();
+				saveTitle(currentId);
+				e.stopPropagation();
+		    });
+			$('.cancelBtn').click(function(e, currentId) {
+				e.preventDefault();
+				cancelTitle(currentId);
+				e.stopPropagation();
+		    });
+		}
+
+		function saveTitle(currentId, newText) {
+			console.log("== saveTitle ==");
+			console.log("currentId: ", currentId);
+
+			var newText = $('#editTitle').val();
+			console.log("newText: ", newText);
+			$('#titleData').data().title = newText;
+
+			// == update html string with changes
+			var saveHtml = "<h2 id='" + currentId + "'>" + newText + "</h2>";
+			$('#editTitle').replaceWith(saveHtml);
+			$('.saveBtn, .cancelBtn').remove();
+
+			// == restore line hilites and click behavior
+			$('#' + currentId).on('mouseover', hiliteLink);
+			$('#' + currentId).on('mouseout', restoreLink);
+			$('#' + currentId).on('click', editLink);
+		}
+
+		function cancelTitle(currentId) {
+			console.log("== cancelTitle ==");
 		}
 
 		// == edit button behaviors
@@ -236,7 +321,7 @@ $(document).on('turbolinks:load', function() {
 			var ingredientsData = $('#ingredientsData').data();
 			var instructionsData = $('#instructionsData').data();
 
-			// == currentId format: category_XXXX or ingredient_XXXX (XXXX = database id)
+			// == currentId format: ingredient_XXXX or instruction_XXXX (XXXX = database id)
 			var underscoreIndex = currentId.indexOf("_");
 			var modifiedId = currentId.substr(underscoreIndex + 1);		// currentId == selected/active text element
 			var newText = $('#' + currentId).val();
@@ -283,21 +368,45 @@ $(document).on('turbolinks:load', function() {
 			$('#' + currentId).on('click', editLink);
 		}
 
+		function deleteRecipe(recipeId) {
+			console.log("== deleteRecipe ==");
+			console.log("recipeId: ", recipeId);
+
+			var url = "/delete_recipe/" + recipeId.toString();
+
+			$.ajax({
+			    url: url,
+				// data: recipeId,
+			    method: "GET",
+				dataType: "json",
+				contentType: "application/json; charset=utf-8"
+			}).done(function(jsonData) {
+			    console.log("*** ajax success ***");
+			    console.dir(jsonData)
+				updateNoticeMessage(jsonData);
+			}).fail(function(unknown){
+			    console.log("*** ajax fail ***");
+				console.log("unknown:", unknown);
+			});
+		}
+
 		function saveRecipe() {
 			console.log("== saveRecipe ==");
 
 			var currentId = $('#recipeId').data().recipeid;
 			var titleData = $('#titleData').data().title;
-			var ratingData = $('#ratingData').data().rating;
+			var ratingData = $('#ratingData').data().ratingid;
 			var categoryData = $('#categoryData').data().categoryid;
 			var nationalityData = $('#nationalityData').data().nationalityid;
 			var ingredientsData = $('#ingredientsData').data().ingredients;
 			var instructionsData = $('#instructionsData').data().instructions;
+			console.log("$('#titleData').data(): ", $('#titleData').data());
+			console.log("$('#ratingData').data(): ", $('#ratingData').data());
 			console.log("$('#categoryData').data(): ", $('#categoryData').data());
 
-			// == avoind null values (items not set by user)
-			if (!ratingData) {
-				ratingData = 0;
+			// == avoid null values (items not set by user)
+			if (!ratingData.ratingid) {
+				ratingData.ratingid = 0;
 			}
 			if (!categoryData.categoryid) {
 				categoryData.categoryid = 0;
@@ -309,7 +418,7 @@ $(document).on('turbolinks:load', function() {
 			var recipeData = {
 				recipe_id:currentId,
 				title:titleData,
-				rating:ratingData,
+				rating_id:ratingData,
 				category_id:categoryData,
 				nationality_id:nationalityData,
 				ingredients:ingredientsData,
@@ -336,11 +445,17 @@ $(document).on('turbolinks:load', function() {
 		if (jsonData.recipeArray.length > 0) {
 			for (var k = 0; k < jsonData.recipeArray.length; k++) {
 				nextId = jsonData.recipeArray[k].id;
-				nextRating = jsonData.recipeArray[k].rating;
+				nextRatingId = jsonData.recipeArray[k].rating_id;
 				nextCategoryId = jsonData.recipeArray[k].category_id;
 				nextNationalityId = jsonData.recipeArray[k].nationality_id;
 				nextTitle = jsonData.recipeArray[k].title;
 
+				if (nextRatingId) {
+					selectedRating = jsonData.ratingObj[nextRatingId];
+					ratingStyle = getRatingStyle(selectedRating);
+				} else {
+					selectedRating = "";
+				}
 				if (nextCategoryId) {
 					selectedCategory = jsonData.categoryObj[nextCategoryId];
 					categoryStyle = getCategoryStyle(selectedCategory);
@@ -834,6 +949,33 @@ $(document).on('turbolinks:load', function() {
 	// ======= ======= ======= UTILITIES ======= ======= =======
 	// ======= ======= ======= UTILITIES ======= ======= =======
 
+	function getRatingStyle(selectedRating) {
+		console.log("== getRatingStyle ==");
+
+		// == colorize type string
+		switch(selectedRating) {
+			case "1":
+			typeStyle = "color:#333";
+			break;
+			case "2":
+			typeStyle = "color:#555";
+			break;
+			case "3":
+			typeStyle = "color:#777";
+			break;
+			case "4":
+			typeStyle = "color:#999";
+			break;
+			case "5":
+			typeStyle = "color:#aaa";
+			break;
+			default:
+			typeStyle = "visibility:hidden";
+			break;
+		}
+		return typeStyle;
+	}
+
 	function getCategoryStyle(selectedCategory) {
 		console.log("== getCategoryStyle ==");
 
@@ -907,10 +1049,12 @@ $(document).on('turbolinks:load', function() {
 		console.log("== toggleEditButtons ==");
 
 		if (showOrHide == "hide") {
+			$('#rating_edit_select').hide();
 			$('#category_edit_select').hide();
 			$('#nationality_edit_select').hide();
 			$('#saveRecipe').hide();
 		} else {
+			$('#rating_edit_select').show();
 			$('#category_edit_select').show();
 			$('#nationality_edit_select').show();
 			$('#saveRecipe').show();
@@ -921,10 +1065,7 @@ $(document).on('turbolinks:load', function() {
 	function updateTitleText(titleText) {
 		console.log("== updateTitleText ==");
 
-		// $(function () {
-		// 	console.log("== jquery function ==");
-			$('#outputTitle').text(titleText);
-		// });
+		$('#outputTitle').text(titleText);
 	}
 
 	// ======= updateNoticeMessage =======

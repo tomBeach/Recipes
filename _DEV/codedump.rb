@@ -1,3 +1,41 @@
+<%# ======= category and nationality options ======= %>
+<% category_ids = [] %>
+<% @categories.each_with_index do |category, index| %>
+    <% category_ids << [category.category, category[:id]] %>
+<% end %>
+
+<% nationality_ids = [] %>
+<% @nationalities.each_with_index do |nationality, index| %>
+    <% nationality_ids << [nationality.nationality, nationality[:id]] %>
+<% end %>
+
+
+<%# ======= selected category / nationality ======= %>
+<% puts "@recipe.category_id: #{@recipe.category_id}" %>
+<% if @recipe.category_id == nil %>
+	<% puts "no category" %>
+	<% category_ids.push(["no category", nil]) %>
+	<% category = ["no category", nil] %>
+	<% @recipe.category_id = 0 %>
+<% else %>
+	<% category = @recipe.category_id %>
+<% end %>
+<% puts "category_ids: #{category_ids}" %>
+
+<% puts "@recipe.nationality_id: #{@recipe.nationality_id}" %>
+<% if @recipe.nationality_id == nil %>
+	<% nationality_ids.push(["no nationality", nil]) %>
+	<% nationality = ["no nationality", nil] %>
+	<% @recipe.nationality_id = 0 %>
+<% else %>
+	<% nationality = @recipe.nationality_id %>
+<% end %>
+<% puts "nationality_ids: #{nationality_ids}" %>
+
+
+
+
+
 function autoSequence() {
 	console.log("== autoSequence ==");
 

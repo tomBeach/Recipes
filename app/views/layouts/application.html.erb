@@ -11,7 +11,12 @@
 
 <body>
 
-	<%# ======= category and nationality options ======= %>
+	<%# ======= rating/category/nationality options ======= %>
+	<% rating_ids = [["rating", nil]] %>
+	<% @ratings.each do |rating| %>
+	    <% rating_ids << [rating.rating, rating[:id]] %>
+	<% end %>
+
 	<% category_ids = [["category", nil]] %>
 	<% @categories.each do |category| %>
 	    <% category_ids << [category.category, category[:id]] %>
@@ -48,6 +53,7 @@
 				<div id="menuSpacer1">
 					<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>
 				</div>
+				<%= link_to "Ratings", ratings_path, id: "ratings", class: "mgmtBtn" %>
 				<%= link_to "Categories", categories_path, id: "categories", class: "mgmtBtn" %>
 				<%= link_to "Nationalities", nationalities_path, id: "nationalities", class: "mgmtBtn" %>
             <% end %>
@@ -58,6 +64,7 @@
 			<input id="search" type="text" name="search">
 			<%= link_to "in recipe title", search_title_path, id: "searchTitles", remote: false %>
 			<%= link_to "in ingredients", search_ingredient_path, id: "searchIngredients", remote: false %>
+			<%= select_tag "rating_select", options_for_select(rating_ids), class: "menuSelect", remote: true %>
 			<%= select_tag "category_select", options_for_select(category_ids), class: "menuSelect", remote: true %>
 			<%= select_tag "nationality_select", options_for_select(nationality_ids), class: "menuSelect", remote: true %>
 		</div>

@@ -6,6 +6,19 @@
 
 
 // ======= ======= ======= add data ======= ======= =======
+Rating.create([
+ { rating:"1", comment:"favorite" },
+ { rating:"2", comment:"very good" },
+ { rating:"3", comment:"okay" },
+ { rating:"4", comment:"not so good" },
+ { rating:"5", comment:"desperation only" }
+])
+@ratings = Rating.all
+puts "@ratings: #{@ratings.inspect}"
+puts "Rating.column_names: #{Rating.column_names.inspect}"
+
+
+
 INSERT INTO table_name(column1, column2, …) VALUES (value1, value2, …);
 INSERT INTO categories (category, created_at, updated_at) VALUES ('meat', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO categories (category, created_at, updated_at) VALUES ('seafood', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
@@ -30,6 +43,7 @@ puts "Category.column_names: #{Category.column_names.inspect}"
 
 // ======= ======= ======= database re-design ======= ======= =======
 // == modify existing ==
+ALTER TABLE recipes RENAME COLUMN rating TO rating_id;
 ALTER TABLE categories RENAME COLUMN recipe_type TO category;
 ALTER TABLE recipes RENAME COLUMN recipe_nation;
 ALTER TABLE recipes RENAME COLUMN column_name TO new_column_name;
@@ -43,6 +57,7 @@ rails g migration DropTypeFromRecipe recipe_type:string
 // == rebuild from scratch ==
 rails g model Category category:string
 rails g model Nationality nationality:string
+rails g model Rating rating:integer comment:string
 rails g model Recipe title:string category:references nationality:references
 rails g model Ingredient recipe:references ingredient:string
 rails g model Instruction recipe:references instruction:string
@@ -68,6 +83,7 @@ rails g migration AddNationalityToRecipe nationality_id:integer
 // ======= ======= ======= recipe_type setup ======= ======= =======
 rails g model Category recipe:references recipe_type:string recipe_nation:string
 rails g scaffold_controller Category
+rails g scaffold_controller Rating
 
 
 // ======= ======= ======= sql/active record statements ======= ======= =======

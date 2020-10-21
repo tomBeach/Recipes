@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
 
 	def getRecipeTypes
 		puts "\n******* getRecipeTypes *******"
+		@ratings = Rating.all
 		@categories = Category.all
 		@nationalities = Nationality.all
 	end
