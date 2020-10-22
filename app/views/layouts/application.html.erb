@@ -14,7 +14,8 @@
 	<%# ======= rating/category/nationality options ======= %>
 	<% rating_ids = [["rating", nil]] %>
 	<% @ratings.each do |rating| %>
-	    <% rating_ids << [rating.rating, rating[:id]] %>
+		<% rating_text = rating.rating.to_s + ":  " + rating.comment %>
+	    <% rating_ids << [rating_text, rating[:id]] %>
 	<% end %>
 
 	<% category_ids = [["category", nil]] %>

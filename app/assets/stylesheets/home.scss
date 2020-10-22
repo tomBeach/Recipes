@@ -163,11 +163,30 @@ h1 {
 }
 
 /* ======= ======= ======= recipe titles list ======= ======= ======= */
+.recipeHeader {
+	display: inline-block;
+	width: 14%;
+	margin: 10px;
+	padding-bottom: 2px;
+	font-size: 16px;
+	border-bottom: 1px solid black;
+	color: navy;
+}
+.recipeHeader:nth-of-type(1) {
+	width: 5%;
+}
 .recipeTitle {
 	margin-top: 15px;
     padding: 15px 10px 0 5px;
 	font-size: 24px;
 	color: mediumslateblue;
+}
+.ratingType {
+	display: inline-block;
+	margin: 10px;
+	width: 5%;
+	font-size: 16px;
+	color: navy;
 }
 .recipeType {
 	display: inline-block;

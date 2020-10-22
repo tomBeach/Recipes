@@ -27,8 +27,9 @@ $(document).on('turbolinks:load', function() {
 		$('#getAllRecipes').click(function(e) {
 			console.log("== click: getAllRecipes ==");
 			e.preventDefault();
-			$('#category_select').val(0);
-			$('#nationality_select').val(0);
+			$('#rating_select').val(0);			// set to no selection
+			$('#category_select').val(0);		// set to no selection
+			$('#nationality_select').val(0);	// set to no selection
 			toggleEditButtons("hide");
 			searchRecipes("", "all");
 			e.stopPropagation();
@@ -37,6 +38,7 @@ $(document).on('turbolinks:load', function() {
 		$('#searchTitles').click(function(e) {
 			console.log("== click: searchTitles ==");
 			e.preventDefault();
+			$('#rating_select').val(0);			// set to no selection
 			$('#category_select').val(0);		// set to no selection
 			$('#nationality_select').val(0);	// set to no selection
 			toggleEditButtons("hide");
@@ -51,6 +53,7 @@ $(document).on('turbolinks:load', function() {
 		$('#searchIngredients').click(function(e) {
 			console.log("== click: searchIngredients ==");
 			e.preventDefault();
+			$('#rating_select').val(0);			// set to no selection
 			$('#category_select').val(0);		// set to no selection
 			$('#nationality_select').val(0);	// set to no selection
 			toggleEditButtons("hide");
@@ -65,6 +68,7 @@ $(document).on('turbolinks:load', function() {
 		$('#rating_select').change(function(e) {
 			console.log("== change: rating_select ==");
 			e.preventDefault();
+			$('#category_select').val(0);		// set to no selection
 			$('#nationality_select').val(0);	// set to no selection
 			toggleEditButtons("hide");
 			var searchString = $('#rating_select option:selected').val();
@@ -78,6 +82,7 @@ $(document).on('turbolinks:load', function() {
 		$('#category_select').change(function(e) {
 			console.log("== change: category_select ==");
 			e.preventDefault();
+			$('#rating_select').val(0);			// set to no selection
 			$('#nationality_select').val(0);	// set to no selection
 			toggleEditButtons("hide");
 			var searchString = $('#category_select option:selected').val();
@@ -91,6 +96,7 @@ $(document).on('turbolinks:load', function() {
 		$('#nationality_select').change(function(e) {
 			console.log("== change: nationality_select ==");
 			e.preventDefault();
+			$('#rating_select').val(0);			// set to no selection
 			$('#category_select').val(0);		// set to no selection
 			toggleEditButtons("hide");
 			var searchString = $('#nationality_select option:selected').val();
@@ -442,6 +448,16 @@ $(document).on('turbolinks:load', function() {
 		var selectedCategory = "";
 		var selectedNationality  = "";
 
+		recipeHtml = recipeHtml + "<div>";
+		recipeHtml = recipeHtml + "<div class='recipeHeader'>";
+		recipeHtml = recipeHtml + "rating" + "</div>";
+		recipeHtml = recipeHtml + "<div class='recipeHeader'>";
+		recipeHtml = recipeHtml + "category" + "</div>";
+		recipeHtml = recipeHtml + "<div class='recipeHeader'>";
+		recipeHtml = recipeHtml + "nationality" + "</div>";
+		recipeHtml = recipeHtml + "<div class='recipeHeader'>";
+		recipeHtml = recipeHtml + "recipe" + "</div></div>";
+
 		if (jsonData.recipeArray.length > 0) {
 			for (var k = 0; k < jsonData.recipeArray.length; k++) {
 				nextId = jsonData.recipeArray[k].id;
@@ -452,24 +468,31 @@ $(document).on('turbolinks:load', function() {
 
 				if (nextRatingId) {
 					selectedRating = jsonData.ratingObj[nextRatingId];
-					ratingStyle = getRatingStyle(selectedRating);
+					ratingText = selectedRating[0] + ": " + selectedRating[1];
+					ratingStyle = getRatingStyle(selectedRating[0]);
 				} else {
 					selectedRating = "";
+					ratingText = "";
+					ratingStyle = "visibility:hidden";
 				}
 				if (nextCategoryId) {
 					selectedCategory = jsonData.categoryObj[nextCategoryId];
 					categoryStyle = getCategoryStyle(selectedCategory);
 				} else {
 					selectedCategory = "";
+					categoryStyle = "visibility:hidden";
 				}
 				if (nextNationalityId) {
 					selectedNationality = jsonData.nationalityObj[nextNationalityId];
 					nationalityStyle = getNationalityStyle(selectedNationality);
 				} else {
 					selectedNationality = "";
+					nationalityStyle = "visibility:hidden";
 				}
 
 				recipeHtml = recipeHtml + "<div>";
+				recipeHtml = recipeHtml + "<div class='ratingType' style='" + ratingStyle + ";'>";
+				recipeHtml = recipeHtml + ratingText + "</div>";
 				recipeHtml = recipeHtml + "<div class='recipeType' style='" + categoryStyle + ";'>";
 				recipeHtml = recipeHtml + selectedCategory + "</div>";
 				recipeHtml = recipeHtml + "<div class='recipeType' style='" + nationalityStyle + ";'>";
@@ -950,7 +973,7 @@ $(document).on('turbolinks:load', function() {
 	// ======= ======= ======= UTILITIES ======= ======= =======
 
 	function getRatingStyle(selectedRating) {
-		console.log("== getRatingStyle ==");
+		// console.log("== getRatingStyle ==");
 
 		// == colorize type string
 		switch(selectedRating) {
@@ -977,7 +1000,7 @@ $(document).on('turbolinks:load', function() {
 	}
 
 	function getCategoryStyle(selectedCategory) {
-		console.log("== getCategoryStyle ==");
+		// console.log("== getCategoryStyle ==");
 
 		// == colorize type string
 		switch(selectedCategory) {
@@ -1004,7 +1027,7 @@ $(document).on('turbolinks:load', function() {
 	}
 
 	function getNationalityStyle(selectedNationality) {
-		console.log("== getNationalityStyle ==");
+		// console.log("== getNationalityStyle ==");
 
 		// == colorize type string
 		switch(selectedNationality) {
@@ -1052,11 +1075,13 @@ $(document).on('turbolinks:load', function() {
 			$('#rating_edit_select').hide();
 			$('#category_edit_select').hide();
 			$('#nationality_edit_select').hide();
+			$('#deleteRecipe').hide();
 			$('#saveRecipe').hide();
 		} else {
 			$('#rating_edit_select').show();
 			$('#category_edit_select').show();
 			$('#nationality_edit_select').show();
+			$('#deleteRecipe').show();
 			$('#saveRecipe').show();
 		}
 	}

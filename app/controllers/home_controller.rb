@@ -274,6 +274,21 @@ class HomeController < ApplicationController
 			elsif recipe_count > 1
 				message = recipe_count.to_s + " recipes found with " + search_term + " in the title."
 			end
+		elsif search_type == "rating"
+
+			# == create numeric/text string from numeric only for rating
+			search_term = search_term.to_i
+			rating_obj = make_rating_object
+			rating_array = rating_obj[search_term.to_i]
+			rating_text = rating_array[0].to_s + ": " + rating_array[1]
+
+			if recipe_count == 0
+				message = "No recipes rated as " + rating_text + " were found."
+			elsif recipe_count == 1
+				message = recipe_count.to_s + "recipes rated as " + rating_text + " was found."
+			elsif recipe_count > 1
+				message = recipe_count.to_s + "recipes rated as " + rating_text + " were found."
+			end
 		elsif search_type == "category"
 			if recipe_count == 0
 				message = "No " + search_term + " recipes were found."
@@ -488,7 +503,7 @@ class HomeController < ApplicationController
 		rating_obj = {}
 		if @ratings.length > 0
 			@ratings.each do |next_rating|
-				rating_obj[next_rating.id] = next_rating.rating
+				rating_obj[next_rating.id] = [next_rating.rating, next_rating.comment]
 			end
 		end
 		return rating_obj
