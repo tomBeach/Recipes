@@ -18,9 +18,9 @@
 				</tr>
 			<% end %>
 			<tr class="btnRow">
-				<td class="btnColumn"><%= link_to 'New Nationality', new_nationality_path %></td>
+				<td class="dataColumn"><%= link_to 'New Nationality', new_nationality_path, id: "newNationalityBtn", remote: false  %></td>
 				<td class="btnColumn"><%= link_to "Back", request.referer.present? ? request.referer : "/home", class: "formLink" %></td>
-				<td>&nbsp;</td>
+				<td class="btnColumn">&nbsp;</td>
 			</tr>
 		</tbody>
 	</table>

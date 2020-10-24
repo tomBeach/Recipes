@@ -13,12 +13,95 @@ $(document).on('turbolinks:load', function() {
 	} else {
 		if (pathParts[1] == "show_recipe") {
 			activateEditLinks();
+		} else if (pathParts[1] == "nationalities") {
+			activateNationalities();
 		}
 	}
 	activateMainMenu();
 
 	// ======= initialize variables =======
 	var recipesArray = [];
+
+	// ======= activateNationalities =======
+    function activateNationalities() {
+		console.log("== activateNationalities ==");
+
+		$('#newNationalityBtn').click(function(e) {
+			console.log("== click: newNationalityBtn ==");
+			e.preventDefault();
+			makeNewNationality();
+			e.stopPropagation();
+		});
+
+	}
+
+	// ======= ======= ======= MGMT ======= ======= =======
+	// ======= ======= ======= MGMT ======= ======= =======
+	// ======= ======= ======= MGMT ======= ======= =======
+
+	function makeNewNationality() {
+		console.log("== makeNewNationality ==");
+
+		var btnColor;
+
+		function hiliteBtn() {
+			// console.log("== hiliteBtn ==");
+			btnColor = $(this).css('background-color');
+			$(this).css('background-color', 'red');
+		}
+		function restoreBtn() {
+			// console.log("== restoreBtn ==");
+			$(this).css('background-color', btnColor);
+		}
+
+		var inputHtml = "<input type='text' id='newNationality' name='newNationality'>";
+		var btnsHtml = "<div class='saveBtn'> save </div> <div class='cancelBtn'> cancel </div> ";
+		var editHtml = inputHtml + btnsHtml;
+		$('#newNationalityBtn').after(editHtml);
+		$('.saveBtn, .cancelBtn').on('mouseover', hiliteBtn);
+		$('.saveBtn, .cancelBtn').on('mouseout', restoreBtn);
+
+		$('.saveBtn').click(function(e) {
+			e.preventDefault();
+			saveNewNationality();
+			e.stopPropagation();
+		});
+		$('.cancelBtn').click(function(e, currentId) {
+			e.preventDefault();
+			cancelNewNationality();
+			e.stopPropagation();
+		});
+	}
+
+	function cancelNewNationality() {
+		console.log("== cancelNewNationality ==");
+
+		$('#newNationality, .saveBtn, .cancelBtn').remove();
+	}
+
+	function saveNewNationality() {
+		console.log("== saveNewNationality ==");
+
+		var url = "/new_nationality";
+		var nationalityText = $('#newNationality').val();
+		var jsonData = JSON.stringify({newNationality:nationalityText});
+
+		$.ajax({
+			url: url,
+			data: jsonData,
+			method: "POST",
+			dataType: "json",
+			contentType: "application/json; charset=utf-8"
+		}).done(function(jsonData) {
+			console.log("*** ajax success ***");
+			console.dir(jsonData)
+			updateNoticeMessage(jsonData);
+		}).fail(function(unknown){
+			console.log("*** ajax fail ***");
+			console.log("unknown:", unknown);
+		});
+	}
+
 
 	// ======= activateMainMenu =======
     function activateMainMenu() {
@@ -470,6 +553,7 @@ $(document).on('turbolinks:load', function() {
 					selectedRating = jsonData.ratingObj[nextRatingId];
 					ratingText = selectedRating[0] + ": " + selectedRating[1];
 					ratingStyle = getRatingStyle(selectedRating[0]);
+					console.log("selectedRating: ", selectedRating);
 				} else {
 					selectedRating = "";
 					ratingText = "";
@@ -973,24 +1057,24 @@ $(document).on('turbolinks:load', function() {
 	// ======= ======= ======= UTILITIES ======= ======= =======
 
 	function getRatingStyle(selectedRating) {
-		// console.log("== getRatingStyle ==");
+		console.log("== getRatingStyle ==");
 
 		// == colorize type string
-		switch(selectedRating) {
+		switch(selectedRating.toString()) {
 			case "1":
-			typeStyle = "color:#333";
+			typeStyle = "color:#000";
 			break;
 			case "2":
-			typeStyle = "color:#555";
+			typeStyle = "color:#333";
 			break;
 			case "3":
-			typeStyle = "color:#777";
+			typeStyle = "color:#666";
 			break;
 			case "4":
 			typeStyle = "color:#999";
 			break;
 			case "5":
-			typeStyle = "color:#aaa";
+			typeStyle = "color:#ccc";
 			break;
 			default:
 			typeStyle = "visibility:hidden";
@@ -1060,6 +1144,9 @@ $(document).on('turbolinks:load', function() {
 			break;
 			case "Asian":
 			typeStyle = "color:Crimson";
+			break;
+			case "Spanish":
+			typeStyle = "color:Coral";
 			break;
 			default:
 			typeStyle = "visibility:hidden";

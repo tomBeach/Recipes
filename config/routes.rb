@@ -15,6 +15,9 @@ Rails.application.routes.draw do
 	resources :categories
 	resources :nationalities
 
+	# == groups
+	post "/new_nationality" => "nationalities#new_nationality"
+
 	# == recipe files
 	get "/import_recipes" => "home#import_recipes"
 	post "/save_recipe_file" => "home#save_recipe_file"

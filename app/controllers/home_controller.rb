@@ -214,7 +214,7 @@ class HomeController < ApplicationController
 					if target_ingredients.length > 0
 						recipe_data = {
 							id: next_recipe.id,
-							rating: next_recipe.rating_id,
+							rating_id: next_recipe.rating_id,
 							category_id: next_recipe.category_id,
 							nationality_id: next_recipe.nationality_id,
 							title: next_recipe.title,
@@ -228,7 +228,7 @@ class HomeController < ApplicationController
 				else
 					recipe_data = {
 						id: next_recipe.id,
-						rating: next_recipe.rating_id,
+						rating_id: next_recipe.rating_id,
 						category_id: next_recipe.category_id,
 						nationality_id: next_recipe.nationality_id,
 						title: next_recipe.title,
@@ -280,14 +280,14 @@ class HomeController < ApplicationController
 			search_term = search_term.to_i
 			rating_obj = make_rating_object
 			rating_array = rating_obj[search_term.to_i]
-			rating_text = rating_array[0].to_s + ": " + rating_array[1]
+			rating_text = rating_array[0].to_s + "/" + rating_array[1]
 
 			if recipe_count == 0
 				message = "No recipes rated as " + rating_text + " were found."
 			elsif recipe_count == 1
-				message = recipe_count.to_s + "recipes rated as " + rating_text + " was found."
+				message = recipe_count.to_s + " recipe rated as " + rating_text + " was found."
 			elsif recipe_count > 1
-				message = recipe_count.to_s + "recipes rated as " + rating_text + " were found."
+				message = recipe_count.to_s + " recipes rated as " + rating_text + " were found."
 			end
 		elsif search_type == "category"
 			if recipe_count == 0

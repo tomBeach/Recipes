@@ -1,20 +1,56 @@
 class NationalitiesController < ApplicationController
   before_action :set_nationality, only: [:show, :edit, :update, :destroy]
 
-  # GET /nationalities
-  # GET /nationalities.json
-  def index
-    @nationalities = Nationality.all
-  end
+	# ======= index =======
+	def index
+		puts "\n******* index *******"
+		@nationalities = Nationality.all
+	end
+
+	# ======= new_nationality =======
+	def new_nationality
+		puts "\n******* new_nationality *******"
+		puts "params: #{params}"
+		@nationality = Nationality.new
+
+		@nationality = Nationality.create(:nationality => params[:newNationality])
+
+		if @nationality.save
+			message = params[:newNationality] + " was added to the Nationalities collection."
+		end
+
+		respond_to do |format|
+			format.json {
+				render json: {:message => message}
+			}
+		end
+	end
+
+	# ======= destroy =======
+	def destroy
+		puts "\n******* destroy *******"
+		puts "params: #{params}"
+
+		nationality_text = @nationality[:nationality]
+
+		recipes = Recipe.where(:nationality_id => params[:id])
+
+		recipes.each do |next_recipe|
+			puts "next_recipe.inspect: #{next_recipe.inspect}"
+			next_recipe.update(:nationality_id => nil)
+		end
+
+		@nationality.destroy
+		message = "Nationality " + nationality_text + " was successfully removed."
+		respond_to do |format|
+			format.html { redirect_to nationalities_url, notice: message }
+		end
+	end
+
 
   # GET /nationalities/1
   # GET /nationalities/1.json
   def show
-  end
-
-  # GET /nationalities/new
-  def new
-    @nationality = Nationality.new
   end
 
   # GET /nationalities/1/edit
@@ -48,16 +84,6 @@ class NationalitiesController < ApplicationController
         format.html { render :edit }
         format.json { render json: @nationality.errors, status: :unprocessable_entity }
       end
-    end
-  end
-
-  # DELETE /nationalities/1
-  # DELETE /nationalities/1.json
-  def destroy
-    @nationality.destroy
-    respond_to do |format|
-      format.html { redirect_to nationalities_url, notice: 'Nationality was successfully destroyed.' }
-      format.json { head :no_content }
     end
   end
 
