@@ -153,6 +153,11 @@ class HomeController < ApplicationController
 		category_obj = make_category_object
 		nationality_obj = make_nationality_object
 
+		puts "\n== categorization objects =="
+		puts "rating_obj: #{rating_obj}"
+		puts "category_obj: #{category_obj}"
+		puts "nationality_obj: #{nationality_obj}"
+
 		if search_type == "all"
 			recipes = Recipe.all
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
@@ -170,8 +175,10 @@ class HomeController < ApplicationController
 			message = recipe_data[1]
 		elsif search_type == "rating"
 			recipes = Recipe.where(:rating_id => search_term)
-			search_term = Rating.where(:id => search_term).first[:rating]			# convert rating_id to rating text
-			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			rating_id = search_term.to_i
+			rating = rating_obj[rating_id][:rating]
+			rating_text = rating[0].to_s + "/" + rating[1]
+			recipe_data = make_recipe_array(recipes, search_type, rating_text)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 		elsif search_type == "category"
@@ -275,19 +282,12 @@ class HomeController < ApplicationController
 				message = recipe_count.to_s + " recipes found with " + search_term + " in the title."
 			end
 		elsif search_type == "rating"
-
-			# == create numeric/text string from numeric only for rating
-			search_term = search_term.to_i
-			rating_obj = make_rating_object
-			rating_array = rating_obj[search_term.to_i]
-			rating_text = rating_array[0].to_s + "/" + rating_array[1]
-
 			if recipe_count == 0
-				message = "No recipes rated as " + rating_text + " were found."
+				message = "No recipes rated as " + search_term + " were found."
 			elsif recipe_count == 1
-				message = recipe_count.to_s + " recipe rated as " + rating_text + " was found."
+				message = recipe_count.to_s + " recipe rated as " + search_term + " was found."
 			elsif recipe_count > 1
-				message = recipe_count.to_s + " recipes rated as " + rating_text + " were found."
+				message = recipe_count.to_s + " recipes rated as " + search_term + " were found."
 			end
 		elsif search_type == "category"
 			if recipe_count == 0
@@ -500,10 +500,18 @@ class HomeController < ApplicationController
 	# ======= make_rating_object =======
 	def make_rating_object
 		puts "\n******* make_rating_object *******"
+
+		ratingColors = ["#03045e", "#023e8a", "#0077b6", "#0096c7", "#00b4d8", "#48cae4", "#90e0ef", "#ade8f4", "#caf0f8"];
 		rating_obj = {}
+
 		if @ratings.length > 0
-			@ratings.each do |next_rating|
-				rating_obj[next_rating.id] = [next_rating.rating, next_rating.comment]
+			@ratings.each_with_index do |next_rating, index|
+				rating_data = {:id => nil, :rating => nil, :color => nil}
+				ratingNumberText = [next_rating.rating, next_rating.comment]
+				rating_data[:id] = next_rating.id
+				rating_data[:rating] = ratingNumberText
+				rating_data[:color] = ratingColors[index]
+				rating_obj[next_rating.id] = rating_data
 			end
 		end
 		return rating_obj
@@ -512,10 +520,17 @@ class HomeController < ApplicationController
 	# ======= make_category_object =======
 	def make_category_object
 		puts "\n******* make_category_object *******"
+
+		categoryColors = ["#54478cff", "#2c699aff", "#048ba8ff", "#0db39eff", "#16db93ff", "#83e377ff", "#b9e769ff", "#efea5aff", "#f1c453ff", "#f29e4cff"];
 		category_obj = {}
+
 		if @categories.length > 0
-			@categories.each do |next_category|
-				category_obj[next_category.id] = next_category.category
+			@categories.each_with_index do |next_category, index|
+				category_data = {:id => nil, :category => nil, :color => nil}
+				category_data[:id] = next_category.id
+				category_data[:category] = next_category.category
+				category_data[:color] = categoryColors[index]
+				category_obj[next_category.id] = category_data
 			end
 		end
 		return category_obj
@@ -524,10 +539,17 @@ class HomeController < ApplicationController
 	# ======= make_nationality_object =======
 	def make_nationality_object
 		puts "\n******* make_nationality_object *******"
+
+		nationalityColors = ["#54478c", "#2c699a", "#048ba8", "#0db39e", "#16db93", "#83e377", "#b9e769", "#efea5a", "#f1c453", "#f29e4c"];
 		nationality_obj = {}
+
 		if @nationalities.length > 0
-			@nationalities.each do |next_nationality|
-				nationality_obj[next_nationality.id] = next_nationality.nationality
+			@nationalities.each_with_index do |next_nationality, index|
+				nationality_data = {:id => nil, :nationality => nil, :color => nil}
+				nationality_data[:id] = next_nationality.id
+				nationality_data[:nationality] = next_nationality.nationality
+				nationality_data[:color] = nationalityColors[index]
+				nationality_obj[next_nationality.id] = nationality_data
 			end
 		end
 		return nationality_obj

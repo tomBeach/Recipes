@@ -489,9 +489,6 @@ $(document).on('turbolinks:load', function() {
 			var nationalityData = $('#nationalityData').data().nationalityid;
 			var ingredientsData = $('#ingredientsData').data().ingredients;
 			var instructionsData = $('#instructionsData').data().instructions;
-			console.log("$('#titleData').data(): ", $('#titleData').data());
-			console.log("$('#ratingData').data(): ", $('#ratingData').data());
-			console.log("$('#categoryData').data(): ", $('#categoryData').data());
 
 			// == avoid null values (items not set by user)
 			if (!ratingData.ratingid) {
@@ -527,9 +524,17 @@ $(document).on('turbolinks:load', function() {
 		console.log("== displayRecipeTitles ==");
 
 		var nextId, nextTitle, recipeHtml, categoryStyle, nationalityStyle;
+		var ratingText, categoryText, nationalityText;
 		var recipeHtml = "";
-		var selectedCategory = "";
-		var selectedNationality  = "";
+
+		ratingObj = jsonData.ratingObj;
+		categoryObj = jsonData.categoryObj;
+		nationalityObj = jsonData.nationalityObj;
+
+		// == object structure
+		// ratingObj: 1=>{:id=>1, :rating=>[1, "favorite"], :color=>"#03045e"},
+		// categoryObj: 2=>{:id=>2, :category=>"meat", :color=>"#54478cff"},
+		// nationalityObj: 17=>{:id=>17, :nationality=>"Thai", :color=>"#54478c"},
 
 		recipeHtml = recipeHtml + "<div>";
 		recipeHtml = recipeHtml + "<div class='recipeHeader'>";
@@ -550,27 +555,25 @@ $(document).on('turbolinks:load', function() {
 				nextTitle = jsonData.recipeArray[k].title;
 
 				if (nextRatingId) {
-					selectedRating = jsonData.ratingObj[nextRatingId];
-					ratingText = selectedRating[0] + ": " + selectedRating[1];
-					ratingStyle = getRatingStyle(selectedRating[0]);
-					console.log("selectedRating: ", selectedRating);
+					ratingText = ratingObj[nextRatingId].rating[0] + ": " + ratingObj[nextRatingId].rating[1];
+					ratingStyle = "color:" + ratingObj[nextRatingId].color;
 				} else {
 					selectedRating = "";
 					ratingText = "";
 					ratingStyle = "visibility:hidden";
 				}
 				if (nextCategoryId) {
-					selectedCategory = jsonData.categoryObj[nextCategoryId];
-					categoryStyle = getCategoryStyle(selectedCategory);
+					categoryText = categoryObj[nextCategoryId].category;
+					categoryStyle = "color:" + categoryObj[nextCategoryId].color;
 				} else {
-					selectedCategory = "";
+					categoryText = "";
 					categoryStyle = "visibility:hidden";
 				}
 				if (nextNationalityId) {
-					selectedNationality = jsonData.nationalityObj[nextNationalityId];
-					nationalityStyle = getNationalityStyle(selectedNationality);
+					nationalityText = nationalityObj[nextNationalityId].nationality;
+					nationalityStyle = "color:" + nationalityObj[nextNationalityId].color;
 				} else {
-					selectedNationality = "";
+					nationalityText = "";
 					nationalityStyle = "visibility:hidden";
 				}
 
@@ -578,9 +581,9 @@ $(document).on('turbolinks:load', function() {
 				recipeHtml = recipeHtml + "<div class='ratingType' style='" + ratingStyle + ";'>";
 				recipeHtml = recipeHtml + ratingText + "</div>";
 				recipeHtml = recipeHtml + "<div class='recipeType' style='" + categoryStyle + ";'>";
-				recipeHtml = recipeHtml + selectedCategory + "</div>";
+				recipeHtml = recipeHtml + categoryText + "</div>";
 				recipeHtml = recipeHtml + "<div class='recipeType' style='" + nationalityStyle + ";'>";
-				recipeHtml = recipeHtml + selectedNationality + "</div>";
+				recipeHtml = recipeHtml + nationalityText + "</div>";
 				recipeHtml = recipeHtml + "<div class='recipeLink'>";
 				recipeHtml = recipeHtml + "<a href='/show_recipe/" + nextId + "'>" + nextTitle;
 				recipeHtml = recipeHtml + "</a></div></div>";
@@ -1055,105 +1058,6 @@ $(document).on('turbolinks:load', function() {
 	// ======= ======= ======= UTILITIES ======= ======= =======
 	// ======= ======= ======= UTILITIES ======= ======= =======
 	// ======= ======= ======= UTILITIES ======= ======= =======
-
-	function getRatingStyle(selectedRating) {
-		console.log("== getRatingStyle ==");
-
-		// == colorize type string
-		switch(selectedRating.toString()) {
-			case "1":
-			typeStyle = "color:#000";
-			break;
-			case "2":
-			typeStyle = "color:#333";
-			break;
-			case "3":
-			typeStyle = "color:#666";
-			break;
-			case "4":
-			typeStyle = "color:#999";
-			break;
-			case "5":
-			typeStyle = "color:#ccc";
-			break;
-			default:
-			typeStyle = "visibility:hidden";
-			break;
-		}
-		return typeStyle;
-	}
-
-	function getCategoryStyle(selectedCategory) {
-		// console.log("== getCategoryStyle ==");
-
-		// == colorize type string
-		switch(selectedCategory) {
-			case "meat":
-			typeStyle = "color:red";
-			break;
-			case "seafood":
-			typeStyle = "color:blue";
-			break;
-			case "vegetarian":
-			typeStyle = "color:green";
-			break;
-			case "dessert":
-			typeStyle = "color:purple";
-			break;
-			case "soup/stew":
-			typeStyle = "color:orange";
-			break;
-			default:
-			typeStyle = "visibility:hidden";
-			break;
-		}
-		return typeStyle;
-	}
-
-	function getNationalityStyle(selectedNationality) {
-		// console.log("== getNationalityStyle ==");
-
-		// == colorize type string
-		switch(selectedNationality) {
-			case "Thai":
-			typeStyle = "color:red";
-			break;
-			case "Indian":
-			typeStyle = "color:CornflowerBlue";
-			break;
-			case "French":
-			typeStyle = "color:green";
-			break;
-			case "Mexican":
-			typeStyle = "color:purple";
-			break;
-			case "Chinese":
-			typeStyle = "color:orange";
-			break;
-			case "Caribbean":
-			typeStyle = "color:Aqua";
-			break;
-			case "Middle Eastern":
-			typeStyle = "color:DarkOrange";
-			break;
-			case "American":
-			typeStyle = "color:blue";
-			break;
-			case "Italian":
-			typeStyle = "color:SlateGray";
-			break;
-			case "Asian":
-			typeStyle = "color:Crimson";
-			break;
-			case "Spanish":
-			typeStyle = "color:Coral";
-			break;
-			default:
-			typeStyle = "visibility:hidden";
-			break;
-		}
-		return typeStyle;
-	}
 
 	function toggleEditButtons(showOrHide) {
 		console.log("== toggleEditButtons ==");
