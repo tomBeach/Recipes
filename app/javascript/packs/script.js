@@ -329,9 +329,7 @@ $(document).on('turbolinks:load', function() {
 
 			// == set edit mode parameters for currently selected element
 			currentText = $(this).text();
-			currentHtml = $(this).html();
-			var currentId = $(this).attr('id');
-			var inputHtml = "<input type='text' id='editTitle' name='" + currentId + "' value='" + currentText + "'>";
+			var inputHtml = "<input type='text' id='editTitle' name='editTitle' value='" + currentText + "'>";
 			var btnsHtml = "<div class='saveBtn'> save </div> <div class='cancelBtn'> cancel </div> ";
 			var editHtml = inputHtml + btnsHtml;
 			$(this).replaceWith(editHtml);
@@ -340,37 +338,47 @@ $(document).on('turbolinks:load', function() {
 
 			$('.saveBtn').click(function(e) {
 				e.preventDefault();
-				saveTitle(currentId);
+				saveTitle();
 				e.stopPropagation();
 		    });
-			$('.cancelBtn').click(function(e, currentId) {
+			$('.cancelBtn').click(function(e) {
 				e.preventDefault();
-				cancelTitle(currentId);
+				cancelTitle(currentText);
 				e.stopPropagation();
 		    });
 		}
 
-		function saveTitle(currentId, newText) {
+		function saveTitle() {
 			console.log("== saveTitle ==");
-			console.log("currentId: ", currentId);
 
 			var newText = $('#editTitle').val();
-			console.log("newText: ", newText);
+
+			// == save new value for ajax submit
 			$('#titleData').data().title = newText;
 
 			// == update html string with changes
-			var saveHtml = "<h2 id='" + currentId + "'>" + newText + "</h2>";
+			var saveHtml = "<h2 id='outputTitle'>" + newText + "</h2>";
 			$('#editTitle').replaceWith(saveHtml);
 			$('.saveBtn, .cancelBtn').remove();
 
 			// == restore line hilites and click behavior
 			$('#' + currentId).on('mouseover', hiliteLink);
 			$('#' + currentId).on('mouseout', restoreLink);
-			$('#' + currentId).on('click', editLink);
+			$('#' + currentId).on('click', editTitle);
 		}
 
-		function cancelTitle(currentId) {
+		function cancelTitle(currentText) {
 			console.log("== cancelTitle ==");
+
+			// == restore html string
+			var saveHtml = "<h2 id='outputTitle'>" + currentText + "</h2>";
+			$('#editTitle').replaceWith(saveHtml);
+			$('.saveBtn, .cancelBtn').remove();
+
+			// == restore line hilites and click behavior
+			$('#outputTitle').on('mouseover', hiliteLink);
+			$('#outputTitle').on('mouseout', restoreLink);
+			$('#outputTitle').on('click', editTitle);
 		}
 
 		// == edit button behaviors
