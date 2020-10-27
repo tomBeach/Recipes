@@ -7,6 +7,11 @@
 
 
 <%# ======= recipe data => javascript ======= %>
+<%= content_tag :div, id: "prevValue", data: {ratingid: @recipe.rating_id, categoryid: @recipe.category_id, nationalityid: @recipe.nationality_id } do %>
+<% end %>
+
+
+<%# ======= recipe data => javascript ======= %>
 <%= content_tag :div, id: "recipeId", data: {recipeid: @recipe.id} do %>
 <% end %>
 <%= content_tag :div, id: "titleData", data: {title: @recipe.title} do %>
@@ -28,8 +33,9 @@
 	<%= select_tag "rating_edit_select", options_for_select(@rating_ids, @rating), class: "editSelect", remote: true %>
 	<%= select_tag "category_edit_select", options_for_select(@category_ids, @category), class: "editSelect", remote: true %>
 	<%= select_tag "nationality_edit_select", options_for_select(@nationality_ids, @nationality), class: "editSelect", remote: true %>
-	<%= link_to "Save Changes", save_recipe_edits_path, id: "saveRecipe", class: "addEditDelete", remote: true %>
-	<%= link_to "Delete", "delete_recipe/" + @recipe[:id].to_s, id: "deleteRecipe", class: "addEditDelete", remote: true %>
+	<%= link_to "Save Changes", save_recipe_edits_path, id: "saveRecipeEdits", class: "addEditDelete", remote: true %>
+	<%= link_to "Cancel Changes", "cancelRecipeEdits", id: "cancelRecipeEdits", class: "addEditDelete", remote: true %>
+	<%= link_to "Delete Recipe", "delete_recipe/" + @recipe[:id].to_s, id: "deleteRecipe", class: "addEditDelete", remote: true %>
 </div>
 
 

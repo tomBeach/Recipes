@@ -234,7 +234,7 @@ h1 {
 .addEditDelete {
 	float: left;
 	width: 12%;
-    min-width: 120px;
+    min-width: 140px;
 	max-width: 160px;
 	margin: 10px;
     height: 24px;
@@ -474,4 +474,30 @@ input[type=submit] {
 input[type=submit]:hover, .field > div > a:hover {
 	background-color: mediumslateblue;
     color: white;
+}
+
+/* ======= ======= ======= modal popup ======= ======= ======= */
+.popup-overlay {
+	display: none;
+    position: fixed;
+	width: 540px;
+	height: 320px;
+	margin: 10%;
+	padding: 10px;
+	background-color: white;
+	border: 2px solid #333;
+	box-shadow: 5px 5px 6px #333;
+    z-index: 1;
+}
+.popup-content {
+	visibility: hidden;
+	width: 90%;
+	height: 90%;
+	background-color: white;
+}
+.popup-overlay.active{
+	display: block;
+}
+.popup-content.active {
+	visibility: visible;
 }

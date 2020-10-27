@@ -49,14 +49,14 @@
 				<div id="menuSpacer1">
 					<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>
 				</div>
-				<%= link_to "Import Recipes", import_recipes_path, id: "import", class: "importBtn" %>
-				<%= link_to "Get All Recipes", all_recipes_path, id: "getAllRecipes", class: "importBtn", remote: true %>
+				<%= link_to "Import Recipes", import_recipes_path, id: "import", class: "importBtn checkEdit" %>
+				<%= link_to "Get All Recipes", all_recipes_path, id: "getAllRecipes", class: "importBtn checkEdit", remote: true %>
 				<div id="menuSpacer1">
 					<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>
 				</div>
-				<%= link_to "Ratings", ratings_path, id: "ratings", class: "mgmtBtn" %>
-				<%= link_to "Categories", categories_path, id: "categories", class: "mgmtBtn" %>
-				<%= link_to "Nationalities", nationalities_path, id: "nationalities", class: "mgmtBtn" %>
+				<%= link_to "Ratings", ratings_path, id: "ratings", class: "mgmtBtn checkEdit" %>
+				<%= link_to "Categories", categories_path, id: "categories", class: "mgmtBtn checkEdit" %>
+				<%= link_to "Nationalities", nationalities_path, id: "nationalities", class: "mgmtBtn checkEdit" %>
             <% end %>
         </div>
 
@@ -77,6 +77,15 @@
 					<p id="message"><%= current_user.username %></p>
 				<% end %>
 				<p id="notice"></p>
+			</div>
+		</div>
+
+		<!-- ======= popup ======= -->
+		<div class="popup-overlay">
+			<div class="popup-content">
+			    <h3>caution</h3>
+			    <p>You haven't saved your edits yet.  Click Save of Cancel before choosing another function.</p>
+				<button id="popupCancel" class="close">Okay</button>
 			</div>
 		</div>
 

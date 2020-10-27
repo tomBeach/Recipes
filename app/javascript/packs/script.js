@@ -19,89 +19,32 @@ $(document).on('turbolinks:load', function() {
 	}
 	activateMainMenu();
 
+
+	// ======= editPopup =======
+	function editPopup() {
+		console.log("== editPopup ==");
+		$(".popup-overlay, .popup-content").addClass("active");
+	}
+
+	$(".close, .popup").on("click", function(){
+		$(".popup-overlay, .popup-content").removeClass("active");
+	});
+
+
 	// ======= initialize variables =======
 	var recipesArray = [];
+	var editFlag = false;
 
-	// ======= activateNationalities =======
-    function activateNationalities() {
-		console.log("== activateNationalities ==");
 
-		$('#newNationalityBtn').click(function(e) {
-			console.log("== click: newNationalityBtn ==");
-			e.preventDefault();
-			makeNewNationality();
-			e.stopPropagation();
-		});
+	// ======= ======= ======= MENU ======= ======= =======
+	// ======= ======= ======= MENU ======= ======= =======
+	// ======= ======= ======= MENU ======= ======= =======
 
+	// ======= activateCheckEdit =======
+    function activateCheckEdit() {
+		console.log("== activateCheckEdit ==");
+		$('.checkEdit').on('click', editPopup);
 	}
-
-	// ======= ======= ======= MGMT ======= ======= =======
-	// ======= ======= ======= MGMT ======= ======= =======
-	// ======= ======= ======= MGMT ======= ======= =======
-
-	function makeNewNationality() {
-		console.log("== makeNewNationality ==");
-
-		var btnColor;
-
-		function hiliteBtn() {
-			// console.log("== hiliteBtn ==");
-			btnColor = $(this).css('background-color');
-			$(this).css('background-color', 'red');
-		}
-		function restoreBtn() {
-			// console.log("== restoreBtn ==");
-			$(this).css('background-color', btnColor);
-		}
-
-		var inputHtml = "<input type='text' id='newNationality' name='newNationality'>";
-		var btnsHtml = "<div class='saveBtn'> save </div> <div class='cancelBtn'> cancel </div> ";
-		var editHtml = inputHtml + btnsHtml;
-		$('#newNationalityBtn').after(editHtml);
-		$('.saveBtn, .cancelBtn').on('mouseover', hiliteBtn);
-		$('.saveBtn, .cancelBtn').on('mouseout', restoreBtn);
-
-		$('.saveBtn').click(function(e) {
-			e.preventDefault();
-			saveNewNationality();
-			e.stopPropagation();
-		});
-		$('.cancelBtn').click(function(e, currentId) {
-			e.preventDefault();
-			cancelNewNationality();
-			e.stopPropagation();
-		});
-	}
-
-	function cancelNewNationality() {
-		console.log("== cancelNewNationality ==");
-
-		$('#newNationality, .saveBtn, .cancelBtn').remove();
-	}
-
-	function saveNewNationality() {
-		console.log("== saveNewNationality ==");
-
-		var url = "/new_nationality";
-		var nationalityText = $('#newNationality').val();
-		var jsonData = JSON.stringify({newNationality:nationalityText});
-
-		$.ajax({
-			url: url,
-			data: jsonData,
-			method: "POST",
-			dataType: "json",
-			contentType: "application/json; charset=utf-8"
-		}).done(function(jsonData) {
-			console.log("*** ajax success ***");
-			console.dir(jsonData)
-			updateNoticeMessage(jsonData);
-		}).fail(function(unknown){
-			console.log("*** ajax fail ***");
-			console.log("unknown:", unknown);
-		});
-	}
-
 
 	// ======= activateMainMenu =======
     function activateMainMenu() {
@@ -110,83 +53,107 @@ $(document).on('turbolinks:load', function() {
 		$('#getAllRecipes').click(function(e) {
 			console.log("== click: getAllRecipes ==");
 			e.preventDefault();
-			$('#rating_select').val(0);			// set to no selection
-			$('#category_select').val(0);		// set to no selection
-			$('#nationality_select').val(0);	// set to no selection
-			toggleEditButtons("hide");
-			searchRecipes("", "all");
+			if (editFlag == false) {
+				$('#rating_select').val(0);			// set to no selection
+				$('#category_select').val(0);		// set to no selection
+				$('#nationality_select').val(0);	// set to no selection
+				toggleEditButtons("hide");
+				searchRecipes("", "all");
+			} else {
+				editPopup();
+			}
 			e.stopPropagation();
 		});
 
 		$('#searchTitles').click(function(e) {
 			console.log("== click: searchTitles ==");
 			e.preventDefault();
-			$('#rating_select').val(0);			// set to no selection
-			$('#category_select').val(0);		// set to no selection
-			$('#nationality_select').val(0);	// set to no selection
-			toggleEditButtons("hide");
-			var searchString = $('#search').val();
-			if (searchString.length == 0) {
-				makeTitleText("", "no search");
+			if (editFlag == false) {
+				$('#rating_select').val(0);			// set to no selection
+				$('#category_select').val(0);		// set to no selection
+				$('#nationality_select').val(0);	// set to no selection
+				toggleEditButtons("hide");
+				var searchString = $('#search').val();
+				if (searchString.length == 0) {
+					makeTitleText("", "no search");
+				} else {
+					searchRecipes(searchString, "title");
+				}
 			} else {
-				searchRecipes(searchString, "title");
+				editPopup();
 			}
 	    });
 
 		$('#searchIngredients').click(function(e) {
 			console.log("== click: searchIngredients ==");
 			e.preventDefault();
-			$('#rating_select').val(0);			// set to no selection
-			$('#category_select').val(0);		// set to no selection
-			$('#nationality_select').val(0);	// set to no selection
-			toggleEditButtons("hide");
-			var searchString = $('#search').val();
-			if (searchString.length == 0) {
-				makeTitleText("", "no search");
+			if (editFlag == false) {
+				$('#rating_select').val(0);			// set to no selection
+				$('#category_select').val(0);		// set to no selection
+				$('#nationality_select').val(0);	// set to no selection
+				toggleEditButtons("hide");
+				var searchString = $('#search').val();
+				if (searchString.length == 0) {
+					makeTitleText("", "no search");
+				} else {
+					searchRecipes(searchString, "ingredient");
+				}
 			} else {
-				searchRecipes(searchString, "ingredient");
+				editPopup();
 			}
 	    });
 
 		$('#rating_select').change(function(e) {
 			console.log("== change: rating_select ==");
 			e.preventDefault();
-			$('#category_select').val(0);		// set to no selection
-			$('#nationality_select').val(0);	// set to no selection
-			toggleEditButtons("hide");
-			var searchString = $('#rating_select option:selected').val();
-			if (searchString.length == 0) {
-				makeTitleText("", "no search");
+			if (editFlag == false) {
+				$('#category_select').val(0);		// set to no selection
+				$('#nationality_select').val(0);	// set to no selection
+				toggleEditButtons("hide");
+				var searchString = $('#rating_select option:selected').val();
+				if (searchString.length == 0) {
+					makeTitleText("", "no search");
+				} else {
+					searchRecipes(searchString, "rating");
+				}
 			} else {
-				searchRecipes(searchString, "rating");
+				editPopup();
 			}
 	    });
 
 		$('#category_select').change(function(e) {
 			console.log("== change: category_select ==");
 			e.preventDefault();
-			$('#rating_select').val(0);			// set to no selection
-			$('#nationality_select').val(0);	// set to no selection
-			toggleEditButtons("hide");
-			var searchString = $('#category_select option:selected').val();
-			if (searchString.length == 0) {
-				makeTitleText("", "no search");
+			if (editFlag == false) {
+				$('#rating_select').val(0);			// set to no selection
+				$('#nationality_select').val(0);	// set to no selection
+				toggleEditButtons("hide");
+				var searchString = $('#category_select option:selected').val();
+				if (searchString.length == 0) {
+					makeTitleText("", "no search");
+				} else {
+					searchRecipes(searchString, "category");
+				}
 			} else {
-				searchRecipes(searchString, "category");
+				editPopup();
 			}
 	    });
 
 		$('#nationality_select').change(function(e) {
 			console.log("== change: nationality_select ==");
 			e.preventDefault();
-			$('#rating_select').val(0);			// set to no selection
-			$('#category_select').val(0);		// set to no selection
-			toggleEditButtons("hide");
-			var searchString = $('#nationality_select option:selected').val();
-			if (searchString.length == 0) {
-				makeTitleText("", "no search");
+			if (editFlag == false) {
+				$('#rating_select').val(0);			// set to no selection
+				$('#category_select').val(0);		// set to no selection
+				toggleEditButtons("hide");
+				var searchString = $('#nationality_select option:selected').val();
+				if (searchString.length == 0) {
+					makeTitleText("", "no search");
+				} else {
+					searchRecipes(searchString, "nationality");
+				}
 			} else {
-				searchRecipes(searchString, "nationality");
+				editPopup();
 			}
 	    });
 	}
@@ -253,7 +220,7 @@ $(document).on('turbolinks:load', function() {
 		var textColor;
 		var currentText, currentHtml, currentId;
 
-		// == activate mouseovers, button actions
+		// == activate mouseovers, button actions for ingredient and instruction text lines
 		$('#outputTitle').on('mouseover', hiliteLink);
 		$('#outputTitle').on('mouseout', restoreLink);
 		$('#outputTitle').on('click', editTitle);
@@ -261,10 +228,20 @@ $(document).on('turbolinks:load', function() {
 		$('.ingredient, .instruction').on('mouseout', restoreLink);
 		$('.ingredient, .instruction').on('click', editLink);
 
+		// ======= cancelRecipeSelects =======
+		function cancelRecipeSelects() {
+			console.log("== cancelRecipeSelects ==");
+		}
+
 		// == activate main edit options (recipe category, auto sequence, save)
 		$('#rating_edit_select').change(function(e) {
 			console.log("== change: rating_edit_select ==");
 			e.preventDefault();
+
+			// == temporarily store previous value for this item (rating)
+			editFlag = true;
+			console.log("editFlag: ", editFlag);
+
 			var rating = $('#rating_edit_select option:selected').text();
 			var ratingId = $('#rating_edit_select option:selected').val();
 			$('#ratingData').data().ratingid = ratingId;
@@ -274,6 +251,11 @@ $(document).on('turbolinks:load', function() {
 		$('#category_edit_select').change(function(e) {
 			console.log("== change: category_edit_select ==");
 			e.preventDefault();
+
+			// == temporarily store previous value for this item (category)
+			editFlag = true;
+			console.log("editFlag: ", editFlag);
+
 			var category = $('#category_edit_select option:selected').text();
 			var categoryId = $('#category_edit_select option:selected').val();
 			$('#categoryData').data().categoryid = categoryId;
@@ -283,22 +265,40 @@ $(document).on('turbolinks:load', function() {
 		$('#nationality_edit_select').change(function(e) {
 			console.log("== change: nationality_edit_select ==");
 			e.preventDefault();
+
+			// == temporarily store previous value for this item (nationality)
+			editFlag = true;
+			console.log("editFlag: ", editFlag);
+
 			var nationality = $('#nationality_edit_select option:selected').text();
 			var nationalityId = $('#nationality_edit_select option:selected').val();
 			$('#nationalityData').data().nationalityid = nationalityId;
 			console.log("$('#nationalityData').data(): ", $('#nationalityData').data());
 	    });
 
-		$('#saveRecipe').click(function(e) {
-			console.log("== click: saveRecipe ==");
+		$('#saveRecipeEdits').click(function(e) {
+			console.log("== click: saveRecipeEdits ==");
 			e.preventDefault();
-			saveRecipe();
+			editFlag = false;
+			console.log("editFlag: ", editFlag);
+			saveRecipeEdits();
+			e.stopPropagation();
+		});
+
+		$('#cancelRecipeEdits').click(function(e) {
+			console.log("== click: cancelRecipeEdits ==");
+			e.preventDefault();
+			editFlag = false;
+			console.log("editFlag: ", editFlag);
+			cancelRecipeEdits();
 			e.stopPropagation();
 		});
 
 		$('#deleteRecipe').click(function(e) {
 			console.log("== click: deleteRecipe ==");
 			e.preventDefault();
+			editFlag = false;
+			console.log("editFlag: ", editFlag);
 			deleteRecipe($('#recipeId').data().recipeid);
 			e.stopPropagation();
 		});
@@ -327,8 +327,16 @@ $(document).on('turbolinks:load', function() {
 		function editTitle() {
 			console.log("== editTitle ==");
 
+			editFlag = true;
+			console.log("editFlag: ", editFlag);
+
 			// == set edit mode parameters for currently selected element
 			currentText = $(this).text();
+
+			// == temporarily store previous value for this item (title)
+			editFlag = true;
+			console.log("editFlag: ", editFlag);
+
 			var inputHtml = "<input type='text' id='editTitle' name='editTitle' value='" + currentText + "'>";
 			var btnsHtml = "<div class='saveBtn'> save </div> <div class='cancelBtn'> cancel </div> ";
 			var editHtml = inputHtml + btnsHtml;
@@ -351,6 +359,8 @@ $(document).on('turbolinks:load', function() {
 		function saveTitle() {
 			console.log("== saveTitle ==");
 
+			editFlag = false;
+			console.log("editFlag: ", editFlag);
 			var newText = $('#editTitle').val();
 
 			// == save new value for ajax submit
@@ -369,6 +379,9 @@ $(document).on('turbolinks:load', function() {
 
 		function cancelTitle(currentText) {
 			console.log("== cancelTitle ==");
+
+			editFlag = false;
+			console.log("editFlag: ", editFlag);
 
 			// == restore html string
 			var saveHtml = "<h2 id='outputTitle'>" + currentText + "</h2>";
@@ -405,12 +418,16 @@ $(document).on('turbolinks:load', function() {
 			$(this).replaceWith(editHtml);
 			$('.saveBtn, .cancelBtn').on('mouseover', hiliteBtn);
 			$('.saveBtn, .cancelBtn').on('mouseout', restoreBtn);
-			$('.saveBtn').on('click', saveEdits);
-			$('.cancelBtn').on('click', cancelEdits);
+			$('.saveBtn').on('click', saveLineEdits);
+			$('.cancelBtn').on('click', cancelLineEdits);
+
+			// == store previous value for cancel option
+			editFlag = true;
+			console.log("editFlag: ", editFlag);
 		}
 
-		function saveEdits() {
-			console.log("== saveEdits ==");
+		function saveLineEdits() {
+			console.log("== saveLineEdits ==");
 
 			var nextId, nextSequence;
 
@@ -430,6 +447,7 @@ $(document).on('turbolinks:load', function() {
 				ingredientsData.ingredients[i].sequence = nextSequence;
 				if (nextId == modifiedId) {
 					ingredientsData.ingredients[i].ingredient = newText;
+					break;
 				}
 			}
 
@@ -440,6 +458,7 @@ $(document).on('turbolinks:load', function() {
 				instructionsData.instructions[i].sequence = nextSequence;
 				if (nextId == modifiedId) {
 					instructionsData.instructions[i].instruction = newText;
+					break;
 				}
 			}
 
@@ -454,9 +473,10 @@ $(document).on('turbolinks:load', function() {
 			$('#' + currentId).on('click', editLink);
 		}
 
-		function cancelEdits() {
-			console.log("== cancelEdits ==");
-			var newText = $('#' + currentId).val();
+		function cancelLineEdits() {
+			console.log("== cancelLineEdits ==");
+			editFlag = false;
+			console.log("editFlag: ", editFlag);
 			var saveHtml = "<p class='ingredient' id='" + currentId + "'>" + currentText + "</p>";
 			$('#' + currentId).replaceWith(saveHtml);
 			$('.saveBtn, .cancelBtn').remove();
@@ -465,30 +485,24 @@ $(document).on('turbolinks:load', function() {
 			$('#' + currentId).on('click', editLink);
 		}
 
-		function deleteRecipe(recipeId) {
-			console.log("== deleteRecipe ==");
-			console.log("recipeId: ", recipeId);
-
-			var url = "/delete_recipe/" + recipeId.toString();
-
-			$.ajax({
-			    url: url,
-				// data: recipeId,
-			    method: "GET",
-				dataType: "json",
-				contentType: "application/json; charset=utf-8"
-			}).done(function(jsonData) {
-			    console.log("*** ajax success ***");
-			    console.dir(jsonData)
-				updateNoticeMessage(jsonData);
-			}).fail(function(unknown){
-			    console.log("*** ajax fail ***");
-				console.log("unknown:", unknown);
-			});
+		function cancelRecipeEdits() {
+			console.log("== cancelRecipeEdits ==");
+			var prevRatingId = $('#prevValue').data().ratingid;
+			var prevCategoryId = $('#prevValue').data().categoryid;
+			var prevNationalityId = $('#prevValue').data().nationalityid;
+			$('#ratingData').data().ratingid = prevRatingId;
+			$('#categoryData').data().categoryid = prevCategoryId;
+			$('#nationalityData').data().nationalityid = prevNationalityId;
+			$('#rating_edit_select').val(prevRatingId);
+			$('#category_edit_select').val(prevCategoryId);
+			$('#nationality_edit_select').val(prevNationalityId);
 		}
 
-		function saveRecipe() {
-			console.log("== saveRecipe ==");
+		function saveRecipeEdits() {
+			console.log("== saveRecipeEdits ==");
+
+			editFlag = false;
+			console.log("editFlag: ", editFlag);
 
 			var currentId = $('#recipeId').data().recipeid;
 			var titleData = $('#titleData').data().title;
@@ -520,6 +534,107 @@ $(document).on('turbolinks:load', function() {
 
 			saveRecipeData(recipeData, "edit")
 		}
+
+		function deleteRecipe(recipeId) {
+			console.log("== deleteRecipe ==");
+			console.log("recipeId: ", recipeId);
+
+			var url = "/delete_recipe/" + recipeId.toString();
+
+			$.ajax({
+			    url: url,
+				// data: recipeId,
+			    method: "GET",
+				dataType: "json",
+				contentType: "application/json; charset=utf-8"
+			}).done(function(jsonData) {
+			    console.log("*** ajax success ***");
+			    console.dir(jsonData)
+				updateNoticeMessage(jsonData);
+			}).fail(function(unknown){
+			    console.log("*** ajax fail ***");
+				console.log("unknown:", unknown);
+			});
+		}
+	}
+
+
+	// ======= ======= ======= MGMT ======= ======= =======
+	// ======= ======= ======= MGMT ======= ======= =======
+	// ======= ======= ======= MGMT ======= ======= =======
+
+	// ======= activateNationalities =======
+    function activateNationalities() {
+		console.log("== activateNationalities ==");
+
+		$('#newNationalityBtn').click(function(e) {
+			console.log("== click: newNationalityBtn ==");
+			e.preventDefault();
+			makeNewNationality();
+			e.stopPropagation();
+		});
+	}
+
+	function makeNewNationality() {
+		console.log("== makeNewNationality ==");
+
+		var btnColor;
+
+		function hiliteBtn() {
+			// console.log("== hiliteBtn ==");
+			btnColor = $(this).css('background-color');
+			$(this).css('background-color', 'red');
+		}
+		function restoreBtn() {
+			// console.log("== restoreBtn ==");
+			$(this).css('background-color', btnColor);
+		}
+
+		var inputHtml = "<input type='text' id='newNationality' name='newNationality'>";
+		var btnsHtml = "<div class='saveBtn'> save </div> <div class='cancelBtn'> cancel </div> ";
+		var editHtml = inputHtml + btnsHtml;
+		$('#newNationalityBtn').after(editHtml);
+		$('.saveBtn, .cancelBtn').on('mouseover', hiliteBtn);
+		$('.saveBtn, .cancelBtn').on('mouseout', restoreBtn);
+
+		$('.saveBtn').click(function(e) {
+			e.preventDefault();
+			saveNewNationality();
+			e.stopPropagation();
+		});
+		$('.cancelBtn').click(function(e, currentId) {
+			e.preventDefault();
+			cancelNewNationality();
+			e.stopPropagation();
+		});
+	}
+
+	function cancelNewNationality() {
+		console.log("== cancelNewNationality ==");
+		$('#newNationality, .saveBtn, .cancelBtn').remove();
+	}
+
+	function saveNewNationality() {
+		console.log("== saveNewNationality ==");
+
+		var url = "/new_nationality";
+		var nationalityText = $('#newNationality').val();
+		var jsonData = JSON.stringify({newNationality:nationalityText});
+
+		$.ajax({
+			url: url,
+			data: jsonData,
+			method: "POST",
+			dataType: "json",
+			contentType: "application/json; charset=utf-8"
+		}).done(function(jsonData) {
+			console.log("*** ajax success ***");
+			console.dir(jsonData)
+			updateNoticeMessage(jsonData);
+		}).fail(function(unknown){
+			console.log("*** ajax fail ***");
+			console.log("unknown:", unknown);
+		});
 	}
 
 
@@ -638,7 +753,6 @@ $(document).on('turbolinks:load', function() {
 			titleText = "Please enter a search value";
 			$('#output').html("");
 		}
-
 		$('#outputTitle').text(titleText);
 	}
 
@@ -971,8 +1085,6 @@ $(document).on('turbolinks:load', function() {
 			}
 			fr.readAsText(this.files[0]);
 		})
-
-
 	}
 
 	// ======= displayRecipeData =======
@@ -1074,21 +1186,22 @@ $(document).on('turbolinks:load', function() {
 			$('#rating_edit_select').hide();
 			$('#category_edit_select').hide();
 			$('#nationality_edit_select').hide();
+			$('#cancelRecipeEdits').hide();
+			$('#saveRecipeEdits').hide();
 			$('#deleteRecipe').hide();
-			$('#saveRecipe').hide();
 		} else {
 			$('#rating_edit_select').show();
 			$('#category_edit_select').show();
 			$('#nationality_edit_select').show();
+			$('#cancelRecipeEdits').show();
+			$('#saveRecipeEdits').show();
 			$('#deleteRecipe').show();
-			$('#saveRecipe').show();
 		}
 	}
 
 	// ======= updateTitleText =======
 	function updateTitleText(titleText) {
 		console.log("== updateTitleText ==");
-
 		$('#outputTitle').text(titleText);
 	}
 
@@ -1196,5 +1309,4 @@ $(document).on('turbolinks:load', function() {
 		}
 		return unitString;
 	}
-
 });
