@@ -6,6 +6,7 @@
 	<%= csp_meta_tag %>
 
 	<%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+	<%= stylesheet_link_tag '//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/le-frog/jquery-ui.min.css' %>
 	<%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
 </head>
 
@@ -65,9 +66,9 @@
 			<input id="search" type="text" name="search">
 			<%= link_to "in recipe title", search_title_path, id: "searchTitles", remote: false %>
 			<%= link_to "in ingredients", search_ingredient_path, id: "searchIngredients", remote: false %>
-			<%= select_tag "rating_select", options_for_select(rating_ids), class: "menuSelect", remote: true %>
-			<%= select_tag "category_select", options_for_select(category_ids), class: "menuSelect", remote: true %>
-			<%= select_tag "nationality_select", options_for_select(nationality_ids), class: "menuSelect", remote: true %>
+			<%= select_tag "rating_select", options_for_select(rating_ids), class: "menuSelect neutral", remote: true %>
+			<%= select_tag "category_select", options_for_select(category_ids), class: "menuSelect neutral", remote: true %>
+			<%= select_tag "nationality_select", options_for_select(nationality_ids), class: "menuSelect neutral", remote: true %>
 		</div>
 
 		<div id="menuBox3">
@@ -84,7 +85,8 @@
 		<div class="popup-overlay">
 			<div class="popup-content">
 			    <h3>caution</h3>
-			    <p>You haven't saved your edits yet.  Click Save of Cancel before choosing another function.</p>
+			    <p>You haven't saved your edits yet.</p>
+				<p>Click <span>Save</span> or <span>Cancel</span> before choosing another function.</p>
 				<button id="popupCancel" class="close">Okay</button>
 			</div>
 		</div>

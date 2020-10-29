@@ -122,7 +122,9 @@ h1 {
 	color: DodgerBlue;
 	border-radius: 5px;
 }
-
+.menuSelect.neutral {
+	color: black;
+}
 #menuSpacer1, #menuSpacer2, #menuSpacer3 {
 	display: inline;
 	margin: 0 5px 0px 10px;
@@ -243,10 +245,13 @@ h1 {
     line-height: 24px;
     text-decoration: none;
 	border-radius: 5px;
-    background-color: orangered;
+    background-color: #eee;
     color: navy;
 }
-.addEditDelete:hover {
+.addEditDelete.active {
+	background-color: orangered;
+}
+.addEditDelete.active:hover {
     background-color: mediumslateblue;
     color: white;
 }
@@ -480,8 +485,8 @@ input[type=submit]:hover, .field > div > a:hover {
 .popup-overlay {
 	display: none;
     position: fixed;
-	width: 540px;
-	height: 320px;
+	width: 50%;
+	height: 280px;
 	margin: 10%;
 	padding: 10px;
 	background-color: white;
@@ -495,7 +500,10 @@ input[type=submit]:hover, .field > div > a:hover {
 	height: 90%;
 	background-color: white;
 }
-.popup-overlay.active{
+.popup-content > p > span {
+	color: Crimson;
+}
+.popup-overlay.active {
 	display: block;
 }
 .popup-content.active {

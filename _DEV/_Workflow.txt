@@ -5,6 +5,10 @@
 // ======= ======= ======= Workflow ======= ======= =======
 
 
+// ======= ======= ======= jquery/rails sortable ======= ======= =======
+https://gorails.com/episodes/sortable-drag-and-drop
+
+
 // ======= ======= ======= add data ======= ======= =======
 Rating.create([
  { rating:"1", comment:"favorite" },

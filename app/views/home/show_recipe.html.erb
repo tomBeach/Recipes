@@ -41,20 +41,24 @@
 
 <div id="output">
 
-	<p class='recipeLabel'>ingredients</p>
-	<% ingredients_sorted.each_with_index do |next_ingredient, index| %>
-		<div class="recipeLine">
-			<input type="text" id="ingrSeq_<%= next_ingredient.id %>" class="sequence" name="seq" value="<%= next_ingredient.sequence %>">
-			<p class="ingredient" id="ingredient_<%= next_ingredient.id %>"><%= next_ingredient.ingredient %></p>
-		</div>
-	<% end %>
+	<p class="recipeLabel">ingredients</p>
+	<div id="ingredients" class="list-group">
+		<% ingredients_sorted.each_with_index do |next_ingredient, index| %>
+			<div class="recipeLine" id="ingrLine_<%= next_ingredient.id %>">
+				<input type="text" id="ingrSeq_<%= next_ingredient.id %>" class="sequence" name="seq" value="<%= next_ingredient.sequence %>">
+				<p class="ingredient" id="ingredient_<%= next_ingredient.id %>"><%= next_ingredient.ingredient %></p>
+			</div>
+		<% end %>
+	</div>
 
-	<p class='recipeLabel'>instructions</p>
-	<% instructions_sorted.each_with_index do |next_instruction, index| %>
-		<div class="recipeLine">
-			<input type="text" id="instSeq_<%= next_instruction.id %>" class="sequence" name="seq" value="<%= next_instruction.sequence %>">
-			<p class="instruction" id="instruction_<%= next_instruction.id %>"><%= next_instruction.instruction %></p>
-		</div>
-	<% end %>
+	<p class="recipeLabel">instructions</p>
+	<div id="instructions" class="list-group">
+		<% instructions_sorted.each_with_index do |next_instruction, index| %>
+			<div class="recipeLine" id="instLine_<%= next_instruction.id %>">
+				<input type="text" id="instSeq_<%= next_instruction.id %>" class="sequence" name="seq" value="<%= next_instruction.sequence %>">
+				<p class="instruction" id="instruction_<%= next_instruction.id %>"><%= next_instruction.instruction %></p>
+			</div>
+		<% end %>
+	</div>
 
 </div>
