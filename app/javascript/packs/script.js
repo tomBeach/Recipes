@@ -3,82 +3,6 @@ $(document).on('turbolinks:load', function() {
 
 	var sortableIngr, sortableIngrLines;
 
-    // ======= check pathname =======
-    var pathname = window.location.pathname;
-	var pathParts = pathname.split("/");
-    var pathPartsCount = (pathname.split("/").length - 1);
-	console.log("pathParts: ", pathParts);
-
-	// ======= window conditionals =======
-    if (pathname == "/import_recipes") {
-		loadFileReader();
-	} else {
-		if (pathParts[1] == "show_recipe") {
-			// sortableIngr = $('#ingredients').sortable();
-			// sortableIngrLines = $('#ingredients').children('div').children('p');
-
-			$('#ingredients').sortable({
-				start: function (event, ui) {
-					console.log("== start ==");
-					console.log("event: ", event);
-					console.log("ui.item: ", ui.item);
-					console.log("ui.item.index(): ", ui.item.index());
-					$(ui.item).data("startindex", ui.item.index());
-					console.log("$(ui.item).data: ", $(ui.item).data);
-				},
-				stop: function (event, ui) {
-					console.log("== stop ==");
-					console.log("event: ", event);
-					self.sendUpdatedIndex(ui.item);
-				}
-			}).disableSelection();
-
-			self.sendUpdatedIndex = function ($item) {
-				console.log("== sendUpdatedIndex ==");
-			    var startIndex = $item.data("startindex") + 1;
-			    var newIndex = $item.index() + 1;
-			    if (newIndex != startIndex) {
-					var itemIndexData = { id: $item.attr("id"), oldPosition: startIndex, newPosition: newIndex };
-					console.log("itemIndexData: ", itemIndexData);
-			    }
-			}
-
-			// for (var i = 0; i < sortableIngrLines.length; i++) {
-			// 	console.log("...text: ", sortableIngrLines[i].innerText);
-			// }
-			//
-			// sortableIngr.on("mouseup", function() {
-			// 	console.log("== sortableIngr: sortchange ==");
-			// 	updateSequenceValues("Ingr");
-			// });
-
-			activateEditLinks();
-		} else if (pathParts[1] == "nationalities") {
-			activateNationalities();
-		}
-	}
-	activateMainMenu();
-
-
-	// ======= updateSequenceValues =======
-	function updateSequenceValues(whichList) {
-		console.log("== updateSequenceValues ==");
-
-		var ingrArray = $('#ingredients').sortable('toArray');
-		console.log("ingrArray: ", ingrArray);
-		var ingrArray = $('#ingredients > div > p').sortable('toArray');
-		console.log("ingrArray: ", ingrArray);
-
-		console.log("whichList: ", whichList);
-		console.log("sortableIngr: ", sortableIngr);
-		console.log("sortableIngr.children()[0]: ", sortableIngr.children()[0]);
-		console.log("sortableIngrLines[0]: ", sortableIngrLines[0]);
-
-		// var ingredientsList = $('#ingredients').children('.recipeLine').children('p');
-		// console.log("ingredientsList: ", ingredientsList);
-		// console.log("ingredientsList[0]: ", ingredientsList[0]);
-	}
-
 	// ======= editPopup =======
 	function editPopup() {
 		console.log("== editPopup ==");
@@ -88,6 +12,85 @@ $(document).on('turbolinks:load', function() {
 	$(".close, .popup").on("click", function(){
 		$(".popup-overlay, .popup-content").removeClass("active");
 	});
+
+
+    // ======= check pathname =======
+    var pathname = window.location.pathname;
+	var pathParts = pathname.split("/");
+    var pathPartsCount = (pathname.split("/").length - 1);
+	console.log("pathParts: ", pathParts);
+
+	// ======= import recipes =======
+    if (pathname == "/import_recipes") {
+		loadFileReader();
+
+
+	// ======= show recipe =======
+	} else {
+		if (pathParts[1] == "show_recipe") {
+
+			// ======= enable drag-n-drop =======
+			var ingredientsInOrder;
+			var instructionsInOrder;
+
+			$('#ingredients').sortable({
+				start: function (event, ui) {
+					console.log("== start ==");
+					$(ui.item).data("startindex", ui.item.index());
+					$(ui.item).data("test", "testValue");
+				},
+				stop: function (event, ui) {
+					console.log("== stop ==");
+					self.updateIngredientSeq(ui.item);
+				}
+			}).disableSelection();
+
+			self.updateIngredientSeq = function($item) {
+				console.log("== updateIngredientSeq ==");
+				$('#saveRecipeEdits').addClass('active');
+				$('#cancelRecipeEdits').addClass('active');
+				editFlag = true;
+			    var startIndex = $item.data("startindex") + 1;
+			    var newIndex = $item.index() + 1;
+			    if (newIndex != startIndex) {
+					var itemIndexData = { id: $item.attr("id"), oldPosition: startIndex, newPosition: newIndex };
+					ingredientsInOrder = $("#ingredients").sortable("toArray");
+			    }
+			}
+
+			$('#instructions').sortable({
+				start: function (event, ui) {
+					console.log("== start ==");
+					$(ui.item).data("startindex", ui.item.index());
+					$(ui.item).data("test", "testValue");
+				},
+				stop: function (event, ui) {
+					console.log("== stop ==");
+					self.updateInstructionsSeq(ui.item);
+				}
+			}).disableSelection();
+
+			self.updateInstructionsSeq = function($item) {
+				console.log("== updateInstructionsSeq ==");
+				$('#saveRecipeEdits').addClass('active');
+				$('#cancelRecipeEdits').addClass('active');
+				editFlag = true;
+			    var startIndex = $item.data("startindex") + 1;
+			    var newIndex = $item.index() + 1;
+			    if (newIndex != startIndex) {
+					var itemIndexData = { id: $item.attr("id"), oldPosition: startIndex, newPosition: newIndex };
+					instructionsInOrder = $("#instructions").sortable("toArray");
+			    }
+			}
+
+			// ======= enable drag-n-drop =======
+			activateEditLinks();
+
+		} else if (pathParts[1] == "nationalities") {
+			activateNationalities();
+		}
+	}
+	activateMainMenu();
 
 
 	// ======= initialize variables =======
@@ -565,6 +568,8 @@ $(document).on('turbolinks:load', function() {
 		function saveRecipeEdits() {
 			console.log("== saveRecipeEdits ==");
 
+			var nextItemId, nextIngredientId;
+
 			editFlag = false;
 
 			var currentId = $('#recipeId').data().recipeid;
@@ -574,6 +579,40 @@ $(document).on('turbolinks:load', function() {
 			var nationalityData = $('#nationalityData').data().nationalityid;
 			var ingredientsData = $('#ingredientsData').data().ingredients;
 			var instructionsData = $('#instructionsData').data().instructions;
+
+			console.log("ingredientsInOrder: ", ingredientsInOrder);
+			console.log("ingredientsData: ", ingredientsData);
+
+			for (var i = 0; i < ingredientsInOrder.length; i++) {
+				nextItemId = ingredientsInOrder[i].substring(9, ingredientsInOrder[i].length);
+
+				for (var j = 0; j < ingredientsData.length; j++) {
+					nextIngredientId = ingredientsData[j].id;
+					if (nextItemId == nextIngredientId) {
+						ingredientsData[j].sequence = i + 1;
+					}
+				}
+			}
+
+			console.log("ingredientsInOrder: ", ingredientsInOrder);
+			console.log("ingredientsData: ", ingredientsData);
+
+			console.log("instructionsInOrder: ", instructionsInOrder);
+			console.log("instructionsData: ", instructionsData);
+
+			for (var a = 0; a < instructionsInOrder.length; a++) {
+				nextItemId = instructionsInOrder[a].substring(9, instructionsInOrder[a].length);
+
+				for (var b = 0; b < instructionsData.length; b++) {
+					nextIngredientId = instructionsData[b].id;
+					if (nextItemId == nextInstructionId) {
+						instructionsData[k].sequence = i + 1;
+					}
+				}
+			}
+
+			console.log("instructionsInOrder: ", instructionsInOrder);
+			console.log("instructionsData: ", instructionsData);
 
 			// == avoid null values (items not set by user)
 			if (!ratingData.ratingid) {
