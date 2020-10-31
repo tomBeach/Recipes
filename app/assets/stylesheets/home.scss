@@ -144,7 +144,6 @@ h1 {
 	float: left;
 	width: 8%;
 }
-
 #feedback, #notice, #message {
     display: inline-block;
 	margin: 0 4px;
@@ -206,6 +205,14 @@ h1 {
 	border: 1px solid gray;
 	white-space: normal;
 	overflow-y: scroll;
+}
+#ingredientsBox {
+	float: left;
+	width: 48%;
+}
+#instructionsBox {
+	float: left;
+	width: 48%;
 }
 #outputTitle {
 	float: left;
@@ -273,7 +280,7 @@ h1 {
 .editItem {
 	margin-left: 9px;
     padding: 4px;
-	width: 60%;
+	width: 50%;
 	font-size: 16px;
 	color: navy;
 }
@@ -287,7 +294,7 @@ h1 {
 	font-style: bold;
 	color: navy;
 }
-.saveBtn, .cancelBtn {
+.saveBtn, .cancelBtn, .deleteBtn {
 	display: inline;
 	width: 100px;
     height: 60px;
@@ -303,14 +310,12 @@ h1 {
 .sequence {
 	display: inline-block;
 	width: 18px;
-	height: 14px;
+	height: 24px;
 	margin-top: 2px;
 	margin-left: 10px;
+	font-size: 16px;
+    line-height: 24px;
 	text-align: center;
-	border-top-style: hidden;
-	border-right-style: hidden;
-	border-left-style: hidden;
-	border-bottom-style: hidden;
 	background-color: #eee;
 }
 
