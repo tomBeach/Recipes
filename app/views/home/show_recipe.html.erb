@@ -42,7 +42,9 @@
 <div id="output">
 
 	<div id="ingredientsBox">
-		<p class="recipeLabel">ingredients</p>
+		<div class="boxHeader">
+			<p class="recipeLabel">ingredients</p> <div id="ingrAdd" class='addBtn'> add ingredient</div>
+		</div>
 		<div id="ingredients" class="list-group">
 			<% ingredients_sorted.each_with_index do |next_ingredient, index| %>
 				<div class="recipeLine" id="ingrLine_<%= next_ingredient.id %>">
@@ -54,7 +56,9 @@
 	</div>
 
 	<div id="instructionsBox">
-		<p class="recipeLabel">instructions</p>
+		<div class="boxHeader">
+			<p class="recipeLabel">instructions</p> <div id="instAdd" class='addBtn'> add instruction</div>
+		</div>
 		<div id="instructions" class="list-group">
 			<% instructions_sorted.each_with_index do |next_instruction, index| %>
 				<div class="recipeLine" id="instLine_<%= next_instruction.id %>">

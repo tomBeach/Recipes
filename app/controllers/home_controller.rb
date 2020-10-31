@@ -348,18 +348,25 @@ class HomeController < ApplicationController
 		deleteIngredientCount = 0
         params[:ingredients].each_with_index do |next_ingredient, index|
             ingredient_id = next_ingredient[:id]
-            ingredient = Ingredient.find(ingredient_id)
 
-			# == identify if ingredient is flagged for delete
-			if next_ingredient[:ingredient][0..6] == "DELETE_"
-				ingredient.destroy
-				deleteIngredientCount = deleteIngredientCount + 1
-			end
+			if ingredient_id == nil
+				Ingredient.create(:recipe_id => next_ingredient[:recipe_id], :ingredient => next_ingredient[:ingredient], :sequence => next_ingredient[:sequence])
+			else
+				ingredient = Ingredient.find(ingredient_id)
 
-			# == collect ids of any failed updates
-			if !ingredient.update(:ingredient => next_ingredient[:ingredient], :sequence => next_ingredient[:sequence])
-				ingredient_fails_array.push(ingredient_id)
-				puts "*** INGREDIENT UPDATE ERROR"
+				# == identify if ingredient is flagged for delete
+				if next_ingredient[:ingredient][0..6] == "DELETE_"
+					ingredient.destroy
+					deleteIngredientCount = deleteIngredientCount + 1
+
+				# == update ingredient; collect ids of any failed updates
+				else
+					puts "next_ingredient[:ingredient]: #{next_ingredient[:ingredient]}"
+					if !ingredient.update(:ingredient => next_ingredient[:ingredient], :sequence => next_ingredient[:sequence])
+						ingredient_fails_array.push(ingredient_id)
+						puts "*** INGREDIENT UPDATE ERROR"
+					end
+				end
 			end
 
 			if deleteIngredientCount > 0
@@ -371,19 +378,27 @@ class HomeController < ApplicationController
 		deleteInstructionCount = 0
         params[:instructions].each do |next_instruction|
             instruction_id = next_instruction[:id]
-            instruction = Instruction.find(instruction_id)
 
-			# == identify if instruction is flagged for delete
-			if next_instruction[:instruction][0..6] == "DELETE_"
-				instruction.destroy
-				deleteInstructionCount = deleteInstructionCount + 1
+			if instruction_id == nil
+				Instruction.create(:recipe_id => next_instruction[:recipe_id], :instruction => next_instruction[:instruction], :sequence => next_instruction[:sequence])
+			else
+				instruction = Instruction.find(instruction_id)
+
+				# == identify if instruction is flagged for delete
+				if next_instruction[:instruction][0..6] == "DELETE_"
+					instruction.destroy
+					deleteInstructionCount = deleteInstructionCount + 1
+
+				# == update instruction; collect ids of any failed updates
+				else
+					# == collect ids of any failed updates
+					if !instruction.update(:instruction => next_instruction[:instruction], :sequence => next_instruction[:sequence])
+						instruction_fails_array.push(instruction_id)
+						puts "*** INSTRUCTION UPDATE ERROR"
+					end
+				end
 			end
 
-			# == collect ids of any failed updates
-			if !instruction.update(:instruction => next_instruction[:instruction], :sequence => next_instruction[:sequence])
-				instruction_fails_array.push(instruction_id)
-				puts "*** INSTRUCTION UPDATE ERROR"
-			end
 
 			if deleteInstructionCount > 0
 				message = message + deleteInstructionCount.to_s + " instruction(s) removed from recipe. "
