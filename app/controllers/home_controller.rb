@@ -349,7 +349,8 @@ class HomeController < ApplicationController
         params[:ingredients].each_with_index do |next_ingredient, index|
             ingredient_id = next_ingredient[:id]
 
-			if ingredient_id == nil
+
+			if ingredient_id[0..3] == "NEW_"
 				Ingredient.create(:recipe_id => next_ingredient[:recipe_id], :ingredient => next_ingredient[:ingredient], :sequence => next_ingredient[:sequence])
 			else
 				ingredient = Ingredient.find(ingredient_id)
@@ -411,9 +412,11 @@ class HomeController < ApplicationController
 			message = message + "Changes were saved successfully."
 		end
 
+		updated_recipe = Recipe.find(params[:recipe_id]).to_json
+
 		respond_to do |format|
 			format.json {
-				render json: {:message => message, :recipe_fails_array => recipe_fails_array, :ingredient_fails_array => ingredient_fails_array, :instruction_fails_array => instruction_fails_array}
+				render json: {:updated_recipe => updated_recipe, :message => message, :recipe_fails_array => recipe_fails_array, :ingredient_fails_array => ingredient_fails_array, :instruction_fails_array => instruction_fails_array}
 			}
 		end
     end

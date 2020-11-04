@@ -5,6 +5,20 @@
 // ======= ======= ======= Workflow ======= ======= =======
 
 
+// ======= ======= ======= folder ======= ======= =======
+$ cd Desktop/_WEB_DEV/_RAILS_WEB/Recipes2
+
+
+// ======= ======= ======= infinite loops ======= ======= =======
+• terminal window
+$ top			// show largest processes
+$ kill 1739		// normal kill process (by process number e.g. 1739)
+$ kill -9 1739	// force kill process
+$ q				// return to normal command line
+
+<%= form_with(model: category, local: true) do |form| %>
+
+
 // ======= ======= ======= jquery/rails sortable ======= ======= =======
 https://gorails.com/episodes/sortable-drag-and-drop
 
@@ -65,16 +79,6 @@ rails g model Rating rating:integer comment:string
 rails g model Recipe title:string category:references nationality:references
 rails g model Ingredient recipe:references ingredient:string
 rails g model Instruction recipe:references instruction:string
-
-
-// ======= ======= ======= infinite loops ======= ======= =======
-• terminal window
-$ top			// show largest processes
-$ kill 1739		// normal kill process (by process number e.g. 1739)
-$ kill -9 1739	// force kill process
-$ q				// return to normal command line
-
-<%= form_with(model: category, local: true) do |form| %>
 
 
 // ======= ======= ======= modify table ======= ======= =======

@@ -48,7 +48,7 @@
 		<div id="ingredients" class="list-group">
 			<% ingredients_sorted.each_with_index do |next_ingredient, index| %>
 				<div class="recipeLine" id="ingrLine_<%= next_ingredient.id %>">
-					<div id="ingrSeq_<%= next_ingredient.id %>" class="sequence"> <%= next_ingredient.sequence %> </div>
+					<div id="ingrSeq_<%= next_ingredient.id %>" class="ingrSequence"> <%= next_ingredient.sequence %> </div>
 					<p class="ingredient" id="ingredient_<%= next_ingredient.id %>"><%= next_ingredient.ingredient %></p>
 				</div>
 			<% end %>
@@ -62,7 +62,7 @@
 		<div id="instructions" class="list-group">
 			<% instructions_sorted.each_with_index do |next_instruction, index| %>
 				<div class="recipeLine" id="instLine_<%= next_instruction.id %>">
-					<div id="instSeq_<%= next_instruction.id %>" class="sequence"> <%= next_instruction.sequence %> </div>
+					<div id="instSeq_<%= next_instruction.id %>" class="instSequence"> <%= next_instruction.sequence %> </div>
 					<p class="instruction" id="instruction_<%= next_instruction.id %>"> <%= next_instruction.instruction %> </p>
 				</div>
 			<% end %>
