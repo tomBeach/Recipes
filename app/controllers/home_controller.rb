@@ -349,29 +349,23 @@ class HomeController < ApplicationController
         params[:ingredients].each_with_index do |next_ingredient, index|
             ingredient_id = next_ingredient[:id]
 
-
-			if ingredient_id[0..3] == "NEW_"
+			# == identify if ingredient is new
+			if next_ingredient[:new_delete] == "NEW"
 				Ingredient.create(:recipe_id => next_ingredient[:recipe_id], :ingredient => next_ingredient[:ingredient], :sequence => next_ingredient[:sequence])
+
+			# == identify if ingredient is flagged for delete
+			elsif next_ingredient[:new_delete] == "DELETE"
+				ingredient = Ingredient.find(ingredient_id)
+				ingredient.destroy
+				deleteIngredientCount = deleteIngredientCount + 1
+
+			# == update existing ingredient text and sequence
 			else
 				ingredient = Ingredient.find(ingredient_id)
-
-				# == identify if ingredient is flagged for delete
-				if next_ingredient[:ingredient][0..6] == "DELETE_"
-					ingredient.destroy
-					deleteIngredientCount = deleteIngredientCount + 1
-
-				# == update ingredient; collect ids of any failed updates
-				else
-					puts "next_ingredient[:ingredient]: #{next_ingredient[:ingredient]}"
-					if !ingredient.update(:ingredient => next_ingredient[:ingredient], :sequence => next_ingredient[:sequence])
-						ingredient_fails_array.push(ingredient_id)
-						puts "*** INGREDIENT UPDATE ERROR"
-					end
+				if !ingredient.update(:ingredient => next_ingredient[:ingredient], :sequence => next_ingredient[:sequence])
+					ingredient_fails_array.push(ingredient_id)
+					puts "*** INGREDIENT UPDATE ERROR"
 				end
-			end
-
-			if deleteIngredientCount > 0
-				message = message + deleteIngredientCount.to_s + " ingredient(s) removed from recipe. "
 			end
         end
 
@@ -380,31 +374,39 @@ class HomeController < ApplicationController
         params[:instructions].each do |next_instruction|
             instruction_id = next_instruction[:id]
 
-			if instruction_id == nil
+			# == identify if ingredient is new
+			if next_instruction[:new_delete] == "NEW"
 				Instruction.create(:recipe_id => next_instruction[:recipe_id], :instruction => next_instruction[:instruction], :sequence => next_instruction[:sequence])
+
+			# == identify if instruction is flagged for delete
+			elsif next_instruction[:new_delete] == "DELETE"
+				instruction = Instruction.find(instruction_id)
+				instruction.destroy
+				deleteInstructionCount = deleteInstructionCount + 1
+
+			# == update existing instruction text and sequence
 			else
 				instruction = Instruction.find(instruction_id)
-
-				# == identify if instruction is flagged for delete
-				if next_instruction[:instruction][0..6] == "DELETE_"
-					instruction.destroy
-					deleteInstructionCount = deleteInstructionCount + 1
-
-				# == update instruction; collect ids of any failed updates
-				else
-					# == collect ids of any failed updates
-					if !instruction.update(:instruction => next_instruction[:instruction], :sequence => next_instruction[:sequence])
-						instruction_fails_array.push(instruction_id)
-						puts "*** INSTRUCTION UPDATE ERROR"
-					end
+				puts "next_instruction[:instruction]: #{next_instruction[:instruction]}"
+				if !instruction.update(:instruction => next_instruction[:instruction], :sequence => next_instruction[:sequence])
+					instruction_fails_array.push(instruction_id)
+					puts "*** INSTRUCTION UPDATE ERROR"
 				end
 			end
-
-
-			if deleteInstructionCount > 0
-				message = message + deleteInstructionCount.to_s + " instruction(s) removed from recipe. "
-			end
         end
+
+		if deleteIngredientCount > 0
+			message = message + deleteIngredientCount.to_s + " ingredient(s) "
+			if deleteInstructionCount > 0
+				message = message + "and " + deleteInstructionCount.to_s + " instruction(s) were removed from the recipe. "
+			else
+				message = message + "were removed from the recipe. "
+			end
+		else
+			if deleteInstructionCount > 0
+				message = message + deleteInstructionCount.to_s + " instruction(s) were removed from the recipe. "
+			end
+		end
 
 		if ingredient_fails_array.length > 0 || instruction_fails_array.length > 0 || recipe_fails_array.length > 0
 			message = message + "One or more changes were not saved."
