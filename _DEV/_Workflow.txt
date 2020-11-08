@@ -9,6 +9,23 @@
 $ cd Desktop/_WEB_DEV/_RAILS_WEB/Recipes2
 
 
+// ======= ======= ======= edit logic ======= ======= =======
+
+edit functions
+	rating
+	category
+	nationality
+	title
+	lines (ingredients/instructions)
+		modify
+			save
+			cancel
+		add
+			save
+			cancel
+		delete
+
+
 // ======= ======= ======= infinite loops ======= ======= =======
 • terminal window
 $ top			// show largest processes
