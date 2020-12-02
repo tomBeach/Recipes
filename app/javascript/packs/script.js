@@ -578,7 +578,7 @@ $(document).on('turbolinks:load', function() {
 
 			// == create textbox and button controls for revised title
 			var inputHtml = "<input type='text' id='editTitleText' name='editTitleText' value='" + currentText + "'>";
-			var btnsHtml = "<div class='saveBtn'> save </div> <div class='cancelBtn'> cancel </div> ";
+			var btnsHtml = "<div id='titleSaveBtn' class='saveBtn'> save </div> <div id='titleCancelBtn' class='cancelBtn'> cancel </div> ";
 			var editHtml = inputHtml + btnsHtml;
 			$(this).replaceWith(editHtml);
 			$('.saveBtn, .cancelBtn').on('mouseover', hiliteBtn);
@@ -1388,7 +1388,7 @@ $(document).on('turbolinks:load', function() {
 			recipeHtml = recipeHtml + "<p class='recipeTitle'>" + nextTitle + "</p>";
 
 			// == ingredients label
-			recipeHtml = recipeHtml + "<p class='recipeLabel'>ingredients</p>";
+			recipeHtml = recipeHtml + "<p class='newRecipeLabel'>ingredients</p>";
 
 			// == ingredients lines: ingredientObj = {quantity:___, units:___, ingredient:___};
 			for (var j = 0; j < nextIngredients.length; j++) {
@@ -1405,18 +1405,18 @@ $(document).on('turbolinks:load', function() {
 				}
 
 				nextText = (nextQuantity + " " + nextUnits + " " + nextIngredient).trim()
-				nextHtml = "<p class='ingredient'>" + nextText + "</p>";
+				nextHtml = "<p class='newIngredient'>" + nextText + "</p>";
 				recipeHtml = recipeHtml + nextHtml;
 			}
 
-			recipeHtml = recipeHtml + "<p class='recipeLabel'>instructions</p>";
+			recipeHtml = recipeHtml + "<p class='newRecipeLabel'>instructions</p>";
 
 			// instructionObj = {instruction:___, duration:___, durUnits:___};
 			for (var k = 0; k < nextInstructions.length; k++) {
 				nextInstruction = nextInstructions[k].instruction;
 				nextDuration = nextInstructions[k].duration;
 				nextDurUnits = nextInstructions[k].durUnits;
-				nextHtml = "<p class='instruction'>" + nextInstruction + "</p>";
+				nextHtml = "<p class='newInstruction'>" + nextInstruction + "</p>";
 				recipeHtml = recipeHtml + nextHtml;
 			}
 		}
@@ -1446,13 +1446,13 @@ $(document).on('turbolinks:load', function() {
 		}).done(function(jsonData) {
 		    console.log("*** ajax success ***");
 		    console.dir(jsonData);
-			var updatedRecipe = JSON.parse(jsonData.updated_recipe);
-			console.log("updatedRecipe:", updatedRecipe);
 			if (importEdit == "import") {
 				updateImportLink("import recipes");
+			} else {
+				var updatedRecipe = JSON.parse(jsonData.updated_recipe);
+				console.log("updatedRecipe:", updatedRecipe);
 			}
 			updateNoticeMessage(jsonData);
-			// updateSequenceDisplay();
 		}).fail(function(unknown){
 		    console.log("*** ajax fail ***");
 			console.log("unknown:", unknown);

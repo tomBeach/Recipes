@@ -181,6 +181,7 @@ h1 {
 	width: 12%;
 }
 .recipeTitle {
+	margin-left: 20px;
 	margin-top: 15px;
     padding: 15px 10px 0 5px;
 	font-size: 24px;
@@ -213,6 +214,21 @@ h1 {
 #ingredientsBox, #instructionsBox {
 	float: left;
 	width: 50%;
+}
+.ingredient, .instruction, .newIngredient, .newInstruction {
+	display: inline-block;
+	vertical-align: top;
+	margin: 0;
+	margin-left: 30px;
+    padding: 5px 15px;
+	font-size: 16px;
+	color: navy;
+}
+.newIngredient, .newInstruction {
+	width: 96%;
+}
+.ingredient, .instruction {
+	width: 80%;
 }
 .boxHeader {
 	width: 100%;
@@ -270,20 +286,15 @@ h1 {
     background-color: mediumslateblue;
     color: white;
 }
+.newRecipeLabel {
+	float: left;
+	margin: 20px 0 0 20px;
+	font-size: 18px;
+}
 .recipeLabel {
 	float: left;
 	margin: 0;
-	margin-left: 34px;
 	font-size: 18px;
-}
-.ingredient, .instruction {
-	display: inline-block;
-	vertical-align: top;
-	margin: 0;
-	width: 80%;
-    padding: 5px 15px;
-	font-size: 16px;
-	color: navy;
 }
 .editItem {
 	margin-left: 9px;
@@ -292,21 +303,19 @@ h1 {
 	font-size: 16px;
 	color: navy;
 }
-#editTitle {
-	height: 40px;
-	margin: 0 0 0 1%;
-	padding: 1%;
-	margin-left: 9px;
+#editTitleText {
+	float: left;
+	width: 96%;
+	margin: 20px;
+	height: 30px;
 	width: 60%;
-	font-size: 32px;
+	font-size: 30px;
 	font-style: bold;
 	color: navy;
 }
-.saveBtn, .cancelBtn, .deleteBtn, .addBtn {
+#titleSaveBtn, #titleCancelBtn, .saveBtn, .cancelBtn, .deleteBtn, .addBtn {
 	display: inline;
 	width: 100px;
-    height: 60px;
-	margin: 0 10px;
 	padding: 5px 10px;
     text-align: center;
     font-size: 16px;
@@ -315,8 +324,18 @@ h1 {
     background-color: DodgerBlue;
     color: white;
 }
-.addBtn {
-	margin: 0 40px;
+// .addBtn {
+// 	margin: 0 40px;
+// }
+.saveBtn, .cancelBtn, .deleteBtn, .addBtn {
+	margin: 0 10px;
+}
+#deleteRecipe {
+	float: right;
+}
+#titleSaveBtn, #titleCancelBtn {
+	display: inline-block;
+	margin: 20px;
 }
 .ingrSequence, .instSequence {
 	float: left;
@@ -496,6 +515,11 @@ input[type=submit] {
 input[type=submit]:hover, .field > div > a:hover {
 	background-color: mediumslateblue;
     color: white;
+}
+
+/* ======= ======= ======= import ======= ======= ======= */
+#inputfile {
+	margin: 0 20px;
 }
 
 /* ======= ======= ======= modal popup ======= ======= ======= */
