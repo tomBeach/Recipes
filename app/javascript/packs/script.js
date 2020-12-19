@@ -332,6 +332,7 @@ $(document).on('turbolinks:load', function() {
 			displayRecipeTitles(jsonData)
 			makeTitleText(jsonData, searchType);
 			updateNoticeMessage(jsonData);
+			deactivateEditLinks();
 		}).fail(function(unknown){
 			console.log("*** ajax fail ***");
 			console.log("unknown:", unknown);
@@ -449,6 +450,14 @@ $(document).on('turbolinks:load', function() {
 	function cancelRecipeEdits() {
 		console.log("== cancelRecipeEdits ==");
 		location.reload();
+	}
+
+	// ======= deactivateEditLinks =======
+    function deactivateEditLinks() {
+		console.log("== deactivateEditLinks ==");
+		$('#outputTitle').off('mouseover');
+		$('#outputTitle').off('mouseout');
+		$('#outputTitle').off('click');
 	}
 
 	// ======= activateEditLinks =======

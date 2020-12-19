@@ -28,7 +28,7 @@ class HomeController < ApplicationController
 
 		# == @rating @category @nationality from application controller callback
 		@recipe = Recipe.find(params[:id])
-		puts "@recipe: #{@recipe}"
+		puts "@recipe: #{@recipe.inspect}"
 
 		# ======= rating/category/nationality options =======
 		@rating_ids = []
@@ -159,22 +159,22 @@ class HomeController < ApplicationController
 		puts "nationality_obj: #{nationality_obj}"
 
 		if search_type == "all"
-			recipes = Recipe.all
+			recipes = Recipe.order(:updated_at)
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 		elsif search_type == "ingredients"
-			recipes = Recipe.all
+			recipes = Recipe.order(:updated_at)
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 		elsif search_type == "titles"
-			recipes = Recipe.where("lower(title) LIKE ?", "%" + search_term + "%")
+			recipes = Recipe.where("lower(title) LIKE ?", "%" + search_term + "%").order(:updated_at)
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 		elsif search_type == "rating"
-			recipes = Recipe.where(:rating_id => search_term)
+			recipes = Recipe.where(:rating_id => search_term).order(:updated_at)
 			rating_id = search_term.to_i
 			rating = rating_obj[rating_id][:rating]
 			rating_text = rating[0].to_s + "/" + rating[1]
