@@ -159,22 +159,22 @@ class HomeController < ApplicationController
 		puts "nationality_obj: #{nationality_obj}"
 
 		if search_type == "all"
-			recipes = Recipe.order(:updated_at)
+			recipes = Recipe.order(:updated_at).reverse_order
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 		elsif search_type == "ingredients"
-			recipes = Recipe.order(:updated_at)
+			recipes = Recipe.order(:updated_at).reverse_order
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 		elsif search_type == "titles"
-			recipes = Recipe.where("lower(title) LIKE ?", "%" + search_term + "%").order(:updated_at)
+			recipes = Recipe.where("lower(title) LIKE ?", "%" + search_term + "%").order(:updated_at).reverse_order
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 		elsif search_type == "rating"
-			recipes = Recipe.where(:rating_id => search_term).order(:updated_at)
+			recipes = Recipe.where(:rating_id => search_term).order(:updated_at).reverse_order
 			rating_id = search_term.to_i
 			rating = rating_obj[rating_id][:rating]
 			rating_text = rating[0].to_s + "/" + rating[1]
@@ -182,13 +182,13 @@ class HomeController < ApplicationController
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 		elsif search_type == "category"
-			recipes = Recipe.where(:category_id => search_term)
+			recipes = Recipe.where(:category_id => search_term).order(:updated_at).reverse_order
 			search_term = Category.where(:id => search_term).first[:category]		# convert category_id to category text
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 		elsif search_type == "nationality"
-			recipes = Recipe.where(:nationality_id => search_term)
+			recipes = Recipe.where(:nationality_id => search_term).order(:updated_at).reverse_order
 			search_term = Nationality.where(:id => search_term).first[:nationality]	# convert nationality_id to nationality text
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]

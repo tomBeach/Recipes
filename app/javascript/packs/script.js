@@ -665,9 +665,12 @@ $(document).on('turbolinks:load', function() {
 			}
 
 			// == set edit mode parameters for currently selected element
+			var inputHtml = "";
 			currentText = $(this).text();
 			currentId = $(this).attr('id');
-			var inputHtml = "<input type='text' class='editItem' id='" + currentId + "' name='" + currentId + "' value='" + currentText + "'>";
+			inputHtml = inputHtml + "<textarea class='editItem' id='" + currentId + "' name='" + currentId + "'";
+			inputHtml = inputHtml + " cols='40' rows='5'>" + currentText + "</textarea>";
+			// var inputHtml = "<input type='text' class='editItem' id='" + currentId + "' name='" + currentId + "' value='" + currentText + "'>";
 			var btnsHtml = "<div class='saveBtn'> save </div> <div class='cancelBtn'> cancel </div> <div class='deleteBtn'> delete </div> ";
 			var editHtml = inputHtml + btnsHtml;
 			$(this).replaceWith(editHtml);
@@ -763,14 +766,14 @@ $(document).on('turbolinks:load', function() {
 				editHtml = editHtml + "<input type='text' class='newItem' id='newIngr' name='newIngr'>";
 				editHtml = editHtml + "<div class='saveBtn' id='ingrSave'> save </div> <div class='cancelBtn' id='ingrCancel'> cancel </div>";
 				editHtml = editHtml + "</div>";
-				$('#ingredients').append(editHtml);
+				$('#ingredients').prepend(editHtml);
 			} else {
 				var instCount = $('#instructions').children().length + 1;
 				editHtml = editHtml + "<div id='instLine_" + instCount + "' class='recipeLine newRecipeLine iu-sortable-handle'>";
 				editHtml = editHtml + "<input type='text' class='newItem' id='newInst' name='newInst'>";
 				editHtml = editHtml + "<div class='saveBtn' id='instSave'> save </div> <div class='cancelBtn' id='instCancel'> cancel </div>";
 				editHtml = editHtml + "</div>";
-				$('#instructions').append(editHtml);
+				$('#instructions').prepend(editHtml);
 			}
 
 			$('.saveBtn, .cancelBtn').on('mouseover', hiliteBtn);
@@ -811,7 +814,7 @@ $(document).on('turbolinks:load', function() {
 				updateHtml = updateHtml + "<div id='ingrSeq_' class='ingrSequence'>" + newSequence +  "</div>";
 				updateHtml = updateHtml + "<p class='ingredient' id='ingredient_" + newSequence + "'>" + newText + "</p>";
 				updateHtml = updateHtml + "</div>";
-				$('#ingredients').append(updateHtml);
+				$('#ingredients').prepend(updateHtml);
 				$('#ingredient_' + newSequence).on('mouseover', hiliteLink);
 				$('#ingredient_' + newSequence).on('mouseout', restoreLink);
 				$('#ingredient_' + newSequence).on('click', editRecipeLine);
@@ -829,7 +832,7 @@ $(document).on('turbolinks:load', function() {
 				updateHtml = updateHtml + "<div id='instSeq_' class='instSequence'>" + newSequence + "</div>";
 				updateHtml = updateHtml + "<p class='instruction' id='instruction_" + newSequence + "'>" + newText + "</p>";
 				updateHtml = updateHtml + "</div>";
-				$('#instructions').append(updateHtml);
+				$('#instructions').prepend(updateHtml);
 				console.log("newSequence: ", newSequence);
 				console.log("hiliteLink: ", hiliteLink);
 				$('#instruction_' + newSequence).on('mouseover', hiliteLink);
