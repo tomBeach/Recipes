@@ -9,6 +9,17 @@
 $ cd Desktop/_WEB_DEV/_RAILS_WEB/Recipes2
 
 
+// ======= ======= ======= flash ======= ======= =======
+The flash object has methods: keys, any?, each, notice, alert
+example:
+
+	flash[:alert] = "User not found."
+
+flash with redirect_to:
+
+	redirect_to :books_path, notice: "Book not found"
+
+
 // ======= ======= ======= edit logic ======= ======= =======
 
 edit functions

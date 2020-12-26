@@ -29,7 +29,7 @@ $(document).on('turbolinks:load', function() {
 	} else {
 		if (pathParts[1] == "show_recipe") {
 
-			// == add placeholder for new or delete designation
+			// == add local placeholder for new or delete designation
 			var ingredientsData = $('#ingredientsData').data().ingredients;
 			for (var i = 0; i < ingredientsData.length; i++) {
 				ingredientsData[i].new_delete = null;
@@ -39,7 +39,7 @@ $(document).on('turbolinks:load', function() {
 				instructionsData[i].new_delete = null;
 			}
 
-			// == add placeholder for previous value (for undo/cancel options)
+			// == add local placeholder for previous value (for undo/cancel options)
 			$('#titleData').data().prev_title = $('#titleData').data().title;
 			$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
 			$('#categoryData').data().prev_categoryid = $('#categoryData').data().categoryid;
@@ -378,6 +378,19 @@ $(document).on('turbolinks:load', function() {
 		}
 	}
 
+	// ======= updateLocalIngrinst =======
+	function updateLocalIngrinst(jsonData) {
+		console.log("== updateLocalIngrinst ==");
+
+		var updatedIngredients = JSON.parse(jsonData.updated_ingredients);
+		var updatedInstructions = JSON.parse(jsonData.updated_instructions);
+		$('#ingredientsData').data('ingredients', updatedIngredients);
+		$('#instructionsData').data('instructions', updatedInstructions);
+		console.log("$('#ingredientsData').data(): ", $('#ingredientsData').data());
+		console.log("$('#instructionsData').data(): ", $('#instructionsData').data());
+
+	}
+
 	// ======= saveRecipeEdits =======
 	function saveRecipeEdits() {
 		console.log("== saveRecipeEdits ==");
@@ -395,8 +408,8 @@ $(document).on('turbolinks:load', function() {
 		var ratingData = $('#ratingData').data().ratingid;
 		var categoryData = $('#categoryData').data().categoryid;
 		var nationalityData = $('#nationalityData').data().nationalityid;
-		var ingredientsData = $('#ingredientsData').data().ingredients;
-		var instructionsData = $('#instructionsData').data().instructions;
+		var ingredientsData = $('#ingredientsData').data().ingredients;		// with NEW or DELETE flag if any and revised text
+		var instructionsData = $('#instructionsData').data().instructions;	// with NEW or DELETE flag if any and revised text
 
 		// == update sequence values to capture sort changes
 		for (var i = 0; i < ingredientsInOrder.length; i++) {
@@ -1453,18 +1466,22 @@ $(document).on('turbolinks:load', function() {
 		    url: url,
 			data: jsonData,
 		    method: "POST",
-			dataType: "json",
+			// dataType: "json",
+			dataType: "script",
+			// contentType: "application/json; charset=utf-8",
 			contentType: "application/json; charset=utf-8"
+			// success: "window.location = '/show_recipe/'" + recipeData.recipe_id
 		}).done(function(jsonData) {
 		    console.log("*** ajax success ***");
 		    console.dir(jsonData);
 			if (importEdit == "import") {
 				updateImportLink("import recipes");
-			} else {
-				var updatedRecipe = JSON.parse(jsonData.updated_recipe);
-				console.log("updatedRecipe:", updatedRecipe);
+			// } else {
+			// 	var updatedRecipe = JSON.parse(jsonData.updated_recipe);
+			// 	console.log("updatedRecipe:", updatedRecipe);
 			}
 			updateNoticeMessage(jsonData);
+			updateLocalIngrinst(jsonData);
 		}).fail(function(unknown){
 		    console.log("*** ajax fail ***");
 			console.log("unknown:", unknown);

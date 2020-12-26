@@ -328,6 +328,7 @@ class HomeController < ApplicationController
 		ingredient_fails_array = []
 		instruction_fails_array = []
 
+		# == values not set by user; prepare for set to nil in database
 		if params[:rating_id] == 0
 			params[:rating_id] = nil
 		end
@@ -338,6 +339,7 @@ class HomeController < ApplicationController
 			params[:nationality_id] = nil
 		end
 
+		# == identify edited recipe and update to new json data values
 		recipe = Recipe.find(params[:recipe_id])
 		if !recipe.update(:title => params[:title], :rating_id => params[:rating_id], :category_id => params[:category_id], :nationality_id => params[:nationality_id])
 			recipe_fails_array.push(params[:recipe_id])
@@ -345,22 +347,27 @@ class HomeController < ApplicationController
 		end
 
 		# == update ingredients
+		addIngredientCount = 0
 		deleteIngredientCount = 0
         params[:ingredients].each_with_index do |next_ingredient, index|
             ingredient_id = next_ingredient[:id]
 
 			# == identify if ingredient is new
 			if next_ingredient[:new_delete] == "NEW"
+				puts "*** NEW INGREDIENT ***"
 				Ingredient.create(:recipe_id => next_ingredient[:recipe_id], :ingredient => next_ingredient[:ingredient], :sequence => next_ingredient[:sequence])
+				addIngredientCount = addIngredientCount + 1
 
 			# == identify if ingredient is flagged for delete
 			elsif next_ingredient[:new_delete] == "DELETE"
+				puts "*** DELETE INGREDIENT ***"
 				ingredient = Ingredient.find(ingredient_id)
 				ingredient.destroy
 				deleteIngredientCount = deleteIngredientCount + 1
 
 			# == update existing ingredient text and sequence
 			else
+				puts "*** UPDATE ingredient ***"
 				ingredient = Ingredient.find(ingredient_id)
 				if !ingredient.update(:ingredient => next_ingredient[:ingredient], :sequence => next_ingredient[:sequence])
 					ingredient_fails_array.push(ingredient_id)
@@ -370,24 +377,27 @@ class HomeController < ApplicationController
         end
 
 		# == update instructions
+		addInstructionCount = 0
 		deleteInstructionCount = 0
         params[:instructions].each do |next_instruction|
             instruction_id = next_instruction[:id]
 
 			# == identify if ingredient is new
 			if next_instruction[:new_delete] == "NEW"
+				puts "*** NEW INSTRUCTION ***"
 				Instruction.create(:recipe_id => next_instruction[:recipe_id], :instruction => next_instruction[:instruction], :sequence => next_instruction[:sequence])
 
 			# == identify if instruction is flagged for delete
 			elsif next_instruction[:new_delete] == "DELETE"
+				puts "*** DELETE INSTRUCTION ***"
 				instruction = Instruction.find(instruction_id)
 				instruction.destroy
 				deleteInstructionCount = deleteInstructionCount + 1
 
 			# == update existing instruction text and sequence
 			else
+				puts "*** UPDATE instruction ***"
 				instruction = Instruction.find(instruction_id)
-				puts "next_instruction[:instruction]: #{next_instruction[:instruction]}"
 				if !instruction.update(:instruction => next_instruction[:instruction], :sequence => next_instruction[:sequence])
 					instruction_fails_array.push(instruction_id)
 					puts "*** INSTRUCTION UPDATE ERROR"
@@ -396,15 +406,27 @@ class HomeController < ApplicationController
         end
 
 		if deleteIngredientCount > 0
-			message = message + deleteIngredientCount.to_s + " ingredient(s) "
-			if deleteInstructionCount > 0
-				message = message + "and " + deleteInstructionCount.to_s + " instruction(s) were removed from the recipe. "
+			if deleteIngredientCount == 1
+				message = message + "1 ingredient was removed "
 			else
-				message = message + "were removed from the recipe. "
+				message = message + deleteIngredientCount.to_s + " ingredients were removed "
+			end
+			if deleteInstructionCount > 0
+				if deleteInstructionCount == 1
+					message = message + "and 1 instruction was removed from the recipe. "
+				else
+					message = message + "and " + deleteInstructionCount.to_s + " instructions were removed from the recipe. "
+				end
+			else
+				message = message + "from the recipe. "
 			end
 		else
 			if deleteInstructionCount > 0
-				message = message + deleteInstructionCount.to_s + " instruction(s) were removed from the recipe. "
+				if deleteInstructionCount == 1
+					message = message + "1 instruction was removed from the recipe. "
+				else
+					message = message + deleteInstructionCount.to_s + " instructions were removed from the recipe. "
+				end
 			end
 		end
 
@@ -414,13 +436,13 @@ class HomeController < ApplicationController
 			message = message + "Changes were saved successfully."
 		end
 
-		updated_recipe = Recipe.find(params[:recipe_id]).to_json
+		redirect_to({:controller => "home", :action => "show_recipe", :id => params[:recipe_id].to_s}, :notice => message)
 
-		respond_to do |format|
-			format.json {
-				render json: {:updated_recipe => updated_recipe, :message => message, :recipe_fails_array => recipe_fails_array, :ingredient_fails_array => ingredient_fails_array, :instruction_fails_array => instruction_fails_array}
-			}
-		end
+		# respond_to do |format|
+		# 	format.json {
+		# 		render json: {:updated_recipe => updated_recipe, :updated_ingredients => updated_ingredients, :updated_instructions => updated_instructions, :message => message, :recipe_fails_array => recipe_fails_array, :ingredient_fails_array => ingredient_fails_array, :instruction_fails_array => instruction_fails_array}
+		# 	}
+		# end
     end
 
 	# ======= ======= ======= RECIPE FILES ======= ======= =======
