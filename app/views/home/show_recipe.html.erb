@@ -7,7 +7,7 @@
 
 
 <%# ======= recipe data => javascript ======= %>
-<%= content_tag :div, id: "prevValue", data: {ratingid: @recipe.rating_id, categoryid: @recipe.category_id, nationalityid: @recipe.nationality_id } do %>
+<%= content_tag :div, id: "prevValues", data: {ratingid: @recipe.rating_id, categoryid: @recipe.category_id, nationalityid: @recipe.nationality_id } do %>
 <% end %>
 
 
@@ -28,23 +28,50 @@
 <% end %>
 
 
-<h2 id="outputTitle"><%= @recipe.title %></h2>
-<div id="editSaveBox">
-	<%= select_tag "rating_edit_select", options_for_select(@rating_ids, @rating), class: "editSelect", remote: true %>
-	<%= select_tag "category_edit_select", options_for_select(@category_ids, @category), class: "editSelect", remote: true %>
-	<%= select_tag "nationality_edit_select", options_for_select(@nationality_ids, @nationality), class: "editSelect", remote: true %>
-	<%= link_to "Save Changes", save_recipe_edits_path, id: "saveRecipeEdits", class: "addEditDelete", remote: true %>
-	<%= link_to "Cancel Changes", "", id: "cancelRecipeEdits", class: "addEditDelete", remote: true %>
-	<%= link_to "Delete Recipe", "delete_recipe/" + @recipe[:id].to_s, id: "deleteRecipe", class: "addEditDelete active", remote: true %>
-</div>
-
-
+<%# ======= output ======= %>
 <div id="output">
 
-	<div id="ingredientsBox">
-		<div class="boxHeader">
-			<p class="recipeLabel">ingredients</p> <div id="ingrAdd" class='addBtn'> add ingredient</div>
+	<%# ======= recipe header ======= %>
+	<div id="recipeBox1" class="fullBox">
+		<div class="halfBox">
+			<h2 id="outputTitle"><%= @recipe.title %></h2>
 		</div>
+		<div class="halfBox">
+			<%= select_tag "rating_edit_select", options_for_select(@rating_ids, @rating), id: "ratingSelect", class: "editSelect", remote: true %>
+			<%= select_tag "category_edit_select", options_for_select(@category_ids, @category), class: "editSelect", remote: true %>
+			<%= select_tag "nationality_edit_select", options_for_select(@nationality_ids, @nationality), class: "editSelect", remote: true %>
+			<%= link_to "Delete", "delete_recipe/" + @recipe[:id].to_s, id: "deleteRecipe", class: "addEditDelete active", remote: true %>
+		</div>
+	</div>
+
+	<div id="recipeBox2" class="fullBox">
+		<div class="oneThirdBox">
+		</div>
+		<div class="oneThirdBox">
+			<%= link_to "Save", save_recipe_edits_path, id: "saveRecipeEdits", class: "addEditDelete", remote: true %>
+			<%= link_to "Cancel", "", id: "cancelRecipeEdits", class: "addEditDelete", remote: true %>
+		</div>
+		<div class="oneThirdBox">
+		</div>
+	</div>
+
+	<div id="recipeBox3" class="fullBox">
+		<div class="halfBox">
+			<div class="boxHeader">
+				<p class="recipeLabel">ingredients</p>
+				<div id="ingrAdd" class='addBtn'> add ingredient</div>
+			</div>
+		</div>
+		<div class="halfBox">
+			<div class="boxHeader">
+				<p class="recipeLabel">instructions</p>
+				<div id="instAdd" class='addBtn'> add instruction</div>
+			</div>
+		</div>
+	</div>
+
+	<%# ======= recipe content ======= %>
+	<div id="recipeContent">
 		<div id="ingredients" class="list-group">
 			<% ingredients_sorted.each_with_index do |next_ingredient, index| %>
 				<div class="recipeLine" id="ingrLine_<%= next_ingredient.id %>">
@@ -52,12 +79,6 @@
 					<p class="ingredient" id="ingredient_<%= next_ingredient.id %>"><%= next_ingredient.ingredient %></p>
 				</div>
 			<% end %>
-		</div>
-	</div>
-
-	<div id="instructionsBox">
-		<div class="boxHeader">
-			<p class="recipeLabel">instructions</p> <div id="instAdd" class='addBtn'> add instruction</div>
 		</div>
 		<div id="instructions" class="list-group">
 			<% instructions_sorted.each_with_index do |next_instruction, index| %>
@@ -68,5 +89,4 @@
 			<% end %>
 		</div>
 	</div>
-
 </div>

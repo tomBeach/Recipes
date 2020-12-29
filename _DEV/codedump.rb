@@ -1,3 +1,5 @@
+
+
 <%# ======= category and nationality options ======= %>
 <% category_ids = [] %>
 <% @categories.each_with_index do |category, index| %>

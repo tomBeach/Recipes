@@ -39,8 +39,6 @@ h1 {
 #yieldBox {
     width: 100%;
     height: 640px;
-	border: solid LightSkyBlue;
-    border-width: 2px;
 }
 #mainTitle {
 	padding-top: 10px;
@@ -55,14 +53,17 @@ h1 {
     margin: 0;
     padding: 8px;
 }
-#menuBox1 {
+#menuBox1, #recipeBox1, #recipeBox2 {
 	background-color: DodgerBlue;
 }
-#menuBox2 {
+#menuBox2, #recipeBox3 {
 	background-color: DeepSkyBlue;
 }
+#recipeBox2 {
+	display: none;
+}
 #menuBox3 {
-	background-color: LightSkyBlue;
+	background-color: white;
 }
 #menuBox1 > a, #menuBox2 > a {
     display: inline-block;
@@ -160,6 +161,8 @@ h1 {
 }
 #notice {
 	float: right;
+	font-size: 14px;
+	background-color: white;
 	color: red;
 }
 .info {
@@ -201,19 +204,171 @@ h1 {
 	font-size: 16px;
 	color: navy;
 }
-
-/* ======= ======= ======= show recipe ======= ======= ======= */
-#output {
-    height: 480px;
-	width: 96%;
-	margin: 20px;
-	border: 1px solid gray;
-	white-space: normal;
+#recipeList {
+	height: 540px;
 	overflow-y: scroll;
 }
-#ingredientsBox, #instructionsBox {
+
+/* ======= ======= ======= show recipe: headers ======= ======= ======= */
+#output {
+    height: 600px;
+	width: 100%;
+	margin: 0;
+	white-space: normal;
+}
+.fullBox, .halfBox, .oneThirdBox, .twoThirdBox {
+	height: 40px;
+	margin: 0;
+}
+.halfBox, .oneThirdBox, .twoThirdBox {
+	padding: 4px 0;
+	border: solid 1px DeepSkyBlue;
+}
+.fullBox {
+	width: 100%;
+}
+.halfBox {
 	float: left;
 	width: 50%;
+}
+.oneThirdBox {
+	float: left;
+	width: 33.33%;
+}
+.twoThirdBox {
+	float: left;
+	width: 66.66%;
+}
+
+#outputTitle {
+	width: 100%;
+	margin: 0;
+	margin-left: 20px;
+	height: 40px;
+	text-align: left;
+	max-width: 540px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.boxHeader {
+	width: 100%;
+	// height: 50px;
+	// padding: 10px;
+	background-color: DeepSkyBlue;
+}
+.recipeLabel {
+	float: left;
+	margin: 4px 0 0 12%;
+	font-size: 18px;
+}
+
+#titleSaveBtn, #titleCancelBtn, .saveBtn, .cancelBtn, .deleteBtn {
+	display: inline;
+	padding: 5px 10px;
+    text-align: center;
+    font-size: 16px;
+    line-height: 24px;
+	border-radius: 3px;
+}
+.saveBtn, .cancelBtn, .deleteBtn {
+	width: 50%;
+	margin: 0 10px;
+	background-color: DodgerBlue;
+    color: white;
+}
+#saveRecipeEdits, #ratingSelect {
+	margin-left: 10%;
+}
+// #ingrAdd {
+// 	float: right;
+// }
+// #instAdd {
+// 	float: left;
+// }
+
+.addBtn, .addEditDelete, .editSelect {
+	float: left;
+	width: 20%;
+	margin: 1%;
+    height: 20px;
+	padding: 0 10px;
+    font-size: 12px;
+	text-align-last:center;
+    line-height: 20px;
+	text-decoration: none;
+	color: navy;
+	background-color: #eee;
+	border-radius: 5px;
+}
+.addEditDelete.active {
+	background-color: orangered;
+}
+.addEditDelete.active:hover {
+    background-color: mediumslateblue;
+    color: white;
+}
+.addBtn {
+	margin-left: 20px;
+	min-width: 120px;
+}
+.editSelect {
+	width: 20%;
+	min-width: 110px;
+	max-width: 160px;
+}
+#deleteRecipe {
+	max-width: 100px;
+}
+#recipeContent {
+	height: 480px;
+	overflow-y: scroll;
+}
+
+
+
+
+
+
+
+
+
+
+
+// #titleBox {
+// 	float: left;
+// 	width: 60%;
+// 	margin: 0;
+// 	padding: 1% 0 1% 2%;
+// 	background-color: DodgerBlue;
+// }
+// #classificationBox {
+// 	float: left;
+// 	width: 40%;
+// 	margin: 0;
+// 	padding: 1% 2% 1% 0;
+// 	background-color: DodgerBlue;
+// }
+// .editSaveBox {
+// 	float: left;
+// 	width: 100%;
+// 	margin: 0;
+// 	text-align: center;
+// 	background-color: DodgerBlue;
+// }
+
+/* ======= ======= ======= show recipe: recipe ======= ======= ======= */
+#ingredients, #instructions {
+	float: left;
+	width: 50%;
+	margin: 0;
+}
+#instructions {
+	border-left: solid DeepSkyBlue;
+}
+#recipeBox3 > .halfBox:nth-of-type(2) {
+	border-left: solid 3px mediumslateblue;
 }
 .ingredient, .instruction, .newIngredient, .newInstruction {
 	display: inline-block;
@@ -230,70 +385,9 @@ h1 {
 .ingredient, .instruction {
 	width: 80%;
 }
-.boxHeader {
-	width: 100%;
-	height: 50px;
-	padding: 10px;
-	background-color: DeepSkyBlue;
-}
-#outputTitle {
-	float: left;
-	width: 96%;
-	margin: 20px;
-	height: 40px;
-	text-overflow: ellipsis;
-}
-#editSaveBox {
-	float: left;
-	width: 96%;
-	margin: 0 20px;
-	text-align: center;
-	background-color: DodgerBlue;
-}
-.editSelect {
-	float: left;
-	width: 12%;
-    min-width: 120px;
-	max-width: 160px;
-    height: 24px;
-	margin: 10px;
-	padding: 0 10px;
-    font-size: 16px;
-	text-align-last:center;
-    line-height: 24px;
-	color: DodgerBlue;
-	border-radius: 5px;
-}
-.addEditDelete {
-	float: left;
-	width: 12%;
-    min-width: 140px;
-	max-width: 160px;
-	margin: 10px;
-    height: 24px;
-    text-align: center;
-    font-size: 16px;
-    line-height: 24px;
-    text-decoration: none;
-	border-radius: 5px;
-    background-color: #eee;
-    color: navy;
-}
-.addEditDelete.active {
-	background-color: orangered;
-}
-.addEditDelete.active:hover {
-    background-color: mediumslateblue;
-    color: white;
-}
 .newRecipeLabel {
 	float: left;
 	margin: 20px 0 0 20px;
-	font-size: 18px;
-}
-.recipeLabel {
-	float: left;
-	margin: 0;
 	font-size: 18px;
 }
 .editItem {
@@ -305,37 +399,20 @@ h1 {
 }
 #editTitleText {
 	float: left;
-	width: 96%;
-	margin: 20px;
+	width: 20px;
+	margin: 0 0 0 20px;
 	height: 30px;
 	width: 60%;
 	font-size: 30px;
 	font-style: bold;
 	color: navy;
 }
-#titleSaveBtn, #titleCancelBtn, .saveBtn, .cancelBtn, .deleteBtn, .addBtn {
-	display: inline;
-	width: 100px;
-	padding: 5px 10px;
-    text-align: center;
-    font-size: 16px;
-    line-height: 24px;
-	border-radius: 3px;
-    background-color: DodgerBlue;
-    color: white;
-}
-// .addBtn {
-// 	margin: 0 40px;
-// }
-.saveBtn, .cancelBtn, .deleteBtn, .addBtn {
-	margin: 0 10px;
-}
-#deleteRecipe {
-	float: right;
-}
 #titleSaveBtn, #titleCancelBtn {
 	display: inline-block;
-	margin: 20px;
+	margin: 0 0 0 10px;
+	width: 12%;
+	background-color: mediumSlateBlue;
+    color: white;
 }
 .ingrSequence, .instSequence {
 	float: left;
