@@ -33,14 +33,14 @@
 
 	<%# ======= recipe header ======= %>
 	<div id="recipeBox1" class="fullBox">
-		<div class="halfBox">
+		<div class="halfBox classifyBox">
 			<h2 id="outputTitle"><%= @recipe.title %></h2>
 		</div>
-		<div class="halfBox">
-			<%= select_tag "rating_edit_select", options_for_select(@rating_ids, @rating), id: "ratingSelect", class: "editSelect", remote: true %>
+		<div class="halfBox classifyBox">
+			<%= select_tag "rating_edit_select", options_for_select(@rating_ids, @rating), class: "editSelect", remote: true %>
 			<%= select_tag "category_edit_select", options_for_select(@category_ids, @category), class: "editSelect", remote: true %>
 			<%= select_tag "nationality_edit_select", options_for_select(@nationality_ids, @nationality), class: "editSelect", remote: true %>
-			<%= link_to "Delete", "delete_recipe/" + @recipe[:id].to_s, id: "deleteRecipe", class: "addEditDelete active", remote: true %>
+			<%= link_to "Delete", "delete_recipe/" + @recipe[:id].to_s, id: "deleteRecipe", class: "active", remote: true %>
 		</div>
 	</div>
 

@@ -5,11 +5,40 @@ $(document).on('turbolinks:load', function() {
 	// ======= editPopup =======
 	function editPopup() {
 		console.log("== editPopup ==");
+
+		var popupHtml = "";
+		popupHtml = popupHtml + "<p>You haven't saved your edits yet.</p>";
+		popupHtml = popupHtml + "<p>Click <span>Save</span> or <span>Cancel</span> before choosing another function.</p>";
+
+		$('#popup-message').html(popupHtml);
 		$(".popup-overlay, .popup-content").addClass("active");
 	}
 
+	$(".close, .popup").off("click");
 	$(".close, .popup").on("click", function(){
 		console.log("== popup: close ==");
+		$('#popup-message').html("");
+		$(".popup-overlay, .popup-content").removeClass("active");
+	});
+
+
+	// ======= newLinePopup =======
+	function newLinePopup(ingrOrInst) {
+		console.log("== newLinePopup ==");
+
+		var popupHtml = "";
+		popupHtml = popupHtml + "<p>Your new " + ingrOrInst + " is at the bottom of the list.</p>";
+		popupHtml = popupHtml + "<p>Drag it to its proper place in the sequence,</p>";
+		popupHtml = popupHtml + "<p>then click <span>Save</span> or <span>Cancel</span>.</p>";
+
+		$('#popup-message').html(popupHtml);
+		$(".popup-overlay, .popup-content").addClass("active");
+	}
+
+	$(".close, .popup").off("click");
+	$(".close, .popup").on("click", function(){
+		console.log("== popup: close ==");
+		$('#popup-message').html("");
 		$(".popup-overlay, .popup-content").removeClass("active");
 	});
 
@@ -817,6 +846,7 @@ $(document).on('turbolinks:load', function() {
 
 			// == save new ingedient line
 			if (ingrOrInst == "ingrSave") {
+				var lineType = "ingredient";
 				var ingredientsData = $('#ingredientsData').data().ingredients;
 				var newSequence = ingredientsData.length + 1;
 				var newText = $('#newIngr').val();
@@ -828,13 +858,14 @@ $(document).on('turbolinks:load', function() {
 				updateHtml = updateHtml + "<div id='ingrSeq_' class='ingrSequence'>" + newSequence +  "</div>";
 				updateHtml = updateHtml + "<p class='ingredient' id='ingredient_" + newSequence + "'>" + newText + "</p>";
 				updateHtml = updateHtml + "</div>";
-				$('#ingredients').prepend(updateHtml);
+				$('#ingredients').append(updateHtml);
 				$('#ingredient_' + newSequence).on('mouseover', hiliteLink);
 				$('#ingredient_' + newSequence).on('mouseout', restoreLink);
 				$('#ingredient_' + newSequence).on('click', editRecipeLine);
 
 			// == save new instruction line
 			} else {
+				var lineType = "instruction";
 				var instructionsData = $('#instructionsData').data().instructions;
 				var newSequence = instructionsData.length + 1;
 				var newText = $('#newInst').val();
@@ -846,7 +877,7 @@ $(document).on('turbolinks:load', function() {
 				updateHtml = updateHtml + "<div id='instSeq_' class='instSequence'>" + newSequence + "</div>";
 				updateHtml = updateHtml + "<p class='instruction' id='instruction_" + newSequence + "'>" + newText + "</p>";
 				updateHtml = updateHtml + "</div>";
-				$('#instructions').prepend(updateHtml);
+				$('#instructions').append(updateHtml);
 				console.log("newSequence: ", newSequence);
 				console.log("hiliteLink: ", hiliteLink);
 				$('#instruction_' + newSequence).on('mouseover', hiliteLink);
@@ -856,6 +887,8 @@ $(document).on('turbolinks:load', function() {
 
 			// == remove previously existing buttons if any
 			$('.newRecipeLine').remove();
+
+			newLinePopup(lineType);
 		}
 
 		// ======= cancelNewLine =======
