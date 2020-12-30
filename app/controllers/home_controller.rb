@@ -113,6 +113,13 @@ class HomeController < ApplicationController
 		get_recipe_data("all", "")
 	end
 
+	# ======= search_text =======
+    def search_text
+        puts "\n******* search_text *******"
+		# == params[:_json] structure: [searchString, searchText]
+		get_recipe_data("text", params[:_json])
+	end
+
 	# ======= search_ingredient =======
     def search_ingredient
         puts "\n******* search_ingredient *******"
@@ -163,16 +170,18 @@ class HomeController < ApplicationController
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
-		elsif search_type == "ingredients"
-			recipes = Recipe.order(:updated_at).reverse_order
-			recipe_data = make_recipe_array(recipes, search_type, search_term)
-			recipe_array = recipe_data[0]
-			message = recipe_data[1]
-		elsif search_type == "titles"
-			recipes = Recipe.where("lower(title) LIKE ?", "%" + search_term + "%").order(:updated_at).reverse_order
-			recipe_data = make_recipe_array(recipes, search_type, search_term)
-			recipe_array = recipe_data[0]
-			message = recipe_data[1]
+		elsif search_type == "text"
+			if search_term[0] == "title"
+				recipes = Recipe.where("lower(title) LIKE ?", "%" + search_term[1] + "%").order(:updated_at).reverse_order
+				recipe_data = make_recipe_array(recipes, search_term[0], search_term[1])
+				recipe_array = recipe_data[0]
+				message = recipe_data[1]
+			elsif search_term[0] == "ingredients"
+				recipes = Recipe.order(:updated_at).reverse_order
+				recipe_data = make_recipe_array(recipes, search_term[0], search_term[1])
+				recipe_array = recipe_data[0]
+				message = recipe_data[1]
+			end
 		elsif search_type == "rating"
 			recipes = Recipe.where(:rating_id => search_term).order(:updated_at).reverse_order
 			rating_id = search_term.to_i
@@ -267,15 +276,15 @@ class HomeController < ApplicationController
 			end
 		elsif search_type == "ingredients"
 			if recipe_count == 0
-				message = "No recipes found with " + search_term + " as an ingredient."
+				message = "No recipes were found with " + search_term + " as an ingredient."
 			elsif recipe_count == 1
 				message = recipe_count.to_s + " recipe found with " + search_term + " as an ingredient."
 			elsif recipe_count > 1
 				message = recipe_count.to_s + " recipes found with " + search_term + " as an ingredient."
 			end
-		elsif search_type == "titles"
+		elsif search_type == "title"
 			if recipe_count == 0
-				message = "No recipes found with " + search_term + " in the title."
+				message = "No recipes were found with " + search_term + " in the title."
 			elsif recipe_count == 1
 				message = recipe_count.to_s + " recipe found with " + search_term + " in the title."
 			elsif recipe_count > 1

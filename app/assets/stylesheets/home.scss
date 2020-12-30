@@ -130,12 +130,12 @@ h1 {
 .menuSelect.neutral {
 	color: black;
 }
-#menuSpacer1, #menuSpacer2, #menuSpacer3 {
+#menuSpacer1, #menuSpacer2, #menuSpacer3, #menuSpacer4 {
 	display: inline;
 	margin: 0 5px 0px 10px;
 	padding: 0;
 	height: 24px;
-	text-align: right;
+	text-align: left;
 	color: navy;
 }
 #menuSpacer1 {
@@ -143,9 +143,12 @@ h1 {
 }
 #menuSpacer2 {
 	float: left;
-	width: 8%;
+	width: 6%;
 }
 #menuSpacer3 {
+	width: 12%;
+}
+#menuSpacer4 {
 	float: left;
 	width: 8%;
 }

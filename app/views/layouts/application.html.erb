@@ -13,6 +13,8 @@
 <body>
 
 	<%# ======= rating/category/nationality options ======= %>
+	<% search_options = ["title", "ingredients"] %>
+
 	<% rating_ids = [["rating", nil]] %>
 	<% @ratings.each do |rating| %>
 		<% rating_text = rating.rating.to_s + ":  " + rating.comment %>
@@ -57,8 +59,11 @@
 		<div id="menuBox2">
 			<div id="menuSpacer2">search</div>
 			<input id="search" type="text" name="search">
-			<%= link_to "in recipe title", search_title_path, id: "searchTitles", remote: false %>
-			<%= link_to "in ingredients", search_ingredient_path, id: "searchIngredients", remote: false %>
+			<%= link_to "search in", "", id: "searchText", remote: false %>
+			<%= select_tag "search_select", options_for_select(search_options), class: "menuSelect neutral", remote: true %>
+			<div id="menuSpacer3">
+				<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>search by
+			</div>
 			<%= select_tag "rating_select", options_for_select(rating_ids), class: "menuSelect neutral", remote: true %>
 			<%= select_tag "category_select", options_for_select(category_ids), class: "menuSelect neutral", remote: true %>
 			<%= select_tag "nationality_select", options_for_select(nationality_ids), class: "menuSelect neutral", remote: true %>
@@ -67,13 +72,15 @@
 		<div id="menuBox3">
 			<div id="feedback">
 				<% if current_user %>
-					<p id="menuSpacer3">welcome </p>
+					<p id="menuSpacer4">welcome </p>
 					<p id="message"><%= current_user.username %></p>
 				<% end %>
 				<% puts "*** flash[:notice]: #{flash[:notice]}" %>
-				<% if flash[:notice] %>
-					<p id="notice"><%= flash[:notice] %></p>
-			    <% end %>
+				<p id="notice">
+					<% if flash[:notice] %>
+						<%= flash[:notice] %>
+				    <% end %>
+				</p>
 			</div>
 		</div>
 

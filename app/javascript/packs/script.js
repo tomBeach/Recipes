@@ -216,37 +216,51 @@ $(document).on('turbolinks:load', function() {
 			e.stopPropagation();
 		});
 
-		$('#searchTitles').click(function(e) {
-			console.log("== click: searchTitles ==");
+		$('#searchText').click(function(e) {
+			console.log("== click: searchText ==");
 			e.preventDefault();
+			var searchString = $('#search_select option:selected').val();
+			console.log("searchString: ", searchString);
 			if (editFlag == false) {
 				toggleEditButtons("hide");
-				var searchString = $('#search').val();
-				if (searchString.length == 0) {
-					makeTitleText("", "no search");
-				} else {
-					searchRecipes(searchString, "title");
-				}
+				searchRecipes(searchString, "text");
 			} else {
 				editPopup();
 			}
-	    });
+			e.stopPropagation();
+		});
 
-		$('#searchIngredients').click(function(e) {
-			console.log("== click: searchIngredients ==");
-			e.preventDefault();
-			if (editFlag == false) {
-				toggleEditButtons("hide");
-				var searchString = $('#search').val();
-				if (searchString.length == 0) {
-					makeTitleText("", "no search");
-				} else {
-					searchRecipes(searchString, "ingredient");
-				}
-			} else {
-				editPopup();
-			}
-	    });
+		// $('#searchTitles').click(function(e) {
+		// 	console.log("== click: searchTitles ==");
+		// 	e.preventDefault();
+		// 	if (editFlag == false) {
+		// 		toggleEditButtons("hide");
+		// 		var searchString = $('#search').val();
+		// 		if (searchString.length == 0) {
+		// 			makeTitleText("", "no search");
+		// 		} else {
+		// 			searchRecipes(searchString, "title");
+		// 		}
+		// 	} else {
+		// 		editPopup();
+		// 	}
+	    // });
+		//
+		// $('#searchIngredients').click(function(e) {
+		// 	console.log("== click: searchIngredients ==");
+		// 	e.preventDefault();
+		// 	if (editFlag == false) {
+		// 		toggleEditButtons("hide");
+		// 		var searchString = $('#search').val();
+		// 		if (searchString.length == 0) {
+		// 			makeTitleText("", "no search");
+		// 		} else {
+		// 			searchRecipes(searchString, "ingredient");
+		// 		}
+		// 	} else {
+		// 		editPopup();
+		// 	}
+	    // });
 
 		$('#rating_select').change(function(e) {
 			console.log("== change: rating_select ==");
@@ -319,6 +333,8 @@ $(document).on('turbolinks:load', function() {
 
 	function searchRecipes(searchString, searchType) {
 		console.log("== searchRecipes ==");
+		console.log("searchString: ", searchString);
+		console.log("searchType: ", searchType);
 
 		switch (searchType) {
 			case "all":
@@ -330,12 +346,17 @@ $(document).on('turbolinks:load', function() {
 			$('#nationality_select').addClass('neutral');		// set to neutral color
 			var url = "/all_recipes";
 			break;
-			case "title":
-			var url = "/search_title";
+			case "text":
+			var searchText = $('#search').val();
+			searchString = [searchString, searchText];
+			var url = "/search_text";
 			break;
-			case "ingredient":
-			var url = "/search_ingredient";
-			break;
+			// case "title":
+			// var url = "/search_title";
+			// break;
+			// case "ingredient":
+			// var url = "/search_ingredient";
+			// break;
 			case "rating":
 			var url = "/search_rating";
 			break;
