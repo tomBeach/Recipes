@@ -1,0 +1,77 @@
+<!-- ======= menu 1 ======= -->
+class="menuBox1">
+
+class="userBtn"
+<%= link_to "Home", "/home", class: "userBtn" %>
+
+id="banner"
+id="profile" class="dropdown userSelect"
+<a href="#">my ratings</a>
+<%= link_to "Edit Ratings", ratings_path, id: "ratings" %>
+
+<a href="#">my categories</a>
+<%= link_to "Edit Categories", categories_path, id: "categories" %>
+
+<a href="#">my nationalities</a>
+<%= link_to "Edit Nationalities", nationalities_path, id: "nationalities" %>
+
+<a href="#">profile</a>
+<%= link_to "profile", profile_path %>
+
+<a href="#">profile</a>
+<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
+
+
+<!-- ======= menu 2 ======= -->
+class="menuBox1"
+
+id="searchOwner"
+<a class="searchBtn" href="/myRecipes">My Recipes</a>
+<%= link_to "My Recipes", my_recipes_path, id: "getMyRecipes", remote: true %>
+
+<a class="searchBtn" href="/allRecipes">All Recipes</a>
+<%= link_to "All Recipes", all_recipes_path, id: "getAllRecipes", remote: true %>
+
+id="searchText"
+id="searchInput"
+<input id="search" type="text" name="search">
+
+id="searchIn"
+<a href="#">title</a>
+<a href="#">ingredients</a>
+<%= select_tag "search_select", options_for_select(search_options), class: "menuSelect neutral", remote: true %>
+
+id="searchClassify"
+id="rating_select" class="dropdown searchSelect">
+<a href="#">1 best</a>
+<a href="#">2 very good</a>
+<a href="#">3 okay</a>
+<a href="#">4 not so good</a>
+<a href="#">5 never again</a>
+<%= select_tag "rating_select", options_for_select(rating_ids), class: "dropdown searchSelect", remote: true %>
+
+id="category_select" class="dropdown searchSelect">
+<a href="#">meat</a>
+<a href="#">vegatarian</a>
+<a href="#">dessert</a>
+<%= select_tag "category_select", options_for_select(category_ids), class: "dropdown searchSelect", remote: true %>
+
+id="nationality_select" class="dropdown searchSelect">
+<a href="#">French</a>
+<a href="#">Italian</a>
+<a href="#">Spanish</a>
+<%= select_tag "nationality_select", options_for_select(nationality_ids), class: "dropdown searchSelect", remote: true %>
+
+<!-- ======= menu 3 ======= -->
+<div id="feedback" class="menuBox2">
+	<p id="message">
+		<% if current_user %>
+			<%= current_user.username + "'s recipe collection" %>  
+		<% end %>
+	</p>
+	<p id="notice">
+		<% if flash[:notice] %>
+			<%= flash[:notice] %>
+		<% end %>
+	</p>
+</div>

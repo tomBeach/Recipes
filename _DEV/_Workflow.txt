@@ -5,6 +5,48 @@
 // ======= ======= ======= Workflow ======= ======= =======
 
 
+// ======= ======= ======= menu ======= ======= =======
+management
+	home (button)
+	banner
+	account (styled dropdown)
+		my ratings (link)
+		my categories (link)
+		my nationalities (link)
+		profile (link)
+			firstname, lastname, username, email, password
+search
+	my recipes (link)
+	all recipes (link)
+	search in
+		text input
+		title/ingredients (select box)
+	search by
+		rating (select box)
+		category (select box)
+		nationality (select box)
+white space/messages
+recipe
+	recipe title/classification
+		title
+		rating
+		category
+		nationality
+		public/private (checkbox)
+		delete
+	ingredients/instructions
+		sequence
+		text
+	groupings
+recipe list
+	list title
+	columns (sort by)
+		rating
+		category
+		nationality
+		public/private (checkbox)
+		title
+
 // ======= ======= ======= folder ======= ======= =======
 $ cd Desktop/_WEB_DEV/_RAILS_WEB/Recipes2
 
