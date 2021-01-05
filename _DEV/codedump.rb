@@ -1,3 +1,47 @@
+<div id="menuBox3">
+	<div id="feedback">
+		<% if current_user %>
+			<p id="menuSpacer4">welcome </p>
+			<p id="message"><%= current_user.username %></p>
+		<% end %>
+		<% puts "*** flash[:notice]: #{flash[:notice]}" %>
+		<p id="notice">
+			<% if flash[:notice] %>
+				<%= flash[:notice] %>
+			<% end %>
+		</p>
+	</div>
+</div>
+
+
+<!-- ======= menu ======= -->
+<div id="menuBox1">
+	<%= link_to "Home", "/home", class: "userBtn" %>
+	<% if !current_user %>
+		<%= link_to "Sign up", new_user_registration_path, class: "userBtn" %>
+		<%= link_to "Sign in", new_user_session_path, class: "userBtn" %>
+	<% else %>
+		<% path = request.path %>
+		<%= link_to "Sign out", destroy_user_session_path, class: "userBtn", :method => :delete %>
+		<div id="menuSpacer1">
+			<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>
+		</div>
+		<%= link_to "Import Recipes", import_recipes_path, id: "import", class: "importBtn checkEdit" %>
+		<%= link_to "Get All Recipes", all_recipes_path, id: "getAllRecipes", class: "importBtn checkEdit", remote: true %>
+		<div id="menuSpacer1">
+			<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>
+		</div>
+		<%= link_to "Edit Ratings", ratings_path, id: "ratings", class: "mgmtBtn checkEdit" %>
+		<%= link_to "Edit Categories", categories_path, id: "categories", class: "mgmtBtn checkEdit" %>
+		<%= link_to "Edit Nationalities", nationalities_path, id: "nationalities", class: "mgmtBtn checkEdit" %>
+	<% end %>
+</div>
+
+
+
+
+
+
 
 
 <%# ======= category and nationality options ======= %>

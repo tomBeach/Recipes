@@ -32,55 +32,92 @@
 
     <div id="wrapper">
 
-		<!-- ======= menu ======= -->
-        <div id="menuBox1">
+		<!-- ======= menu 1 ======= -->
+        <div class="menuBox1">
 			<%= link_to "Home", "/home", class: "userBtn" %>
-            <% if !current_user %>
+			<div id="banner">
+				My Recipes
+			</div>
+
+			<% if !current_user %>
                 <%= link_to "Sign up", new_user_registration_path, class: "userBtn" %>
                 <%= link_to "Sign in", new_user_session_path, class: "userBtn" %>
             <% else %>
-				<% path = request.path %>
-				<%= link_to "Sign out", destroy_user_session_path, class: "userBtn", :method => :delete %>
-				<div id="menuSpacer1">
-					<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>
+				<div id="profile" class="dropdown userSelect">
+					<button class="dropdown-menu">My Account</button>
+					<div class="dropdown-content">
+						<%= link_to "Import Recipes", import_recipes_path, id: "import", class: "importBtn checkEdit" %>
+						<%= link_to "Edit Ratings", ratings_path, id: "ratings", class: "checkEdit" %>
+						<%= link_to "Edit Categories", categories_path, id: "categories", class: "checkEdit" %>
+						<%= link_to "Edit Nationalities", nationalities_path, id: "nationalities", class: "checkEdit" %>
+						<a href="#">profile</a>
+						<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
+					</div>
 				</div>
-				<%= link_to "Import Recipes", import_recipes_path, id: "import", class: "importBtn checkEdit" %>
-				<%= link_to "Get All Recipes", all_recipes_path, id: "getAllRecipes", class: "importBtn checkEdit", remote: true %>
-				<div id="menuSpacer1">
-					<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>
-				</div>
-				<%= link_to "Edit Ratings", ratings_path, id: "ratings", class: "mgmtBtn checkEdit" %>
-				<%= link_to "Edit Categories", categories_path, id: "categories", class: "mgmtBtn checkEdit" %>
-				<%= link_to "Edit Nationalities", nationalities_path, id: "nationalities", class: "mgmtBtn checkEdit" %>
-            <% end %>
-        </div>
-
-		<div id="menuBox2">
-			<div id="menuSpacer2">search</div>
-			<input id="search" type="text" name="search">
-			<%= link_to "search in", "", id: "searchText", remote: false %>
-			<%= select_tag "search_select", options_for_select(search_options), class: "menuSelect neutral", remote: true %>
-			<div id="menuSpacer3">
-				<span>&nbsp;&nbsp; | &nbsp;&nbsp;</span>search by
-			</div>
-			<%= select_tag "rating_select", options_for_select(rating_ids), class: "menuSelect neutral", remote: true %>
-			<%= select_tag "category_select", options_for_select(category_ids), class: "menuSelect neutral", remote: true %>
-			<%= select_tag "nationality_select", options_for_select(nationality_ids), class: "menuSelect neutral", remote: true %>
+			<% end %>
 		</div>
 
-		<div id="menuBox3">
-			<div id="feedback">
-				<% if current_user %>
-					<p id="menuSpacer4">welcome </p>
-					<p id="message"><%= current_user.username %></p>
-				<% end %>
-				<% puts "*** flash[:notice]: #{flash[:notice]}" %>
-				<p id="notice">
-					<% if flash[:notice] %>
-						<%= flash[:notice] %>
-				    <% end %>
-				</p>
+		<!-- ======= menu 2 ======= -->
+		<div class="menuBox1">
+			<div id="searchOwner" class="menuGroup">
+				<%= link_to "My Recipes", "#", id: "getMyRecipes", class: "searchBtn checkEdit", remote: true %>
+				<%= link_to "All Recipes", all_recipes_path, id: "getAllRecipes", class: "searchBtn checkEdit", remote: true %>
 			</div>
+
+			<div id="searchText" class="menuGroup">
+				<input id="searchInput" type="text" name="search" placeholder="search text">
+				<div id="searchIn" class="dropdown searchSelect">
+					<button class="dropdown-menu">Search in</button>
+					<div class="dropdown-content">
+						<a href="#">title</a>
+						<a href="#">ingredients</a>
+					</div>
+				</div>
+			</div>
+
+			<div id="searchClassify" class="menuGroup">
+				<p class="searchLabel">Search by...</p>
+				<div id="searchRating" class="dropdown searchSelect">
+					<button class="dropdown-menu">Rating</button>
+					<div class="dropdown-content">
+						<% rating_ids = [["rating", nil]] %>
+						<% @ratings.each do |rating| %>
+							<% rating_text = rating.rating.to_s + " " + rating.comment %>
+							<%= link_to rating_text, rating.rating.to_s, id: "rating_" + rating.rating.to_s, remote: true %>
+						<% end %>
+					</div>
+				</div>
+				<div id="searchCategory" class="dropdown searchSelect">
+					<button class="dropdown-menu">Category</button>
+					<div class="dropdown-content">
+						<% @categories.each do |category| %>
+							<%= link_to category.category, "", id: "category_" + category[:id].to_s, remote: true %>
+						<% end %>
+					</div>
+				</div>
+				<div id="searchNationality" class="dropdown searchSelect">
+					<button class="dropdown-menu">Nationality</button>
+					<div class="dropdown-content">
+						<% @nationalities.each_with_index do |nationality, index| %>
+							<%= link_to nationality.nationality, "", id: "nationality_" + nationality[:id].to_s, remote: true %>
+						<% end %>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ======= menu 3 ======= -->
+		<div id="feedback" class="menuBox2">
+			<p id="notice">
+				<% if flash[:notice] %>
+					<%= flash[:notice] %>
+				<% end %>
+			</p>
+			<p id="message">
+				<% if current_user %>
+					<%= current_user.username %>
+				<% end %>
+			</p>
 		</div>
 
 		<!-- ======= popup ======= -->

@@ -196,7 +196,7 @@ $(document).on('turbolinks:load', function() {
 		$('body').keyup(function(e) {
 			console.log("== keyup ==");
 	        if (e.keyCode === 13) {
-				var searchValue = $('#search').val();
+				var searchValue = $('#searchInput').val();
 				if (searchValue != "") {
 					var searchString = $('#search_select option:selected').val();
 					if (editFlag == false) {
@@ -225,16 +225,31 @@ $(document).on('turbolinks:load', function() {
 			e.stopPropagation();
 		});
 
-		// == button for search text (alternative to Enter key)
-		$('#searchText').click(function(e) {
-			console.log("== click: searchText ==");
+		// == search for text in title
+		$('#searchIn > div > a:nth-of-type(1)').click(function(e) {
+			console.log("== click: searchIn ==");
 			e.preventDefault();
-			var searchValue = $('#search').val();
+			var searchValue = $('#searchInput').val();
 			if (searchValue != "") {
-				var searchString = $('#search_select option:selected').val();
 				if (editFlag == false) {
 					toggleEditButtons("hide");
-					searchRecipes(searchString, "text");
+					searchRecipes("title", "text");
+				} else {
+					displayPopup("edit", "");
+				}
+			}
+			e.stopPropagation();
+		});
+
+		// == search for text in ingredients
+		$('#searchIn > div > a:nth-of-type(2)').click(function(e) {
+			console.log("== click: searchIn ==");
+			e.preventDefault();
+			var searchValue = $('#searchInput').val();
+			if (searchValue != "") {
+				if (editFlag == false) {
+					toggleEditButtons("hide");
+					searchRecipes("ingredients", "text");
 				} else {
 					displayPopup("edit", "");
 				}
@@ -243,17 +258,12 @@ $(document).on('turbolinks:load', function() {
 		});
 
 		// == search by rating
-		$('#rating_select').change(function(e) {
-			console.log("== change: rating_select ==");
+		$('#searchRating > div > a').click(function(e) {
+			console.log("== click: searchRating ==");
 			e.preventDefault();
 			if (editFlag == false) {
-				$('#rating_select').removeClass('neutral');		// set to *active* color
-				$('#category_select').val(null);				// set to no selection
-				$('#nationality_select').val(null);				// set to no selection
-				$('#category_select').addClass('neutral');		// set to neutral color
-				$('#nationality_select').addClass('neutral');	// set to neutral color
 				toggleEditButtons("hide");
-				var searchString = $('#rating_select option:selected').val();
+				var searchString = $(this).attr('id').split('_')[1];
 				if (searchString.length == 0) {
 					makeTitleText("", "no search");
 				} else {
@@ -262,20 +272,16 @@ $(document).on('turbolinks:load', function() {
 			} else {
 				displayPopup("edit", "");
 			}
+			e.stopPropagation();
 	    });
 
 		// == search by category
-		$('#category_select').change(function(e) {
-			console.log("== change: category_select ==");
+		$('#searchCategory > div > a').click(function(e) {
+			console.log("== click: searchCategory ==");
 			e.preventDefault();
 			if (editFlag == false) {
-				$('#rating_select').val(null);					// set to no selection
-				$('#category_select').removeClass('neutral');	// set to *active* color
-				$('#nationality_select').val(null);				// set to no selection
-				$('#rating_select').addClass('neutral');		// set to neutral color
-				$('#nationality_select').addClass('neutral');	// set to neutral color
 				toggleEditButtons("hide");
-				var searchString = $('#category_select option:selected').val();
+				var searchString = $(this).attr('id').split('_')[1];
 				if (searchString.length == 0) {
 					makeTitleText("", "no search");
 				} else {
@@ -284,20 +290,16 @@ $(document).on('turbolinks:load', function() {
 			} else {
 				displayPopup("edit", "");
 			}
+			e.stopPropagation();
 	    });
 
 		// == search by nationality
-		$('#nationality_select').change(function(e) {
-			console.log("== change: nationality_select ==");
+		$('#searchNationality > div > a').click(function(e) {
+			console.log("== click: searchNationality ==");
 			e.preventDefault();
 			if (editFlag == false) {
-				$('#rating_select').val(null);						// set to no selection
-				$('#category_select').val(null);					// set to no selection
-				$('#nationality_select').removeClass('neutral');	// set to *active* color
-				$('#rating_select').addClass('neutral');			// set to neutral color
-				$('#category_select').addClass('neutral');			// set to neutral color
 				toggleEditButtons("hide");
-				var searchString = $('#nationality_select option:selected').val();
+				var searchString = $(this).attr('id').split('_')[1];
 				if (searchString.length == 0) {
 					makeTitleText("", "no search");
 				} else {
@@ -306,6 +308,7 @@ $(document).on('turbolinks:load', function() {
 			} else {
 				displayPopup("edit", "");
 			}
+			e.stopPropagation();
 	    });
 	}
 
@@ -330,7 +333,7 @@ $(document).on('turbolinks:load', function() {
 			var url = "/all_recipes";
 			break;
 			case "text":
-			var searchText = $('#search').val();
+			var searchText = $('#searchInput').val();
 			searchString = [searchString, searchText];
 			var url = "/search_text";
 			break;
