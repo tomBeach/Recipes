@@ -115,7 +115,7 @@ h1, h2 {
 	background-color: #4CAF50;
 	color: white;
 }
-#searchInput, #searchIn {
+#searchInput, #searchInBtn {
 	width: 42%;
 	margin: 0 2%;
 }

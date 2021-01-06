@@ -36,7 +36,7 @@ id="searchText"
 id="searchInput"
 <input id="search" type="text" name="search">
 
-id="searchIn"
+id="searchInBtn"
 <a href="#">title</a>
 <a href="#">ingredients</a>
 <%= select_tag "search_select", options_for_select(search_options), class: "menuSelect neutral", remote: true %>
@@ -66,7 +66,7 @@ id="nationality_select" class="dropdown searchSelect">
 <div id="feedback" class="menuBox2">
 	<p id="message">
 		<% if current_user %>
-			<%= current_user.username + "'s recipe collection" %>  
+			<%= current_user.username + "'s recipe collection" %>
 		<% end %>
 	</p>
 	<p id="notice">

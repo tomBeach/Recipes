@@ -226,10 +226,11 @@ $(document).on('turbolinks:load', function() {
 		});
 
 		// == search for text in title
-		$('#searchIn > div > a:nth-of-type(1)').click(function(e) {
-			console.log("== click: searchIn ==");
+		$('#searchInBtn > div > a:nth-of-type(1)').click(function(e) {
+			console.log("== click: searchInBtn ==");
 			e.preventDefault();
 			var searchValue = $('#searchInput').val();
+			console.log("searchValue: ", searchValue);
 			if (searchValue != "") {
 				if (editFlag == false) {
 					toggleEditButtons("hide");
@@ -237,13 +238,15 @@ $(document).on('turbolinks:load', function() {
 				} else {
 					displayPopup("edit", "");
 				}
+			} else {
+				displayPopup("search", "");
 			}
 			e.stopPropagation();
 		});
 
 		// == search for text in ingredients
-		$('#searchIn > div > a:nth-of-type(2)').click(function(e) {
-			console.log("== click: searchIn ==");
+		$('#searchInBtn > div > a:nth-of-type(2)').click(function(e) {
+			console.log("== click: searchInBtn ==");
 			e.preventDefault();
 			var searchValue = $('#searchInput').val();
 			if (searchValue != "") {
@@ -253,6 +256,8 @@ $(document).on('turbolinks:load', function() {
 				} else {
 					displayPopup("edit", "");
 				}
+			} else {
+				displayPopup("search", "");
 			}
 			e.stopPropagation();
 		});
@@ -324,17 +329,12 @@ $(document).on('turbolinks:load', function() {
 
 		switch (searchType) {
 			case "all":
-			$('#rating_select').val(null);						// set to no selection
-			$('#category_select').val(null);					// set to no selection
-			$('#nationality_select').val(null);					// set to no selection
-			$('#rating_select').addClass('neutral');			// set to neutral color
-			$('#category_select').addClass('neutral');			// set to neutral color
-			$('#nationality_select').addClass('neutral');		// set to neutral color
 			var url = "/all_recipes";
 			break;
 			case "text":
-			var searchText = $('#searchInput').val();
-			searchString = [searchString, searchText];
+			var searchText = $('#searchInput').val();	// search in title or ingredients
+			searchString = [searchString, searchText];	// pass type and title/ingredient selection
+			// searchType = searchString;					// makeTitleText() function requires title or ingredients selection
 			var url = "/search_text";
 			break;
 			case "rating":
@@ -594,8 +594,8 @@ $(document).on('turbolinks:load', function() {
 		$('.ingredient, .instruction').on('mouseover', hiliteLink);
 		$('.ingredient, .instruction').on('mouseout', restoreLink);
 		$('.ingredient, .instruction').on('click', editRecipeLine);
-		$('.addBtn').on('mouseover', hiliteBtn);
-		$('.addBtn').on('mouseout', restoreBtn);
+		// $('.addBtn').on('mouseover', hiliteBtn);
+		// $('.addBtn').on('mouseout', restoreBtn);
 		$('.addBtn').on('click', inputNewLine);
 
 		// == recipe line behaviors
@@ -608,15 +608,15 @@ $(document).on('turbolinks:load', function() {
 			// console.log("== restoreLink ==");
 			$(this).css('color', textColor);
 		}
-		function hiliteBtn() {
-			// console.log("== hiliteBtn ==");
-			btnColor = $(this).css('background-color');
-			$(this).css('background-color', 'red');
-		}
-		function restoreBtn() {
-			// console.log("== restoreBtn ==");
-			$(this).css('background-color', btnColor);
-		}
+		// function hiliteBtn() {
+		// 	// console.log("== hiliteBtn ==");
+		// 	btnColor = $(this).css('background-color');
+		// 	$(this).css('background-color', 'red');
+		// }
+		// function restoreBtn() {
+		// 	// console.log("== restoreBtn ==");
+		// 	$(this).css('background-color', btnColor);
+		// }
 
 
 		// ======= ======= ======= title edit/update/cancel ======= ======= =======
@@ -635,8 +635,6 @@ $(document).on('turbolinks:load', function() {
 			var btnsHtml = "<div id='titleSaveBtn' class='saveBtn'> save </div> <div id='titleCancelBtn' class='cancelBtn'> cancel </div> ";
 			var editHtml = inputHtml + btnsHtml;
 			$(this).replaceWith(editHtml);
-			$('.saveBtn, .cancelBtn').on('mouseover', hiliteBtn);
-			$('.saveBtn, .cancelBtn').on('mouseout', restoreBtn);
 
 			$('.saveBtn').click(function(e) {
 				e.preventDefault();
@@ -701,7 +699,7 @@ $(document).on('turbolinks:load', function() {
 
 			// == remove/restore existing edit mode elements if any
 			if ($('.saveBtn').length > 0) {
-				$('.saveBtn, .cancelBtn, .deleteBtn').remove();
+				$('.editItemBox, .saveBtn, .cancelBtn, .deleteBtn').remove();
 				var saveHtml = "<p class='ingredient' id='" + currentId + "'>" + currentText + "</p>";
 				$('#' + currentId).replaceWith(saveHtml);
 				$('#' + currentId).on('mouseover', hiliteLink);
@@ -710,18 +708,21 @@ $(document).on('turbolinks:load', function() {
 			}
 
 			// == set edit mode parameters for currently selected element
+			var btnsHtml = "";
 			var inputHtml = "";
 			currentText = $(this).text();
 			currentId = $(this).attr('id');
 			inputHtml = inputHtml + "<textarea class='editItem' id='" + currentId + "' name='" + currentId + "'";
 			inputHtml = inputHtml + " cols='40' rows='5'>" + currentText + "</textarea>";
-			var btnsHtml = "<div class='saveBtn'> save </div> <div class='cancelBtn'> cancel </div> <div class='deleteBtn'> delete </div> ";
+			var btnsHtml = btnsHtml + "<div class='editItemBox'>";
+			var btnsHtml = btnsHtml + "<div class='saveBtn'> save </div>";
+			var btnsHtml = btnsHtml + "<div class='cancelBtn'> cancel </div>";
+			var btnsHtml = btnsHtml + "<div class='deleteBtn'> delete </div> ";
+			var btnsHtml = btnsHtml + "</div> ";
 			var editHtml = inputHtml + btnsHtml;
 			$(this).replaceWith(editHtml);
 
 			// == activate save/cancel/delete buttons
-			$('.saveBtn, .cancelBtn, .deleteBtn').on('mouseover', hiliteBtn);
-			$('.saveBtn, .cancelBtn, .deleteBtn').on('mouseout', restoreBtn);
 			$('.saveBtn').on('click', updateRecipeLine);
 			$('.cancelBtn').on('click', cancelLineEdits);
 			$('.deleteBtn').on('click', deleteRecipeLine);
@@ -767,7 +768,7 @@ $(document).on('turbolinks:load', function() {
 			// == update html string with changes
 			var saveHtml = "<p class='ingredient' id='" + currentId + "'>" + newText + "</p>";
 			$('#' + currentId).replaceWith(saveHtml);
-			$('.saveBtn, .cancelBtn, .deleteBtn').remove();
+			$('.editItemBox, .saveBtn, .cancelBtn, .deleteBtn').remove();
 
 			// == restore line hilites and click behavior
 			$('#' + currentId).on('mouseover', hiliteLink);
@@ -784,7 +785,7 @@ $(document).on('turbolinks:load', function() {
 			editFlag = false;
 			var saveHtml = "<p class='ingredient' id='" + currentId + "'>" + currentText + "</p>";
 			$('#' + currentId).replaceWith(saveHtml);
-			$('.saveBtn, .cancelBtn, .deleteBtn').remove();
+			$('.editItemBox, .saveBtn, .cancelBtn, .deleteBtn').remove();
 			$('#' + currentId).on('mouseover', hiliteLink);
 			$('#' + currentId).on('mouseout', restoreLink);
 			$('#' + currentId).on('click', editRecipeLine);
@@ -808,20 +809,20 @@ $(document).on('turbolinks:load', function() {
 				var ingrCount = $('#ingredients').children().length + 1;
 				editHtml = editHtml + "<div id='ingrLine_" + ingrCount + "' class='recipeLine newRecipeLine iu-sortable-handle'>";
 				editHtml = editHtml + "<input type='text' class='newItem' id='newIngr' name='newIngr'>";
-				editHtml = editHtml + "<div class='saveBtn' id='ingrSave'> save </div> <div class='cancelBtn' id='ingrCancel'> cancel </div>";
+				editHtml = editHtml + "<div class='saveBtn' id='ingrSave'> save </div>";
+				editHtml = editHtml + "<div class='cancelBtn' id='ingrCancel'> cancel </div>";
 				editHtml = editHtml + "</div>";
 				$('#ingredients').prepend(editHtml);
 			} else if (ingrOrInst == "instAdd") {
 				var instCount = $('#instructions').children().length + 1;
 				editHtml = editHtml + "<div id='instLine_" + instCount + "' class='recipeLine newRecipeLine iu-sortable-handle'>";
 				editHtml = editHtml + "<input type='text' class='newItem' id='newInst' name='newInst'>";
-				editHtml = editHtml + "<div class='saveBtn' id='instSave'> save </div> <div class='cancelBtn' id='instCancel'> cancel </div>";
+				editHtml = editHtml + "<div class='saveBtn' id='instSave'> save </div>";
+				editHtml = editHtml + "<div class='cancelBtn' id='instCancel'> cancel </div>";
 				editHtml = editHtml + "</div>";
 				$('#instructions').prepend(editHtml);
 			}
 
-			$('.saveBtn, .cancelBtn').on('mouseover', hiliteBtn);
-			$('.saveBtn, .cancelBtn').on('mouseout', restoreBtn);
 			$('.saveBtn').on('click', saveNewLine);
 			$('.cancelBtn').on('click', cancelNewLine);
 		}
@@ -1002,24 +1003,18 @@ $(document).on('turbolinks:load', function() {
 		// nationalityObj: 17=>{:id=>17, :nationality=>"Thai", :color=>"#54478c"},
 
 		// == title html
-		recipeHtml = recipeHtml + "<div id='recipeBox1' class='fullBox'>";
-		recipeHtml = recipeHtml + "<div class='twoThirdBox'>";
-		recipeHtml = recipeHtml + "<h2 id='outputTitle'></h2>";
-		recipeHtml = recipeHtml + "</div>";
-		recipeHtml = recipeHtml + "<div class='oneThirdBox'></div>";
-		recipeHtml = recipeHtml + "</div>";
+		recipeHtml = recipeHtml + "<div class='menuBox1'>";
+		recipeHtml = recipeHtml + "<h2 id='outputTitle'></h2></div>";
 
 		// == column headers html
-		recipeHtml = recipeHtml + "<div id='recipeHeaders'>";
-		recipeHtml = recipeHtml + "<div class='recipeHeader'>";
-		recipeHtml = recipeHtml + "rating" + "</div>";
-		recipeHtml = recipeHtml + "<div class='recipeHeader'>";
-		recipeHtml = recipeHtml + "category" + "</div>";
-		recipeHtml = recipeHtml + "<div class='recipeHeader'>";
-		recipeHtml = recipeHtml + "nationality" + "</div>";
-		recipeHtml = recipeHtml + "<div class='recipeHeader'>";
-		recipeHtml = recipeHtml + "recipe" + "</div></div>";
-		recipeHtml = recipeHtml + "<div id='recipeList'>";
+		recipeHtml = recipeHtml + "<table class='menuList'>";
+		recipeHtml = recipeHtml + "<tr class='menuHeaders'>";
+		recipeHtml = recipeHtml + "<th id='shareHeader' class='menuListHeader'>share</th>";
+		recipeHtml = recipeHtml + "<th id='ratingHeader' class='menuListHeader'>rating</th>";
+		recipeHtml = recipeHtml + "<th id='categoryHeader' class='menuListHeader'>category</th>";
+		recipeHtml = recipeHtml + "<th id='nationalityHeader' class='menuListHeader'>nationality</th>";
+		recipeHtml = recipeHtml + "<th id='titleHeader' class='menuListHeader'>title</th>";
+		recipeHtml = recipeHtml + "</tr>";
 
 		if (jsonData.recipeArray.length > 0) {
 			for (var k = 0; k < jsonData.recipeArray.length; k++) {
@@ -1034,9 +1029,9 @@ $(document).on('turbolinks:load', function() {
 					ratingText = ratingObj[nextRatingId].rating[0] + ": " + ratingObj[nextRatingId].rating[1];
 					ratingStyle = "color:" + ratingObj[nextRatingId].color;
 				} else {
-					selectedRating = "";
-					ratingText = "";
-					ratingStyle = "visibility:hidden";
+					selectedRating = "&nbsp;";
+					ratingText = "&nbsp;";
+					ratingStyle = "";
 				}
 
 				// == category
@@ -1044,8 +1039,8 @@ $(document).on('turbolinks:load', function() {
 					categoryText = categoryObj[nextCategoryId].category;
 					categoryStyle = "color:" + categoryObj[nextCategoryId].color;
 				} else {
-					categoryText = "";
-					categoryStyle = "visibility:hidden";
+					categoryText = "&nbsp;";
+					categoryStyle = "";
 				}
 
 				// == nationality
@@ -1053,20 +1048,21 @@ $(document).on('turbolinks:load', function() {
 					nationalityText = nationalityObj[nextNationalityId].nationality;
 					nationalityStyle = "color:" + nationalityObj[nextNationalityId].color;
 				} else {
-					nationalityText = "";
-					nationalityStyle = "visibility:hidden";
+					nationalityText = "&nbsp;";
+					nationalityStyle = "";
 				}
 
-				recipeHtml = recipeHtml + "<div>";
-				recipeHtml = recipeHtml + "<div class='ratingType' style='" + ratingStyle + ";'>";
-				recipeHtml = recipeHtml + ratingText + "</div>";
-				recipeHtml = recipeHtml + "<div class='recipeType' style='" + categoryStyle + ";'>";
-				recipeHtml = recipeHtml + categoryText + "</div>";
-				recipeHtml = recipeHtml + "<div class='recipeType' style='" + nationalityStyle + ";'>";
-				recipeHtml = recipeHtml + nationalityText + "</div>";
-				recipeHtml = recipeHtml + "<div class='recipeLink'>";
+				recipeHtml = recipeHtml + "<tr>";
+				recipeHtml = recipeHtml + "<td class='menuListItem shareItem'>";
+				recipeHtml = recipeHtml + "<input type='checkbox'>";
+				recipeHtml = recipeHtml + "</td>";
+				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + ratingStyle + ";'>" + ratingText + "</td>";
+				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + categoryStyle + ";'>" + categoryText + "</td>";
+				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + nationalityStyle + ";'>" + nationalityText + "</td>";
+				recipeHtml = recipeHtml + "<td class='menuListItem recipeLink'>";
 				recipeHtml = recipeHtml + "<a href='/show_recipe/" + nextId + "'>" + nextTitle;
-				recipeHtml = recipeHtml + "</a></div></div>";
+				recipeHtml = recipeHtml + "</td>";
+				recipeHtml = recipeHtml + "</tr>";
 			}
 		} else {
 			recipeHtml = "<p class='info'> Sorry... no results were returned from the database.</p>";
@@ -1084,19 +1080,19 @@ $(document).on('turbolinks:load', function() {
 		var titleText;
 		var ratingText = "";
 		var ratingObj = jsonData.ratingObj;
+		// ratingObj: 1=>{:id=>1, :rating=>[1, "favorite"], :color=>"#03045e"},
 
 		if (jsonData != "") {
 			if (jsonData.recipeArray.length > 0) {
-				if (type == "title") {
-					titleText = "Recipes with '" + jsonData.search + "' in title";
-				} else if (type == "ingredient") {
-					titleText = "Recipes with '" + jsonData.search + "' as an ingredient";
+				if ((type == "text") && (jsonData.search[0] == "title")) {
+					titleText = "Recipes with '" + jsonData.search[1] + "' in title";
+				} else if ((type == "text") && (jsonData.search[0] == "ingredients")) {
+					titleText = "Recipes with '" + jsonData.search[1] + "' as an ingredient";
 				} else if (type == "category") {
 					titleText = "Recipes in the '" + jsonData.search + "' category";
 				} else if (type == "nationality") {
 					titleText = "Recipes classified as '" + jsonData.search + "'";
 				} else if (type == "rating") {
-					// ratingObj: 1=>{:id=>1, :rating=>[1, "favorite"], :color=>"#03045e"},
 					ratingText = ratingText + ratingObj[jsonData.search].rating[0];
 					ratingText = ratingText + ": ";
 					ratingText = ratingText + ratingObj[jsonData.search].rating[1];
@@ -1114,7 +1110,6 @@ $(document).on('turbolinks:load', function() {
 				} else if (type == "nationality") {
 					titleText = "No recipes classified as '" + jsonData.search + "' were found.";
 				} else if (type == "rating") {
-					// ratingObj: 1=>{:id=>1, :rating=>[1, "favorite"], :color=>"#03045e"},
 					ratingText = ratingText + ratingObj[jsonData.search].rating[0];
 					ratingText = ratingText + ": ";
 					ratingText = ratingText + ratingObj[jsonData.search].rating[1];
@@ -1731,22 +1726,22 @@ $(document).on('turbolinks:load', function() {
 
 		var btnColor;
 
-		function hiliteBtn() {
-			// console.log("== hiliteBtn ==");
-			btnColor = $(this).css('background-color');
-			$(this).css('background-color', 'red');
-		}
-		function restoreBtn() {
-			// console.log("== restoreBtn ==");
-			$(this).css('background-color', btnColor);
-		}
+		// function hiliteBtn() {
+		// 	// console.log("== hiliteBtn ==");
+		// 	btnColor = $(this).css('background-color');
+		// 	$(this).css('background-color', 'red');
+		// }
+		// function restoreBtn() {
+		// 	// console.log("== restoreBtn ==");
+		// 	$(this).css('background-color', btnColor);
+		// }
 
 		var inputHtml = "<input type='text' id='newNationality' name='newNationality'>";
 		var btnsHtml = "<div class='saveBtn'> save </div> <div class='cancelBtn'> cancel </div> ";
 		var editHtml = inputHtml + btnsHtml;
 		$('#newNationalityBtn').after(editHtml);
-		$('.saveBtn, .cancelBtn').on('mouseover', hiliteBtn);
-		$('.saveBtn, .cancelBtn').on('mouseout', restoreBtn);
+
+
 
 		$('.saveBtn').click(function(e) {
 			e.preventDefault();

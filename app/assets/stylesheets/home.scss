@@ -38,31 +38,21 @@ h1, h2 {
     color: navy;
 }
 
-/* ======= ======= ======= redesign: menus ======= ======= ======= */
+/* ======= ======= ======= menus ======= ======= ======= */
 .menuBox1 {
 	width: 100%;
 	height: 70px;
 	margin: 0;
-	margin-top: 10px;
+	margin-top: 2px;
 	padding: 10px 0;
 	padding-right: 10px;
 	background-color: #eee;
 }
 .menuBox2 {
 	height: 40px;
-	background-color: #fafafa;
-}
-#message, #notice {
-	float: left;
-	margin: 10px 2%;
-}
-#message {
-	width: 22%;
-	text-align: right;
-}
-#notice {
-	width: 70%;
-	text-align: left;
+	margin: 0;
+	margin-top: 2px;
+	background-color: #f5f5f5;
 }
 
 /* ======= menu groups ======= */
@@ -84,13 +74,21 @@ h1, h2 {
 #searchClassify {
 	width: 57%;
 }
-#ingredients, #instructions {
-	width: 50%;
+
+/* ======= banner bar ======= */
+#banner {
+	float: left;
+	width: 54%;
 	margin: 0;
-	padding: 10px;
+	padding: 10px 0;
+	font-size: 24px;
+	text-align: center;
+}
+#profile {
+	float: right;
 }
 
-/* ======= menu elements ======= */
+/* ======= search bar ======= */
 .userBtn, .searchBtn, .searchLabel, #searchInput {
 	float: left;
 	position: relative;
@@ -115,7 +113,7 @@ h1, h2 {
 	background-color: #4CAF50;
 	color: white;
 }
-#searchInput, #searchIn {
+#searchInput, #searchInBtn {
 	width: 42%;
 	margin: 0 2%;
 }
@@ -130,17 +128,6 @@ h1, h2 {
 	background-color: navy;
 	color: red;
 }
-#banner {
-	float: left;
-	width: 54%;
-	margin: 0;
-	padding: 10px 0;
-	font-size: 24px;
-	text-align: center;
-}
-#profile {
-	float: right;
-}
 .searchLabel {
 	margin: 0;
 	padding: 0;
@@ -148,66 +135,33 @@ h1, h2 {
 	margin-top: 8px;
 	font-size: 24px;
 	text-align: right;
-	color: navy;
+	color: Navy;
 }
 
-/* ======= dropdown ======= */
-.dropdown {
+/* ======= feedback bar ======= */
+#message, #notice {
 	float: left;
-	position: relative;
-	display: inline-block;
-	margin: 0;
-	margin-left: 1%;
+	margin: 10px 2%;
+	color: Navy;
 }
-.dropdown-menu {
-	width: 100%;
-	padding: 16px 0;
-	text-align: center;
-	font-size: 16px;
-	background-color: #4CAF50;
-	color: white;
-	border: none;
-}
-.dropdown-content {
-	display: none;
-	position: absolute;
-	background-color: #f1f1f1;
-	width: 100%;
-	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-	z-index: 1;
-}
-.dropdown-content a {
-	color: black;
-	padding: 12px 10px;
-	text-decoration: none;
-	display: block;
-}
-.dropdown-content a:hover {
-	background-color: #ddd;
-}
-.dropdown:hover .dropdown-content {
-	display: block;
-}
-.dropdown:hover .dropdown-menu {
-	background-color: navy;
-	color: red;
-}
-.userSelect {
-	width: 20%;
-}
-.searchSelect {
+#message {
 	width: 22%;
-	margin-left: 4%;
+	text-align: right;
+}
+#notice {
+	width: 70%;
+	text-align: left;
+	color: Plum;
 }
 
-/* ======= ======= ======= redesign: menu display ======= ======= ======= */
+/* ======= title bar ======= */
 #outputTitle {
 	float: left;
 	color: Tomato;
 	margin: 5px 20px;
 }
 
-/* ======= ======= ======= redesign: menu menuList ======= ======= ======= */
+/* ======= ======= ======= menu menuList ======= ======= ======= */
 .menuList {
 	width: 100%;
 }
@@ -230,407 +184,165 @@ h1, h2 {
 	width: 5%;
 }
 .menuListHeader:nth-of-type(2) {
-	width: 5%;
+	width: 10%;
 }
 .menuListHeader:nth-of-type(3) {
 	width: 15%;
 }
 .menuListHeader:nth-of-type(4) {
-	width: 15%;
+	width: 10%;
 }
 .menuListHeader:nth-of-type(5) {
 	width: 60%;
 }
-
 .menuListItem {
 	padding: 5px 10px;
 	font-size: 16px;
 	text-align: left;
 }
 
-/* ======= ======= ======= redesign: checkbox ======= ======= ======= */
-.shareItem input[type=checkbox] {
-	-ms-transform: scale(1.5); /* IE */
-	-moz-transform: scale(1.5); /* FF */
-	-webkit-transform: scale(1.5); /* Safari and Chrome */
-	-o-transform: scale(1.5); /* Opera */
-	transform: scale(1.5);
-	padding: 10px;
-	margin-left: 36%;
+/* ======= ======= ======= show recipe ======= ======= ======= */
+.recipeBox1 {
+	width: 100%;
+	height: 70px;
+	margin: 0;
+	margin-top: 2px;
+	padding: 10px 0;
+	padding-right: 10px;
+	background-color: #eee;
 }
-
-/* ======= ======= ======= modal popup ======= ======= ======= */
-.popup-overlay {
+#recipeBox2 {
 	display: none;
-    position: fixed;
+	height: 40px;
+	margin: 0;
+	margin-top: 2px;
+	background-color: #eee;
+}
+.recipeBox3 {
+	height: 40px;
+	margin: 2px 0;
+	margin-top: 2px;
+	background-color: #f5f5f5;
+}
+
+/* ======= recipeBox1 ======= */
+.editSelect, #deleteRecipe {
+	float: left;
+    height: 20px;
+	padding: 0 10px;
+    font-size: 12px;
+	text-align-last:center;
+    line-height: 20px;
+	text-decoration: none;
+	color: navy;
+	background-color: #eee;
+	border-radius: 5px;
+}
+.editSelect {
+	float: left;
+	width: 10%;
+	min-width: 110px;
+	max-width: 160px;
+	margin: 1%;
+}
+#deleteRecipe {
+	float: right;
+	width: 5%;
+	max-width: 100px;
+	margin: 1%;
+}
+#deleteRecipe.active {
+	background-color: orangered;
+}
+#deleteRecipe.active.hover {
+    background-color: mediumslateblue;
+    color: white;
+}
+
+/* ======= recipeBox2 [hidden] ======= */
+.addEditDelete {
+	width: 10%;
+    height: 20px;
+	margin-top: 5px;
+	padding: 0 10px;
+    font-size: 12px;
+	text-align-last:center;
+    line-height: 20px;
+	text-decoration: none;
+	color: navy;
+	background-color: #eee;
+	border-radius: 5px;
+}
+#saveRecipeEdits {
+	float: right;
+	margin-right: 10%;
+}
+#cancelRecipeEdits {
+	float: left;
+	margin-left: 10%;
+}
+.addEditDelete.active {
+	background-color: Plum;
+	color: navy;
+}
+.addEditDelete.active:hover {
+	background-color: navy;
+	color: red;
+}
+
+/* ======= recipeBox3 ======= */
+.halfBox {
+	height: 40px;
+	margin: 0;
+	padding: 4px 0;
+	float: left;
 	width: 50%;
-	height: 280px;
-	margin: 10%;
-	padding: 10px;
-	background-color: white;
-	border: 2px solid #333;
-	box-shadow: 5px 5px 6px #333;
-    z-index: 1;
 }
-.popup-content {
-	visibility: hidden;
-	width: 90%;
-	height: 90%;
-	background-color: white;
+.recipeHeader {
+	float: left;
+	margin: 1px 20px;
+	font-family: "Monaco";
 }
-.popup-content > p > span {
-	color: Crimson;
+#ingrAdd, #instAdd {
+	float: left;
+    height: 20px;
+	width: 20%;
+	min-width: 120px;
+	margin: 1%;
+	margin-left: 20px;
+	margin-top: 5px;
+	padding: 0 10px;
+    font-size: 12px;
+	text-align-last:center;
+    line-height: 20px;
+	text-decoration: none;
+	border-radius: 5px;
+	background-color: Plum;
+	color: navy;
 }
-.popup-overlay.active {
-	display: block;
-}
-.popup-content.active {
-	visibility: visible;
+#ingrAdd:hover, #instAdd:hover {
+	background-color: navy;
+	color: red;
 }
 
-
-
-
-
-
-
-//
-//
-// /* ======= ======= ======= menu ======= ======= ======= */
-// #menuBox1, #menuBox2, #menuBox3 {
-// 	height: 40px;
-//     margin: 0;
-//     padding: 8px;
-// }
-// #menuBox1, #recipeBox1, #recipeBox2 {
-// 	background-color: DodgerBlue;
-// }
-// #menuBox2, #recipeBox3 {
-// 	background-color: DeepSkyBlue;
-// }
-// #recipeBox2 {
-// 	display: none;
-// }
-// #menuBox3 {
-// 	background-color: white;
-// }
-// #menuBox1 > a, #menuBox2 > a {
-//     display: inline-block;
-//     height: 24px;
-// 	margin: 0 4px;
-// 	padding: 0 10px;
-//     text-align: center;
-//     font-size: 16px;
-//     line-height: 24px;
-//     text-decoration: none;
-// 	border-radius: 5px;
-//     color: navy;
-// }
-// #menuBox1 > a {
-// 	background-color: #66b3ff;
-// }
-// #menuBox1 > .userBtn {
-// 	width: 8%;
-// 	color: white;
-// 	background-color: #0073e6;
-// }
-// #menuBox1 > .mgmtBtn {
-// 	width: 12%;
-// 	color: white;
-// 	background-color: #0073e6;
-// }
-// #menuBox2 > a {
-// 	width: 12%;
-// 	background-color: #00ace6;
-// }
-// #menuBox1 > a:hover {
-// 	color: darkblue;
-//     background-color: mediumslateblue;
-// }
-// #menuBox1 > .importBtn:hover {
-// 	color: white;
-// }
-// #menuBox2 > a:hover {
-// 	color: white;
-//     background-color: mediumslateblue;
-// }
-//
-// #search {
-// 	display: inline;
-// 	float: left;
-// 	height: 10px;
-// 	width: 12%;
-// 	margin: 0 10px 10px 10px;
-// 	padding: 5px;
-// 	border-radius: 5px;
-// }
-// .menuSelect {
-// 	display: inline;
-// 	width: 12%;
-//     min-width: 120px;
-//     height: 24px;
-// 	padding: 0 10px;
-//     font-size: 16px;
-// 	text-align-last:center;
-//     line-height: 24px;
-// 	color: DodgerBlue;
-// 	border-radius: 5px;
-// }
-// .menuSelect.neutral {
-// 	color: black;
-// }
-// #menuSpacer1, #menuSpacer2, #menuSpacer3, #menuSpacer4 {
-// 	display: inline;
-// 	margin: 0 5px 0px 10px;
-// 	padding: 0;
-// 	height: 24px;
-// 	text-align: left;
-// 	color: navy;
-// }
-// #menuSpacer1 {
-// 	width: 4%;
-// }
-// #menuSpacer2 {
-// 	float: left;
-// 	width: 6%;
-// }
-// #menuSpacer3 {
-// 	width: 12%;
-// }
-// #menuSpacer4 {
-// 	float: left;
-// 	width: 8%;
-// }
-// #feedback, #notice, #message {
-//     display: inline-block;
-// 	margin: 0 4px;
-//     // height: 24px;
-// 	padding: 0 10px;
-//     line-height: 24px;
-// }
-// #feedback {
-// 	width: 100%;
-// }
-// #notice {
-// 	float: right;
-// 	font-size: 14px;
-// 	background-color: white;
-// 	color: red;
-// }
-// .info {
-// 	display: inline-block;
-// 	margin: 20px;
-// }
-//
-//
-// /* ======= ======= ======= recipe titles list ======= ======= ======= */
-// .recipeHeader {
-// 	display: inline-block;
-// 	width: 14%;
-// 	margin: 10px;
-// 	padding-bottom: 2px;
-// 	font-size: 16px;
-// 	border-bottom: 1px solid black;
-// 	color: navy;
-// }
-// .recipeHeader:nth-of-type(1) {
-// 	width: 12%;
-// }
-// .recipeTitle {
-// 	margin-left: 20px;
-// 	margin-top: 15px;
-//     padding: 15px 10px 0 5px;
-// 	font-size: 24px;
-// 	color: mediumslateblue;
-// }
-// .ratingType {
-// 	display: inline-block;
-// 	margin: 10px;
-// 	width: 12%;
-// 	font-size: 16px;
-// 	color: navy;
-// }
-// .recipeType {
-// 	display: inline-block;
-// 	margin: 10px;
-// 	width: 14%;
-// 	font-size: 16px;
-// 	color: navy;
-// }
-// #recipeList {
-// 	height: 540px;
-// 	overflow-y: scroll;
-// }
-//
-// /* ======= ======= ======= show recipe: headers ======= ======= ======= */
-// #output {
-//     height: 600px;
-// 	width: 100%;
-// 	margin: 0;
-// 	white-space: normal;
-// }
-// .fullBox, .halfBox, .oneThirdBox, .twoThirdBox {
-// 	height: 40px;
-// 	margin: 0;
-// }
-// .halfBox, .oneThirdBox, .twoThirdBox {
-// 	padding: 4px 0;
-// 	border: solid 1px DeepSkyBlue;
-// }
-// .fullBox {
-// 	width: 100%;
-// }
-// .halfBox {
-// 	float: left;
-// 	width: 50%;
-// }
-// .oneThirdBox {
-// 	float: left;
-// 	width: 33.33%;
-// }
-// .twoThirdBox {
-// 	float: left;
-// 	width: 66.66%;
-// }
-//
-// @media only screen and (max-width: 1100px) {
-// 	#recipeBox1 {
-// 		height: 80px;
-// 	}
-// 	.classifyBox {
-// 		height: 80px;
-// 	}
-// }
-//
-// #outputTitle {
-// 	width: 100%;
-// 	margin: 0;
-// 	margin-left: 20px;
-// 	height: 40px;
-// 	text-align: left;
-// 	max-width: 540px;
-// 	white-space: nowrap;
-// 	overflow: hidden;
-// 	text-overflow: ellipsis;
-// }
-//
-// .boxHeader {
-// 	width: 100%;
-// 	// height: 50px;
-// 	// padding: 10px;
-// 	background-color: DeepSkyBlue;
-// }
-// .recipeLabel {
-// 	float: left;
-// 	margin: 4px 0 0 12%;
-// 	font-size: 18px;
-// }
-//
-// #titleSaveBtn, #titleCancelBtn, .saveBtn, .cancelBtn, .deleteBtn {
-// 	display: inline;
-// 	padding: 5px 10px;
-//     text-align: center;
-//     font-size: 16px;
-//     line-height: 24px;
-// 	border-radius: 3px;
-// }
-// .saveBtn, .cancelBtn, .deleteBtn {
-// 	width: 50%;
-// 	margin: 0 10px;
-// 	background-color: DodgerBlue;
-//     color: white;
-// }
-// #saveRecipeEdits, #ratingSelect {
-// 	margin-left: 10%;
-// }
-// // #ingrAdd {
-// // 	float: right;
-// // }
-// // #instAdd {
-// // 	float: left;
-// // }
-//
-// .addBtn, .addEditDelete, .editSelect, #deleteRecipe {
-// 	float: left;
-// 	width: 20%;
-//     height: 20px;
-// 	padding: 0 10px;
-//     font-size: 12px;
-// 	text-align-last:center;
-//     line-height: 20px;
-// 	text-decoration: none;
-// 	color: navy;
-// 	background-color: #eee;
-// 	border-radius: 5px;
-// }
-// .addEditDelete {
-// 	margin-left: 20%;
-// }
-// .addEditDelete.active, #deleteRecipe.active {
-// 	background-color: orangered;
-// }
-// .addEditDelete.active:hover, #deleteRecipe.active.hover {
-//     background-color: mediumslateblue;
-//     color: white;
-// }
-// .addBtn {
-// 	width: 20%;
-// 	margin-left: 20px;
-// 	min-width: 120px;
-// 	margin: 1%;
-// }
-// .editSelect {
-// 	width: 20%;
-// 	min-width: 110px;
-// 	max-width: 160px;
-// 	margin: 1%;
-// }
-// #deleteRecipe {
-// 	float: left;
-// 	max-width: 100px;
-// 	margin: 1%;
-// }
-// #recipeContent {
-// 	height: 480px;
-// 	overflow-y: scroll;
-// }
-//
-//
-//
-
-
-
-
-
-
-
-
-// #titleBox {
-// 	float: left;
-// 	width: 60%;
-// 	margin: 0;
-// 	padding: 1% 0 1% 2%;
-// 	background-color: DodgerBlue;
-// }
-// #classificationBox {
-// 	float: left;
-// 	width: 40%;
-// 	margin: 0;
-// 	padding: 1% 2% 1% 0;
-// 	background-color: DodgerBlue;
-// }
-// .editSaveBox {
-// 	float: left;
-// 	width: 100%;
-// 	margin: 0;
-// 	text-align: center;
-// 	background-color: DodgerBlue;
-// }
+/* ======= recipeContent ======= */
+#recipeContent {
+	height: 400px;
+	font-size: 10px;
+	overflow-y: scroll;
+}
+#ingredients, #instructions {
+	font-family: "Monaco";
+}
+#instructions {
+	border-left: solid 3px DeepSkyBlue;
+}
 
 /* ======= ======= ======= show recipe: recipe ======= ======= ======= */
 #ingredients, #instructions {
 	float: left;
 	width: 50%;
+	height: 100%;
 	margin: 0;
 }
 #instructions {
@@ -696,33 +408,159 @@ h1, h2 {
 	background-color: #eee;
 }
 
-/* ======= ======= ======= search ======= ======= ======= */
-.recipeLink {
+// /* ======= ======= ======= search ======= ======= ======= */
+// .recipeLink {
+// 	display: inline-block;
+// 	margin: 4px;
+// }
+// .recipeLink > a {
+// 	margin: 10px;
+// 	font-size: 16px;
+// 	text-decoration: none;
+// 	color: navy;
+// }
+// .recipeLink > a:hover {
+//     color: orangered;
+// }
+// #searchType {
+// 	display: inline;
+// 	width: 18%;
+//     min-width: 120px;
+//     height: 24px;
+// 	padding: 0 10px;
+//     font-size: 16px;
+// 	text-align-last:center;
+//     line-height: 24px;
+// 	color: white;
+// 	background-color: DodgerBlue;
+// 	border-radius: 5px;
+// }
+
+
+
+
+
+
+/* ======= ======= ======= line edits ======= ======= ======= */
+.editItem {
+	float: left;
+}
+.editItemBox {
+	float: left;
+	width: 40%;
+	height: 120px;
+}
+#titleSaveBtn, #titleCancelBtn, .saveBtn, .cancelBtn, .deleteBtn {
+	// display: inline;
+	padding: 5px 10px;
+	font-family: "Ariel", sans-serif;
+    text-align: center;
+    font-size: 14px;
+    line-height: 16px;
+	border-radius: 3px;
+}
+.saveBtn, .cancelBtn, .deleteBtn {
+	// float: left;
+	width: 30%;
+	margin: 6px 20px;
+	background-color: Plum;
+    color: navy;
+}
+.saveBtn:hover, .cancelBtn:hover, .deleteBtn:hover {
+	background-color: navy;
+	color: red;
+}
+
+/* ======= ======= ======= modal popup ======= ======= ======= */
+.popup-overlay {
+	display: none;
+    position: fixed;
+	width: 50%;
+	height: 280px;
+	margin: 10%;
+	padding: 10px;
+	background-color: white;
+	border: 2px solid #333;
+	box-shadow: 5px 5px 6px #333;
+    z-index: 1;
+}
+.popup-content {
+	visibility: hidden;
+	width: 90%;
+	height: 90%;
+	background-color: white;
+}
+.popup-content > p > span {
+	color: Crimson;
+}
+.popup-overlay.active {
+	display: block;
+}
+.popup-content.active {
+	visibility: visible;
+}
+
+/* ======= ======= ======= custom styles ======= ======= ======= */
+/* ======= dropdown ======= */
+.dropdown {
+	float: left;
+	position: relative;
 	display: inline-block;
-	margin: 4px;
+	margin: 0;
+	margin-left: 1%;
 }
-.recipeLink > a {
-	margin: 10px;
+.dropdown-menu {
+	width: 100%;
+	padding: 16px 0;
+	text-align: center;
 	font-size: 16px;
-	text-decoration: none;
-	color: navy;
-}
-.recipeLink > a:hover {
-    color: orangered;
-}
-#searchType {
-	display: inline;
-	width: 18%;
-    min-width: 120px;
-    height: 24px;
-	padding: 0 10px;
-    font-size: 16px;
-	text-align-last:center;
-    line-height: 24px;
+	background-color: #4CAF50;
 	color: white;
-	background-color: DodgerBlue;
-	border-radius: 5px;
+	border: none;
 }
+.dropdown-content {
+	display: none;
+	position: absolute;
+	background-color: #f1f1f1;
+	width: 100%;
+	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	z-index: 1;
+}
+.dropdown-content a {
+	color: black;
+	padding: 12px 10px;
+	text-decoration: none;
+	display: block;
+}
+.dropdown-content a:hover {
+	background-color: #ddd;
+}
+.dropdown:hover .dropdown-content {
+	display: block;
+}
+.dropdown:hover .dropdown-menu {
+	background-color: navy;
+	color: red;
+}
+.userSelect {
+	width: 20%;
+}
+.searchSelect {
+	width: 22%;
+	margin-left: 4%;
+}
+
+/* ======= checkbox ======= */
+.shareItem input[type=checkbox] {
+	-ms-transform: scale(1.5); /* IE */
+	-moz-transform: scale(1.5); /* FF */
+	-webkit-transform: scale(1.5); /* Safari and Chrome */
+	-o-transform: scale(1.5); /* Opera */
+	transform: scale(1.5);
+	padding: 10px;
+	margin-left: 36%;
+}
+
 //
 // /* ======= ======= ======= tables ======= ======= ======= */
 // table, th, td {
@@ -863,8 +701,7 @@ h1, h2 {
 //     color: white;
 // }
 //
-// /* ======= ======= ======= import ======= ======= ======= */
-// #inputfile {
-// 	margin: 0 20px;
-// }
-//
+/* ======= ======= ======= import ======= ======= ======= */
+#inputfile {
+	margin: 0 20px;
+}
