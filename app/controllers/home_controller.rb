@@ -11,7 +11,7 @@ class HomeController < ApplicationController
 		# @categories = Category.all
 		# @nationalities = Nationality.all
 		if current_user
-			puts "** current_user: #{current_user}"
+			puts "** current_user: #{current_user.inspect}"
 		else
 			puts "** NO current_user **"
 		end
@@ -107,6 +107,12 @@ class HomeController < ApplicationController
     # ======= ======= ======= SEARCH ======= ======= =======
     # ======= ======= ======= SEARCH ======= ======= =======
 
+	# ======= my_recipes =======
+	def my_recipes
+		puts "\n******* my_recipes *******"
+		get_recipe_data("my", "")
+	end
+
 	# ======= all_recipes =======
 	def all_recipes
 		puts "\n******* all_recipes *******"
@@ -165,23 +171,54 @@ class HomeController < ApplicationController
 		puts "category_obj: #{category_obj}"
 		puts "nationality_obj: #{nationality_obj}"
 
-		if search_type == "all"
+		# == get recently imported (or existing) recipes
+		if search_type == "import"
+			puts "\n** import **"
+
+			# search_term structure: [ recipe_id1, recipe_id2, recipe_id3 ... message ]
+			message = search_term[search_term.length-1]
+			puts "message: #{message}"
+			search_term.pop()	# remove message so array contains recipe ids only
+			recipes = Recipe.where(id: search_term).order(:updated_at).reverse_order
+			puts "recipes: #{recipes.inspect}"
+			search_term = "import"
+			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			puts "recipe_data: #{recipe_data.inspect}"
+			recipe_array = recipe_data[0]
+
+		# == all recipes designated for sharing (function to be added)
+		elsif search_type == "all"
 			recipes = Recipe.order(:updated_at).reverse_order
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
+
+		# == recipes belonging to user
+		elsif search_type == "my"
+			puts "current_user: #{current_user}"
+			recipes = Recipe.where("user_id" => current_user[:id]).order(:updated_at).reverse_order
+			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			recipe_array = recipe_data[0]
+			message = recipe_data[1]
+
 		elsif search_type == "text"
+
+			# == search for search_term in title
 			if search_term[0] == "title"
 				recipes = Recipe.where("lower(title) LIKE ?", "%" + search_term[1] + "%").order(:updated_at).reverse_order
 				recipe_data = make_recipe_array(recipes, search_term[0], search_term[1])
 				recipe_array = recipe_data[0]
 				message = recipe_data[1]
+
+			# == get all shared and user-owned recipes; search ingredients in make_recipe_array function
 			elsif search_term[0] == "ingredients"
 				recipes = Recipe.order(:updated_at).reverse_order
 				recipe_data = make_recipe_array(recipes, search_term[0], search_term[1])
 				recipe_array = recipe_data[0]
 				message = recipe_data[1]
 			end
+
+		# == search by rating
 		elsif search_type == "rating"
 			recipes = Recipe.where(:rating_id => search_term).order(:updated_at).reverse_order
 			rating_id = search_term.to_i
@@ -190,12 +227,16 @@ class HomeController < ApplicationController
 			recipe_data = make_recipe_array(recipes, search_type, rating_text)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
+
+		# == search by category
 		elsif search_type == "category"
 			recipes = Recipe.where(:category_id => search_term).order(:updated_at).reverse_order
 			search_term = Category.where(:id => search_term).first[:category]		# convert category_id to category text
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
+
+		# == search by nationality
 		elsif search_type == "nationality"
 			recipes = Recipe.where(:nationality_id => search_term).order(:updated_at).reverse_order
 			search_term = Nationality.where(:id => search_term).first[:nationality]	# convert nationality_id to nationality text
@@ -220,6 +261,7 @@ class HomeController < ApplicationController
 		recipe_array = []
 		recipe_count = 0
 		recipe_data = {}
+		message = ""
 
 		if recipes.length > 0
 			recipes.each do |next_recipe|
@@ -257,7 +299,9 @@ class HomeController < ApplicationController
 		else
 			puts "NO RECORDS"
 		end
-		message = make_message_text(search_type, search_term, recipe_count)
+		if search_type != "import"
+			message = make_message_text(search_type, search_term, recipe_count)
+		end
 		return [recipe_array, message]
 	end
 
@@ -268,7 +312,13 @@ class HomeController < ApplicationController
 		puts "search_term: #{search_term}"
 		puts "recipe_count: #{recipe_count}"
 
-		if search_type == "all"
+		if search_type == "my"
+			if recipe_count == 0
+				message = "No recipes belonging to you were retrieved from the database."
+			elsif recipe_count > 0
+				message = "Here are the " + recipe_count.to_s + " recipes belonging to you."
+			end
+		elsif search_type == "all"
 			if recipe_count == 0
 				message = "No recipes were retrieved from the database."
 			elsif recipe_count > 0
@@ -446,12 +496,6 @@ class HomeController < ApplicationController
 		end
 
 		redirect_to({:controller => "home", :action => "show_recipe", :id => params[:recipe_id].to_s}, :notice => message)
-
-		# respond_to do |format|
-		# 	format.json {
-		# 		render json: {:updated_recipe => updated_recipe, :updated_ingredients => updated_ingredients, :updated_instructions => updated_instructions, :message => message, :recipe_fails_array => recipe_fails_array, :ingredient_fails_array => ingredient_fails_array, :instruction_fails_array => instruction_fails_array}
-		# 	}
-		# end
     end
 
 	# ======= ======= ======= RECIPE FILES ======= ======= =======
@@ -469,7 +513,9 @@ class HomeController < ApplicationController
 		puts "params[:_json]: #{params[:_json]}"
 
 		# == initialize message variables
+		existing_recipes_flag = false
 		existing_recipes_text = ""
+		import_data_array = []
 		error_message = ""
 		recipe_count = 0
 		error_count = 0
@@ -489,12 +535,13 @@ class HomeController < ApplicationController
 			# == no recipes with same title found
 			if recipe.length == 0
 				puts "NO RECORD"
-				@recipe = Recipe.create(:title => title)
+				@recipe = Recipe.create(:title => title, :user_id => current_user[:id])
 		        if @recipe.save
 					puts "RECIPE SAVED"
 					recipe_count = recipe_count + 1
 
 					recipe_id = @recipe.id
+					import_data_array.push(recipe_id)
 
 					ingredients.each_with_index do |next_ingredient, index|
 						next_ingredient = next_ingredient.permit(:quantity, :units, :ingredient)
@@ -536,7 +583,7 @@ class HomeController < ApplicationController
 					end
 
 					if error_count > 0
-						error_message = "There were " + error_count.to_s + " errors when saving ingredients or instructions."
+						error_message = error_count.to_s + " ingredients or instructions were not saved properly.  Select recipe and edit to fix."
 					end
 				end
 
@@ -544,28 +591,41 @@ class HomeController < ApplicationController
 			else
 				puts "RECIPE EXISTS"
 				recipe_id = recipe[0][:id]
+				existing_recipes_flag = true
+				import_data_array.push(recipe_id)
 				if existing_recipes_text == ""
-					existing_recipes_text = existing_recipes_text + recipe_id.to_s
+					existing_recipes_text = existing_recipes_text + title + "(" + recipe_id.to_s + ")"
 				else
-					existing_recipes_text = existing_recipes_text + ", " + recipe_id.to_s
+					existing_recipes_text = existing_recipes_text + ", " + title + "(" + recipe_id.to_s + ")"
 				end
 
 			end
 
 			if existing_recipes_text != ""
-				message = "These recipes already exist: " + existing_recipes_text + ". " + error_message
+				message = "These recipes already exist: " + existing_recipes_text + "."
+				if error_count > 0
+					message = message  + "Also, " + error_message
+				end
 			else
-				message = recipe_count.to_s + " recipes were added to the database. " + error_message
+				if recipe_count > 0
+					message = recipe_count.to_s + " recipes were added to your recipe collection. "
+				elsif recipe_count == 1
+					message = recipe_count.to_s + " recipe was added to your recipe collection. "
+				end
+				if error_count > 0
+					message = message  + "Also, " + error_message
+				end
 			end
 		end
-
+		import_data_array.push(message)
 		puts "message: " + message
+		get_recipe_data("import", import_data_array)
 
-		respond_to do |format|
-			format.json {
-				render :json => {:message => message}
-			}
-		end
+		# respond_to do |format|
+		# 	format.json {
+		# 		render :json => {:message => message, :existing_recipes_flag => existing_recipes_flag}
+		# 	}
+		# end
     end
 
 	# ======= ======= ======= UTILITIES ======= ======= =======

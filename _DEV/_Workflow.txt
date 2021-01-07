@@ -5,6 +5,11 @@
 // ======= ======= ======= Workflow ======= ======= =======
 
 
+// ======= ======= ======= recipe table ======= ======= =======
+ALTER TABLE recipes ADD user_id integer;
+UPDATE recipes SET user_id = '2' WHERE id = '78';
+
+
 // ======= ======= ======= menu ======= ======= =======
 management
 	home (button)

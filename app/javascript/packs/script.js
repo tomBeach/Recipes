@@ -212,6 +212,19 @@ $(document).on('turbolinks:load', function() {
 	        }
 	    });
 
+		// == show my recipes
+		$('#getMyRecipes').click(function(e) {
+			console.log("== click: getMyRecipes ==");
+			e.preventDefault();
+			if (editFlag == false) {
+				toggleEditButtons("hide");
+				searchRecipes("", "my");
+			} else {
+				displayPopup("edit", "");
+			}
+			e.stopPropagation();
+		});
+
 		// == show all recipes
 		$('#getAllRecipes').click(function(e) {
 			console.log("== click: getAllRecipes ==");
@@ -328,6 +341,9 @@ $(document).on('turbolinks:load', function() {
 		console.log("searchType: ", searchType);
 
 		switch (searchType) {
+			case "my":
+			var url = "/my_recipes";
+			break;
 			case "all":
 			var url = "/all_recipes";
 			break;
@@ -1080,7 +1096,9 @@ $(document).on('turbolinks:load', function() {
 		var titleText;
 		var ratingText = "";
 		var ratingObj = jsonData.ratingObj;
-		// ratingObj: 1=>{:id=>1, :rating=>[1, "favorite"], :color=>"#03045e"},
+		console.log("ratingObj: ", ratingObj);
+		// ratingObj: 1=>{:id=>1, :rating=>[1, "favorite"], :color=>"#03045e"}, 2=>{}, etc.
+		// jsonData.search for "text" type: [title OR ingredients, string to search for] e.g. ["title", "garlic"]
 
 		if (jsonData != "") {
 			if (jsonData.recipeArray.length > 0) {
@@ -1097,13 +1115,15 @@ $(document).on('turbolinks:load', function() {
 					ratingText = ratingText + ": ";
 					ratingText = ratingText + ratingObj[jsonData.search].rating[1];
 					titleText = "Recipes rated as '" + ratingText + "'";
+				} else if (type == "my") {
+					titleText = "My Database Recipes";
 				} else if (type == "all") {
 					titleText = "All Database Recipes";
 				}
 			} else {
-				if (type == "title") {
+				if ((type == "text") && (jsonData.search[0] == "title")) {
 					titleText = "No recipes found with '" + jsonData.search + "' in the title.";
-				} else if (type == "ingredient") {
+				} else if ((type == "text") && (jsonData.search[0] == "ingredients")) {
 					titleText = "No recipes were found with '" + jsonData.search + "' as an ingredient.";
 				} else if (type == "category") {
 					titleText = "No recipes found in the '" + jsonData.search + "' category.";
@@ -1114,6 +1134,8 @@ $(document).on('turbolinks:load', function() {
 					ratingText = ratingText + ": ";
 					ratingText = ratingText + ratingObj[jsonData.search].rating[1];
 					titleText = "No recipes rated as '" + ratingText + "' were found.";
+				} else if (type == "my") {
+					titleText = "You do not have any recipes yet.  Import some!";
 				} else if (type == "all") {
 					titleText = "All Database Recipes";
 				}
@@ -1459,6 +1481,7 @@ $(document).on('turbolinks:load', function() {
 	// ======= displayImportedRecipes =======
     function displayImportedRecipes(recipeData) {
         console.log("== displayImportedRecipes ==");
+		console.log("recipeData: ", recipeData);
 
 		var nextRecipe, nextTitle, nextIngredients, nextInstructions;
 		var nextQuantity, nextUnits, nextIngredient, nextText, nextHtml;
@@ -1470,6 +1493,8 @@ $(document).on('turbolinks:load', function() {
 			nextTitle = recipeData[i].recipe;
 			nextIngredients = recipeData[i].ingredients;
 			nextInstructions = recipeData[i].instructions;
+			console.log("nextIngredients.length: ", nextIngredients.length);
+			console.log("nextInstructions.length: ", nextInstructions.length);
 
 			// == recipe title
 			recipeHtml = recipeHtml + "<p class='recipeTitle'>" + nextTitle + "</p>";
@@ -1510,6 +1535,9 @@ $(document).on('turbolinks:load', function() {
 		$('#output').html(recipeHtml);
 		$('#inputfile').remove();
 		updateTitleText("Imported Recipes");
+		var messageString = "You can modify new recipes by clicking 'My Recipes' and selecting the recipe."
+		$('#notice').html(messageString);
+
 	}
 
 	// ======= saveRecipeData =======
@@ -1536,10 +1564,12 @@ $(document).on('turbolinks:load', function() {
 		    console.log("*** ajax success ***");
 		    console.dir(jsonData);
 			if (importEdit == "import") {
-				updateImportLink("import recipes");
+				displayRecipeTitles(jsonData);
+				makeTitleText(jsonData, "import");
+			} else {
+				updateLocalIngrinst(jsonData);
 			}
 			updateNoticeMessage(jsonData);
-			updateLocalIngrinst(jsonData);
 		}).fail(function(unknown){
 		    console.log("*** ajax fail ***");
 			console.log("unknown:", unknown);
@@ -1610,19 +1640,16 @@ $(document).on('turbolinks:load', function() {
     function updateMenuLinks(recipeData) {
         console.log("== updateMenuLinks ==");
 
-		// == change import b=link to save link
-		updateImportLink("save recipes")
-		$('#import').click(function(e) {
+		var saveBtnHtml = "";
+		saveBtnHtml = saveBtnHtml + "<div class='saveBtn' id='fileSaveBtn'> save </div>";
+		$('.recipeBox1').append(saveBtnHtml);
+
+		$('#fileSaveBtn').click(function(e) {
+			console.log("== click: fileSaveBtn ==");
 			e.preventDefault();
 			saveRecipeData(recipeData, "import");
 			e.stopPropagation();
-	    });
-	}
-
-	// ======= updateImportLink =======
-	function updateImportLink(linkText) {
-		console.log("== updateImportLink ==");
-		$('#import').text(linkText);
+		});
 	}
 
 	// ======= standardUnits =======
@@ -1726,22 +1753,10 @@ $(document).on('turbolinks:load', function() {
 
 		var btnColor;
 
-		// function hiliteBtn() {
-		// 	// console.log("== hiliteBtn ==");
-		// 	btnColor = $(this).css('background-color');
-		// 	$(this).css('background-color', 'red');
-		// }
-		// function restoreBtn() {
-		// 	// console.log("== restoreBtn ==");
-		// 	$(this).css('background-color', btnColor);
-		// }
-
 		var inputHtml = "<input type='text' id='newNationality' name='newNationality'>";
 		var btnsHtml = "<div class='saveBtn'> save </div> <div class='cancelBtn'> cancel </div> ";
 		var editHtml = inputHtml + btnsHtml;
 		$('#newNationalityBtn').after(editHtml);
-
-
 
 		$('.saveBtn').click(function(e) {
 			e.preventDefault();

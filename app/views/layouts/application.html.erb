@@ -34,7 +34,7 @@
 
 		<!-- ======= menu 1 ======= -->
         <div class="menuBox1">
-			<%= link_to "Home", "/home", class: "userBtn" %>
+			<%= link_to "Home", "/home", id: "homeBtn" %>
 			<div id="banner">
 				My Recipes
 			</div>
@@ -60,7 +60,7 @@
 		<!-- ======= menu 2 ======= -->
 		<div class="menuBox1">
 			<div id="searchOwner" class="menuGroup">
-				<%= link_to "My Recipes", "#", id: "getMyRecipes", class: "searchBtn checkEdit", remote: true %>
+				<%= link_to "My Recipes", my_recipes_path, id: "getMyRecipes", class: "searchBtn checkEdit", remote: true %>
 				<%= link_to "All Recipes", all_recipes_path, id: "getAllRecipes", class: "searchBtn checkEdit", remote: true %>
 			</div>
 

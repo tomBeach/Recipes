@@ -1,3 +1,29 @@
+/* ======= recipeBox1 ======= */
+#outputTitle {
+	float: left;
+	color: Tomato;
+	margin: 5px 20px;
+}
+#newFileOutput, #recipeListOutput, #recipeOutput {
+	height: 400px;
+	overflow-y: scroll;
+}
+#newFileOutput {
+	font-family: "Monaco";
+}
+#recipeListOutput {
+	font-family: "Ariel";
+}
+#recipeOutput {
+	font-family: "Monaco";
+}
+
+#fileSaveBtn {
+	float: left;
+}
+
+
+
 <div id="menuBox3">
 	<div id="feedback">
 		<% if current_user %>

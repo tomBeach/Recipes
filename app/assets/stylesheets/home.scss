@@ -89,7 +89,7 @@ h1, h2 {
 }
 
 /* ======= search bar ======= */
-.userBtn, .searchBtn, .searchLabel, #searchInput {
+#homeBtn, .userBtn, .searchBtn, .searchLabel, #searchInput {
 	float: left;
 	position: relative;
 	display: inline-block;
@@ -101,11 +101,16 @@ h1, h2 {
 	text-decoration: none;
 	border: none;
 }
-.userBtn {
-	width: 20%;
+#homeBtn, .userBtn {
 	margin: 0 1%;
 	background-color: #4CAF50;
 	color: white;
+}
+#homeBtn {
+	width: 20%;
+}
+.userBtn {
+	width: 10%;
 }
 .searchBtn {
 	width: 42%;
@@ -159,6 +164,11 @@ h1, h2 {
 	float: left;
 	color: Tomato;
 	margin: 5px 20px;
+}
+#fileSaveBtn {
+	float: left;
+	width: 10%;
+	margin: 10px;
 }
 
 /* ======= ======= ======= menu menuList ======= ======= ======= */
@@ -521,8 +531,9 @@ h1, h2 {
 .dropdown-content {
 	display: none;
 	position: absolute;
-	background-color: #f1f1f1;
 	width: 100%;
+	font-size: 16px;
+	background-color: #f1f1f1;
 	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 	z-index: 1;
 }
