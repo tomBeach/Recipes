@@ -58,7 +58,7 @@
 		</div>
 
 		<!-- ======= menu 2 ======= -->
-		<div class="menuBox1">
+		<div class="menuBox2">
 			<div id="searchOwner" class="menuGroup">
 				<%= link_to "My Recipes", my_recipes_path, id: "getMyRecipes", class: "searchBtn checkEdit", remote: true %>
 				<%= link_to "All Recipes", all_recipes_path, id: "getAllRecipes", class: "searchBtn checkEdit", remote: true %>
@@ -107,7 +107,7 @@
 		</div>
 
 		<!-- ======= menu 3 ======= -->
-		<div id="feedback" class="menuBox2">
+		<div id="feedback" class="menuBox3">
 			<p id="notice">
 				<% if flash[:notice] %>
 					<%= flash[:notice] %>

@@ -314,7 +314,9 @@ class HomeController < ApplicationController
 
 		if search_type == "my"
 			if recipe_count == 0
-				message = "No recipes belonging to you were retrieved from the database."
+				message = "Sorry.  No recipes belonging to you were retrieved.  Try importing a new one!"
+			elsif recipe_count == 1
+				message = "Here is your recipe.  Try importing more when you can."
 			elsif recipe_count > 0
 				message = "Here are the " + recipe_count.to_s + " recipes belonging to you."
 			end
@@ -535,6 +537,7 @@ class HomeController < ApplicationController
 			# == no recipes with same title found
 			if recipe.length == 0
 				puts "NO RECORD"
+				puts "current_user[:id]: #{current_user[:id]}"
 				@recipe = Recipe.create(:title => title, :user_id => current_user[:id])
 		        if @recipe.save
 					puts "RECIPE SAVED"

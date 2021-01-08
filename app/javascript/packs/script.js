@@ -29,6 +29,74 @@ $(document).on('turbolinks:load', function() {
 		$(".popup-overlay, .popup-content").removeClass("active");
 	});
 
+	// ======= activateListHeaders =======
+	function activateListHeaders() {
+		console.log("== activateListHeaders ==");
+		$('#ratingHeader').click(function() {
+			console.log("== click: ratingHeader ==");
+			sortRecipeList(1, 'text');
+		});
+		$('#categoryHeader').click(function() {
+			console.log("== click: categoryHeader ==");
+			sortRecipeList(2, 'text');
+		});
+		$('#nationalityHeader').click(function() {
+			console.log("== click: nationalityHeader ==");
+			sortRecipeList(3, 'text');
+		});
+		$('#titleHeader').click(function() {
+			console.log("== click: titleHeader ==");
+			sortRecipeList(4, 'text');
+		});
+	}
+
+	// ======= sortRecipeList =======
+	function sortRecipeList(columnIndex, columnType) {
+		console.log("== sortRecipeList ==");
+		console.log("columnIndex: ", columnIndex);
+		console.log("columnType: ", columnType);
+
+		// == get and set order (ascending or descending)
+		var order = $('.menuList thead tr>th:eq(' + columnIndex + ')').data('order');
+		order = order === 'ASC' ? 'DESC' : 'ASC';
+		$('.menuList thead tr>th:eq(' + columnIndex + ')').data('order', order);
+		console.log("order2: ", order);
+
+		// == table sort
+		$('.menuList tbody tr').sort(function(a, b) {
+			console.log("== <tr> sort ==");
+			console.log("a: ", a);
+			console.log("b: ", b);
+			console.log("$('td':eq(4)).text(): ", $('td:eq(4)').text());
+
+			// == get text value in <td> via columnIndex number
+			a = $(a).find('td:eq(' + columnIndex + ')').text();
+			b = $(b).find('td:eq(' + columnIndex + ')').text();
+
+			switch (columnType) {
+				case 'text':
+					// == compare text via localeCompare
+					return order === 'ASC' ? a.localeCompare(b) : b.localeCompare(a);
+					break;
+				case 'number':
+					// == compare number values
+					return order === 'ASC' ? a - b : b - a;
+					break;
+				case 'date':
+					// == compare date values
+					var dateFormat = function(dt) {
+						[m, d, y] = dt.split('/');
+						return [y, m - 1, d];
+					}
+					// == convert date string to an object
+					a = new Date(...dateFormat(a));
+					b = new Date(...dateFormat(b));
+					// == convert the date object to numbers via getTime() (milliseconds since January 1, 1970)
+					return order === 'ASC' ? a.getTime() - b.getTime() : b.getTime() - a.getTime();
+					break;
+			}
+		}).appendTo('.menuList tbody');
+	}
 
     // ======= check pathname =======
     var pathname = window.location.pathname;
@@ -350,7 +418,6 @@ $(document).on('turbolinks:load', function() {
 			case "text":
 			var searchText = $('#searchInput').val();	// search in title or ingredients
 			searchString = [searchString, searchText];	// pass type and title/ingredient selection
-			// searchType = searchString;					// makeTitleText() function requires title or ingredients selection
 			var url = "/search_text";
 			break;
 			case "rating":
@@ -376,6 +443,7 @@ $(document).on('turbolinks:load', function() {
 			console.log("*** ajax success ***");
 			console.dir(jsonData);
 			displayRecipeTitles(jsonData);
+			activateListHeaders();
 			makeTitleText(jsonData, searchType);
 			updateNoticeMessage(jsonData);
 			deactivateTitleEdit();
@@ -1023,14 +1091,14 @@ $(document).on('turbolinks:load', function() {
 		recipeHtml = recipeHtml + "<h2 id='outputTitle'></h2></div>";
 
 		// == column headers html
-		recipeHtml = recipeHtml + "<table class='menuList'>";
+		recipeHtml = recipeHtml + "<table class='menuList'><thead>";
 		recipeHtml = recipeHtml + "<tr class='menuHeaders'>";
 		recipeHtml = recipeHtml + "<th id='shareHeader' class='menuListHeader'>share</th>";
 		recipeHtml = recipeHtml + "<th id='ratingHeader' class='menuListHeader'>rating</th>";
 		recipeHtml = recipeHtml + "<th id='categoryHeader' class='menuListHeader'>category</th>";
 		recipeHtml = recipeHtml + "<th id='nationalityHeader' class='menuListHeader'>nationality</th>";
 		recipeHtml = recipeHtml + "<th id='titleHeader' class='menuListHeader'>title</th>";
-		recipeHtml = recipeHtml + "</tr>";
+		recipeHtml = recipeHtml + "</tr></thead><tbody>";
 
 		if (jsonData.recipeArray.length > 0) {
 			for (var k = 0; k < jsonData.recipeArray.length; k++) {
@@ -1080,6 +1148,7 @@ $(document).on('turbolinks:load', function() {
 				recipeHtml = recipeHtml + "</td>";
 				recipeHtml = recipeHtml + "</tr>";
 			}
+			recipeHtml = recipeHtml + "</tbody></table>";
 		} else {
 			recipeHtml = "<p class='info'> Sorry... no results were returned from the database.</p>";
 		}
@@ -1565,6 +1634,7 @@ $(document).on('turbolinks:load', function() {
 		    console.dir(jsonData);
 			if (importEdit == "import") {
 				displayRecipeTitles(jsonData);
+				activateListHeaders();
 				makeTitleText(jsonData, "import");
 			} else {
 				updateLocalIngrinst(jsonData);

@@ -4,7 +4,7 @@
 	color: Tomato;
 	margin: 5px 20px;
 }
-#newFileOutput, #recipeListOutput, #recipeOutput {
+#newFileOutput, #recipeListOutput, #output {
 	height: 400px;
 	overflow-y: scroll;
 }
@@ -14,7 +14,7 @@
 #recipeListOutput {
 	font-family: "Ariel";
 }
-#recipeOutput {
+#output {
 	font-family: "Monaco";
 }
 
