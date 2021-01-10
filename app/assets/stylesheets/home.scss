@@ -14,13 +14,13 @@ div {
 h1, h2 {
     margin: 0;
 }
+
+/* ======= ======= ======= sections ======= ======= ======= */
 #wrapper {
     width: 90%;
 	min-width: 900px;
     margin: 0 auto;
 }
-
-/* ======= ======= ======= sections ======= ======= ======= */
 #header {
     width: 100%;
     height: 60px;
@@ -31,20 +31,14 @@ h1, h2 {
     width: 100%;
     height: 640px;
 }
-#mainTitle {
-	padding-top: 10px;
-	text-align: center;
-    font-size: 18px;
-    color: navy;
-}
 
 /* ======= ======= ======= menus ======= ======= ======= */
 .menuBox1, .menuBox2 {
 	width: 100%;
-	height: 70px;
+	height: 60px;
 	margin: 0;
 	margin-top: 2px;
-	padding: 10px 0;
+	padding: 8px 0;
 	padding-right: 10px;
 }
 .menuBox1 {
@@ -56,17 +50,20 @@ h1, h2 {
 	margin-top: 2px;
 	background-color: #f5f5f5;
 }
+.menuBox1, .menuBox2, .menuBox3 {
+	min-width: 1050px;
+}
 
 /* ======= menu groups ======= */
 .menuGroup {
 	float: left;
-	height: 70px;
-	margin-top: -10px;
-	padding-top: 10px;
+	height: 60px;
+	margin-top: -8px;
+	padding-top: 8px;
 	background-color: #eee;
 }
 .menuBox2 > .menuGroup:nth-of-type(2) {
-	margin-top: -10px;
+	margin-top: -8px;
 	margin-left: 2px;
 }
 .menuBox2 > .menuGroup:nth-of-type(3) {
@@ -100,13 +97,14 @@ h1, h2 {
 	float: left;
 	position: relative;
 	display: inline-block;
-	padding: 16px 0;
+	padding: 12px 0;
 	margin: 0;
 	margin-left: 1%;
 	font-size: 16px;
 	text-align: center;
 	text-decoration: none;
 	border: none;
+	border-radius: 5px;
 }
 #homeBtn, .userBtn {
 	margin: 0 1%;
@@ -119,19 +117,19 @@ h1, h2 {
 .userBtn {
 	width: 10%;
 }
+#searchInput, #searchInBtn {
+	width: 42%;
+	margin: 0 2%;
+}
 .searchBtn {
 	width: 42%;
 	margin: 0 4%;
 	background-color: #4CAF50;
 	color: white;
 }
-#searchInput, #searchInBtn {
-	width: 42%;
-	margin: 0 2%;
-}
 #searchInput {
 	height: 40px;
-	margin-top: 5px;
+	margin-top: 2px;
 	margin-left: 6%;
 	padding: 0;
 	font-style: italic;
@@ -172,6 +170,10 @@ h1, h2 {
 	float: left;
 	color: Tomato;
 	margin: 5px 20px;
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 500px;
 }
 #fileSaveBtn {
 	float: left;
@@ -179,7 +181,7 @@ h1, h2 {
 	margin: 10px;
 }
 
-/* ======= ======= ======= menu menuList ======= ======= ======= */
+/* ======= ======= ======= menuList ======= ======= ======= */
 .menuList {
 	width: 100%;
 }
@@ -202,13 +204,13 @@ h1, h2 {
 	width: 5%;
 }
 .menuListHeader:nth-of-type(2) {
-	width: 10%;
+	width: 12%;
 }
 .menuListHeader:nth-of-type(3) {
-	width: 15%;
+	width: 10%;
 }
 .menuListHeader:nth-of-type(4) {
-	width: 10%;
+	width: 13%;
 }
 .menuListHeader:nth-of-type(5) {
 	width: 60%;
@@ -241,6 +243,12 @@ h1, h2 {
 	margin: 2px 0;
 	margin-top: 2px;
 	background-color: #f5f5f5;
+}
+.recipeBox1, .recipeBox2, .recipeBox3 {
+	min-width: 1050px;
+}
+#recipeBox3 > .halfBox:nth-of-type(2) {
+	border-left: solid 3px mediumslateblue;
 }
 
 /* ======= recipeBox1 ======= */
@@ -345,29 +353,19 @@ h1, h2 {
 
 /* ======= recipeContent ======= */
 #recipeContent {
-	height: 400px;
+	height: 440px;
 	font-size: 10px;
 	overflow-y: scroll;
 }
-#ingredients, #instructions {
-	font-family: "Monaco";
-}
-#instructions {
-	border-left: solid 3px DeepSkyBlue;
-}
-
-/* ======= ======= ======= show recipe: recipe ======= ======= ======= */
 #ingredients, #instructions {
 	float: left;
 	width: 50%;
 	height: 100%;
 	margin: 0;
+	font-family: "Monaco";
 }
 #instructions {
-	border-left: solid DeepSkyBlue;
-}
-#recipeBox3 > .halfBox:nth-of-type(2) {
-	border-left: solid 3px mediumslateblue;
+	border-left: solid 3px DeepSkyBlue;
 }
 .ingredient, .instruction, .newIngredient, .newInstruction {
 	display: inline-block;
@@ -389,17 +387,11 @@ h1, h2 {
 	margin: 20px 0 0 20px;
 	font-size: 18px;
 }
-.editItem {
-	margin-left: 9px;
-    padding: 4px;
-	width: 50%;
-	font-size: 16px;
-	color: navy;
-}
+
+/* ======= edit title ======= */
 #editTitleText {
 	float: left;
-	width: 20px;
-	margin: 0 0 0 20px;
+	margin: 8px 0 0 20px;
 	height: 30px;
 	width: 60%;
 	font-size: 30px;
@@ -408,8 +400,14 @@ h1, h2 {
 }
 #titleSaveBtn, #titleCancelBtn {
 	display: inline-block;
-	margin: 0 0 0 10px;
 	width: 12%;
+	margin: 12px 0 0 10px;
+	padding: 5px 10px;
+	font-family: "Ariel", sans-serif;
+    text-align: center;
+    font-size: 14px;
+    line-height: 16px;
+	border-radius: 3px;
 	background-color: mediumSlateBlue;
     color: white;
 }
@@ -426,61 +424,43 @@ h1, h2 {
 	background-color: #eee;
 }
 
-// /* ======= ======= ======= search ======= ======= ======= */
-// .recipeLink {
-// 	display: inline-block;
-// 	margin: 4px;
-// }
-// .recipeLink > a {
-// 	margin: 10px;
-// 	font-size: 16px;
-// 	text-decoration: none;
-// 	color: navy;
-// }
-// .recipeLink > a:hover {
-//     color: orangered;
-// }
-// #searchType {
-// 	display: inline;
-// 	width: 18%;
-//     min-width: 120px;
-//     height: 24px;
-// 	padding: 0 10px;
-//     font-size: 16px;
-// 	text-align-last:center;
-//     line-height: 24px;
-// 	color: white;
-// 	background-color: DodgerBlue;
-// 	border-radius: 5px;
-// }
-
-
-
-
-
-
-/* ======= ======= ======= line edits ======= ======= ======= */
-.editItem {
-	float: left;
+/* ======= edit item ======= */
+.newRecipeLine {
+	width: 100%;
+	height: 46px;
+	background-color: #eee;
 }
 .editItemBox {
 	float: left;
 	width: 40%;
 	height: 120px;
 }
-#titleSaveBtn, #titleCancelBtn, .saveBtn, .cancelBtn, .deleteBtn {
-	// display: inline;
+.editItem {
+	float: left;
+	margin-left: 9px;
+    padding: 4px;
+	width: 50%;
+	font-size: 16px;
+	color: navy;
+}
+.newItem {
+	float: left;
+	margin: 8px 0 0 20px;
+	height: 22px;
+	width: 40%;
+	font-size: 12px;
+	color: navy;
+}
+.saveBtn, .cancelBtn, .deleteBtn {
+	float: left;
+	width: 20%;
+	margin: 10px 2%;
 	padding: 5px 10px;
 	font-family: "Ariel", sans-serif;
     text-align: center;
     font-size: 14px;
     line-height: 16px;
 	border-radius: 3px;
-}
-.saveBtn, .cancelBtn, .deleteBtn {
-	// float: left;
-	width: 30%;
-	margin: 6px 20px;
 	background-color: Plum;
     color: navy;
 }
@@ -519,6 +499,7 @@ h1, h2 {
 }
 
 /* ======= ======= ======= custom styles ======= ======= ======= */
+
 /* ======= dropdown ======= */
 .dropdown {
 	float: left;
@@ -529,12 +510,13 @@ h1, h2 {
 }
 .dropdown-menu {
 	width: 100%;
-	padding: 16px 0;
+	padding: 12px 0;
 	text-align: center;
 	font-size: 16px;
 	background-color: #4CAF50;
 	color: white;
 	border: none;
+	border-radius: 5px;
 }
 .dropdown-content {
 	display: none;
@@ -570,7 +552,7 @@ h1, h2 {
 }
 
 /* ======= checkbox ======= */
-.shareItem input[type=checkbox] {
+.listShare {
 	-ms-transform: scale(1.5); /* IE */
 	-moz-transform: scale(1.5); /* FF */
 	-webkit-transform: scale(1.5); /* Safari and Chrome */
@@ -578,6 +560,34 @@ h1, h2 {
 	transform: scale(1.5);
 	padding: 10px;
 	margin-left: 36%;
+}
+.recipeShare {
+	-ms-transform: scale(1.5); /* IE */
+	-moz-transform: scale(1.5); /* FF */
+	-webkit-transform: scale(1.5); /* Safari and Chrome */
+	-o-transform: scale(1.5); /* Opera */
+	transform: scale(1.5);
+	float: left;
+	padding: 10px;
+	margin-top: 16px;
+}
+.label {
+	float: left;
+	margin: 10px;
+	font-size: 16px;
+	font-style: italic;
+    line-height: 24px;
+	text-align: center;
+	color: Navy;
+}
+.sharedLabel {
+	float: left;
+	margin: 0 10px;
+	font-size: 12px;
+	font-style: italic;
+    line-height: 12px;
+	text-align: center;
+	color: Navy;
 }
 
 //

@@ -248,7 +248,7 @@ h1, h2 {
 }
 
 /* ======= ======= ======= redesign: checkbox ======= ======= ======= */
-.shareItem input[type=checkbox] {
+.listShare input[type=checkbox] {
 	-ms-transform: scale(1.5); /* IE */
 	-moz-transform: scale(1.5); /* FF */
 	-webkit-transform: scale(1.5); /* Safari and Chrome */

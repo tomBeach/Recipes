@@ -16,6 +16,8 @@
 <% end %>
 <%= content_tag :div, id: "titleData", data: {title: @recipe.title} do %>
 <% end %>
+<%= content_tag :div, id: "sharedData", data: {shared: @recipe.shared} do %>
+<% end %>
 <%= content_tag :div, id: "ratingData", data: {ratingid: @recipe.rating_id} do %>
 <% end %>
 <%= content_tag :div, id: "categoryData", data: {categoryid: @recipe.category_id} do %>
@@ -37,6 +39,13 @@
 		<%= select_tag "rating_edit_select", options_for_select(@rating_ids, @rating), class: "editSelect", remote: true %>
 		<%= select_tag "category_edit_select", options_for_select(@category_ids, @category), class: "editSelect", remote: true %>
 		<%= select_tag "nationality_edit_select", options_for_select(@nationality_ids, @nationality), class: "editSelect", remote: true %>
+		<% puts "@recipe.shared: #{@recipe.shared}" %>
+		<p class="label">shared</p>
+		<% if @recipe.shared === true %>
+			<input type="checkbox" id="shared" name="shared" class="recipeShare" value="<%= @recipe.shared %>" checked>
+		<% else %>
+			<input type="checkbox" id="shared" name="shared" class="recipeShare" value="<%= @recipe.shared %>">
+		<% end %>
 		<%= link_to "Delete", "delete_recipe/" + @recipe[:id].to_s, id: "deleteRecipe", class: "active", remote: true %>
 	</div>
 

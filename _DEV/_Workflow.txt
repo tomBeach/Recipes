@@ -8,6 +8,9 @@
 // ======= ======= ======= recipe table ======= ======= =======
 ALTER TABLE recipes ADD user_id integer;
 UPDATE recipes SET user_id = '2' WHERE id = '78';
+ALTER TABLE recipes ADD shared boolean;
+UPDATE recipes SET shared = true;
+
 
 
 // ======= ======= ======= menu ======= ======= =======

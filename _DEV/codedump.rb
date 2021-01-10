@@ -1,3 +1,42 @@
+// // == detect Enter key for search text (in ingredients or title)
+// $('body').keyup(function(e) {
+// 	console.log("== keyup ==");
+//     if (e.keyCode === 13) {
+// 		var searchValue = $('#searchInput').val();
+// 		if (searchValue != "") {
+// 			var searchString = $('#search_select option:selected').val();
+// 			if (editFlag == false) {
+// 				toggleEditButtons("hide");
+// 				searchRecipes(searchString, "text");
+// 			} else {
+// 				displayPopup("edit", "");
+// 			}
+// 			e.stopPropagation();
+// 		} else {
+// 			displayPopup("search", "");
+// 		}
+//     }
+// });
+
+
+
+
+<%# <%= check_box_tag name, value = "1", checked = false, options = {}  %> %>
+<%= check_box_tag "shared", value = @recipe.shared, checked, options = {class: 'recipeShare'} %>
+
+<%= check_box_tag "shared", value = @recipe.shared, options = {class: 'recipeShare'} %>
+
+
+
+<%# <% if @recipe.shared === true %>
+	<%# <%= check_box_tag name, value = "1", checked = false, options = {}  %> %>
+	<%= check_box_tag "shared", value = @recipe.shared, checked = @recipe.shared, options = {class: 'recipeShare'}  %>
+<% else %>
+	<%= check_box_tag "shared", false, 0, class: 'recipeShare'%>
+<% end %> %>
+
+
+
 /* ======= recipeBox1 ======= */
 #outputTitle {
 	float: left;
