@@ -695,29 +695,37 @@ $(document).on('turbolinks:load', function() {
 			console.log("== editRecipeLine ==");
 
 			editFlag = true;
-
-			// == remove/restore existing edit mode elements if any
-			if ($('.saveBtn').length > 0) {
-				$('.editItemBox, .saveBtn, .cancelBtn, .deleteBtn').remove();
-				var saveHtml = "<p class='ingredient' id='" + currentId + "'>" + currentText + "</p>";
-				$('#' + currentId).replaceWith(saveHtml);
-				$('#' + currentId).on('mouseover', hiliteLink);
-				$('#' + currentId).on('mouseout', restoreLink);
-				$('#' + currentId).on('click', editRecipeLine);
-			}
-
-			// == set edit mode parameters for currently selected element
 			var btnsHtml = "";
 			var inputHtml = "";
+
+			// == get existing id and text values for currently selected element
 			currentText = $(this).text();
 			currentId = $(this).attr('id');
+
+			// == currentId format: ingredient_XXXX or instruction_XXXX (XXXX = database id)
+			var itemId = currentId.split("_")[1];
+			var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
+
+			// == remove existing edit mode elements if any/restore line functionality
+			if ($('.editLineBox').length > 0) {
+				var activeEditId = $('.editLineBox').children('textarea').attr('id');
+				var activeEditText = $('.editLineBox').children('textarea').text();
+				var saveHtml = "<p class='" + ingrOrInst + "' id='" + activeEditId + "'>" + activeEditText + "</p>";
+				$('.editLineBox').replaceWith(saveHtml);
+				$('#' + activeEditId).on('mouseover', hiliteLink);
+				$('#' + activeEditId).on('mouseout', restoreLink);
+				$('#' + activeEditId).on('click', editRecipeLine);
+			}
+
+			// == replace selected line with edit functionality
+			inputHtml = inputHtml + "<div class='editLineBox'>";
 			inputHtml = inputHtml + "<textarea class='editItem' id='" + currentId + "' name='" + currentId + "'";
 			inputHtml = inputHtml + " cols='40' rows='5'>" + currentText + "</textarea>";
-			var btnsHtml = btnsHtml + "<div class='editItemBox'>";
-			var btnsHtml = btnsHtml + "<div class='saveBtn'> save </div>";
-			var btnsHtml = btnsHtml + "<div class='cancelBtn'> cancel </div>";
-			var btnsHtml = btnsHtml + "<div class='deleteBtn'> delete </div> ";
-			var btnsHtml = btnsHtml + "</div> ";
+			var btnsHtml = btnsHtml + "<div class='editBtnsBox'>";
+			var btnsHtml = btnsHtml + "<div class='saveBtn'>save</div>";
+			var btnsHtml = btnsHtml + "<div class='cancelBtn'>cancel</div>";
+			var btnsHtml = btnsHtml + "<div class='deleteBtn'>delete</div> ";
+			var btnsHtml = btnsHtml + "</div></div>";
 			var editHtml = inputHtml + btnsHtml;
 			$(this).replaceWith(editHtml);
 
@@ -725,6 +733,22 @@ $(document).on('turbolinks:load', function() {
 			$('.saveBtn').on('click', updateRecipeLine);
 			$('.cancelBtn').on('click', cancelLineEdits);
 			$('.deleteBtn').on('click', deleteRecipeLine);
+		}
+
+		// ======= cancelLineEdits =======
+		function cancelLineEdits() {
+			console.log("== cancelLineEdits ==");
+			console.log("currentId: ", currentId);
+			editFlag = false;
+
+			// == currentId format: ingredient_XXXX or instruction_XXXX (XXXX = database id)
+			var itemId = currentId.split("_")[1];
+			var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
+			var saveHtml = "<p class='" + ingrOrInst + "' id='" + currentId + "'>" + currentText + "</p>";
+			$('.editLineBox').replaceWith(saveHtml);
+			$('#' + currentId).on('mouseover', hiliteLink);
+			$('#' + currentId).on('mouseout', restoreLink);
+			$('#' + currentId).on('click', editRecipeLine);
 		}
 
 		// ======= updateRecipeLine =======
@@ -743,31 +767,33 @@ $(document).on('turbolinks:load', function() {
 			var newText = $('#' + currentId).val();
 
 			// == save ingredient changes to local data
-			for (var i = 0; i < ingredientsData.ingredients.length; i++) {
-				nextId = ingredientsData.ingredients[i].id;
-				nextSequence = parseInt($('#ingrSeq_' + nextId).val());
-				ingredientsData.ingredients[i].sequence = nextSequence;
-				if (nextId == itemId) {
-					ingredientsData.ingredients[i].ingredient = newText;
-					break;
+			if (ingrOrInst == "ingredient") {
+				for (var i = 0; i < ingredientsData.ingredients.length; i++) {
+					nextId = ingredientsData.ingredients[i].id;
+					nextSequence = parseInt($('#ingrSeq_' + nextId).val());
+					ingredientsData.ingredients[i].sequence = nextSequence;
+					if (nextId == itemId) {
+						ingredientsData.ingredients[i].ingredient = newText;
+						break;
+					}
 				}
-			}
 
 			// == save instruction changes to local data
-			for (var i = 0; i < instructionsData.instructions.length; i++) {
-				nextId = instructionsData.instructions[i].id;
-				nextSequence = parseInt($('#instSeq_' + nextId).val());
-				instructionsData.instructions[i].sequence = nextSequence;
-				if (nextId == itemId) {
-					instructionsData.instructions[i].instruction = newText;
-					break;
+			} else if (ingrOrInst == "instruction") {
+				for (var i = 0; i < instructionsData.instructions.length; i++) {
+					nextId = instructionsData.instructions[i].id;
+					nextSequence = parseInt($('#instSeq_' + nextId).val());
+					instructionsData.instructions[i].sequence = nextSequence;
+					if (nextId == itemId) {
+						instructionsData.instructions[i].instruction = newText;
+						break;
+					}
 				}
 			}
 
 			// == update html string with changes
-			var saveHtml = "<p class='ingredient' id='" + currentId + "'>" + newText + "</p>";
-			$('#' + currentId).replaceWith(saveHtml);
-			$('.editItemBox, .saveBtn, .cancelBtn, .deleteBtn').remove();
+			var saveHtml = "<p class='" + ingrOrInst + "' id='" + currentId + "'>" + newText + "</p>";
+			$('.editLineBox').replaceWith(saveHtml);
 
 			// == restore line hilites and click behavior
 			$('#' + currentId).on('mouseover', hiliteLink);
@@ -778,16 +804,59 @@ $(document).on('turbolinks:load', function() {
 			activateSaveCancel();
 		}
 
-		// ======= cancelLineEdits =======
-		function cancelLineEdits() {
-			console.log("== cancelLineEdits ==");
-			editFlag = false;
-			var saveHtml = "<p class='ingredient' id='" + currentId + "'>" + currentText + "</p>";
-			$('#' + currentId).replaceWith(saveHtml);
-			$('.editItemBox, .saveBtn, .cancelBtn, .deleteBtn').remove();
-			$('#' + currentId).on('mouseover', hiliteLink);
-			$('#' + currentId).on('mouseout', restoreLink);
-			$('#' + currentId).on('click', editRecipeLine);
+		// ======= deleteRecipeLine =======
+		function deleteRecipeLine() {
+			console.log("== deleteRecipeLine ==");
+
+			var nextItem;
+			var itemId = currentId.split("_")[1];
+			var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
+			console.log("itemId: ", itemId);
+
+			// == identify ingredient or instruction to be removed (update local data)
+			if (ingrOrInst == "ingredient") {
+				var sequenceElement = $('#ingrSeq_' + itemId);
+				var ingredientsData = $('#ingredientsData').data().ingredients;
+				ingredientsInOrder = $("#ingredients").sortable("toArray");			// ingredient element ids
+				for (var i = 0; i < ingredientsData.length; i++) {
+					nextItem = ingredientsData[i];
+					if (nextItem.id == itemId) {
+						var sortableDeleteItem = "ingrLine_" + itemId;
+						var deleteItemIndex = ingredientsInOrder.indexOf(sortableDeleteItem);
+						ingredientsInOrder.splice(deleteItemIndex, 1);				// remove item id from inOrder list
+						ingredientsData[i].new_delete = "DELETE";					// flag item for delete
+						$('#ingrLine_' + itemId).remove();
+					}
+				}
+				updateItemSequences("ingr");
+			} else if (ingrOrInst == "instruction") {
+				var sequenceElement = $('#instSeq_' + itemId);
+				var instructionsData = $('#instructionsData').data().instructions;
+				instructionsInOrder = $("#instructions").sortable("toArray");		// instruction element ids
+				console.log("instructionsInOrder1: ", instructionsInOrder);
+				for (var i = 0; i < instructionsData.length; i++) {
+					nextItem = instructionsData[i];
+					if (nextItem.id == itemId) {
+						var sortableDeleteItem = "instLine_" + itemId;
+						var deleteItemIndex = instructionsInOrder.indexOf(sortableDeleteItem);
+						instructionsInOrder.splice(deleteItemIndex, 1);				// remove item id from inOrder list
+						instructionsData[i].new_delete = "DELETE";					// flag item for delete
+						$('#instLine_' + itemId).remove();
+						console.log("instructionsInOrder2: ", instructionsInOrder);
+					}
+				}
+				updateItemSequences("inst");
+			}
+			console.log("ingredientsData: ", ingredientsData);
+			console.log("instructionsData: ", instructionsData);
+
+			// == update html string with changes
+			sequenceElement.remove();
+			$('#' + currentId).parent().remove();
+			// $('.saveBtn, .cancelBtn, .deleteBtn').remove();
+
+			// == activate save and cancel buttons
+			activateSaveCancel();
 		}
 
 
@@ -910,53 +979,6 @@ $(document).on('turbolinks:load', function() {
 			$('#saveRecipeEdits').removeClass('active');
 			$('#cancelRecipeEdits').removeClass('active');
 			$('.newRecipeLine, .newItem, .saveBtn, .cancelBtn').remove();
-		}
-
-		// ======= deleteRecipeLine =======
-		function deleteRecipeLine() {
-			console.log("== deleteRecipeLine ==");
-
-			var nextItem;
-			var itemId = currentId.split("_")[1];
-			var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
-
-			// == identify ingredient or instruction to be removed (update local data)
-			if (ingrOrInst == "ingredient") {
-				var ingredientsData = $('#ingredientsData').data().ingredients;
-				ingredientsInOrder = $("#ingredients").sortable("toArray");			// ingredient element ids
-				for (var i = 0; i < ingredientsData.length; i++) {
-					nextItem = ingredientsData[i];
-					if (nextItem.id == itemId) {
-						var sortableDeleteItem = "ingrLine_" + itemId;
-						var deleteItemIndex = ingredientsInOrder.indexOf(sortableDeleteItem);
-						ingredientsInOrder.splice(deleteItemIndex, 1);				// remove item id from inOrder list
-						ingredientsData[i].new_delete = "DELETE";					// flag item for delete
-					}
-				}
-				updateItemSequences("ingr");
-			} else if (ingrOrInst == "instruction") {
-				var instructionsData = $('#instructionsData').data().instructions;
-				instructionsInOrder = $("#instructions").sortable("toArray");		// instruction element ids
-				for (var i = 0; i < instructionsData.length; i++) {
-					nextItem = instructionsData[i];
-					if (nextItem.id == itemId) {
-						var sortableDeleteItem = "instLine_" + itemId;
-						var deleteItemIndex = instructionsInOrder.indexOf(sortableDeleteItem);
-						instructionsInOrder.splice(deleteItemIndex, 1);				// remove item id from inOrder list
-						instructionsData[i].new_delete = "DELETE";					// flag item for delete
-					}
-				}
-				updateItemSequences("inst");
-			}
-			console.log("ingredientsData: ", ingredientsData);
-			console.log("instructionsData: ", instructionsData);
-
-			// == update html string with changes
-			$('#' + currentId).parent().remove();
-			$('.saveBtn, .cancelBtn, .deleteBtn').remove();
-
-			// == activate save and cancel buttons
-			activateSaveCancel();
 		}
 
 
@@ -1651,7 +1673,7 @@ $(document).on('turbolinks:load', function() {
 		if (type == "search") {
 			popupHtml = popupHtml + "<p>Please enter a search value.</p>";
 		} else if (type == "noText") {
-			popupHtml = popupHtml + "<p>Please enter new " + data + " text or click cancel button.</p>";
+			popupHtml = popupHtml + "<p>Please enter new " + data + " text or click the <span>Cancel</span> button.</p>";
 		} else if (type == "edit") {
 			popupHtml = popupHtml + "<p>You haven't saved your edits yet.</p>";
 			popupHtml = popupHtml + "<p>Click <span>Save</span> or <span>Cancel</span> before choosing another function.</p>";
