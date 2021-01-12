@@ -6,22 +6,26 @@
 
 	<table class="AEDtable">
 		<thead>
-			<tr class="btnRow">
-				<th colspan="3"></th>
+			<tr class="headerRow">
+				<th class="dataColumn">nationality</th>
+				<th class="btnColumn">edit</th>
+				<th class="btnColumn">delete</th>
 			</tr>
 		</thead>
 
 		<tbody>
 			<% @nationalities.each do |nationality| %>
-				<tr>
-					<td class="dataColumn"><%= nationality[:nationality] %></td>
-					<td class="btnColumn"><%= link_to 'edit', edit_nationality_path(nationality) %></td>
+				<% id_item_html = "nationality_" + nationality[:id].to_s %>
+				<% id_btn_html = "editNationalityBtn_" + nationality[:id].to_s %>
+				<tr class="dataRow">
+					<td id="<%= id_item_html %>" class="dataColumn"><%= nationality[:nationality] %></td>
+					<td class="btnColumn"><%= link_to 'edit', "", id: id_btn_html, class: "mgmtEditBtn", remote: true  %></td>
 					<td class="btnColumn"><%= link_to 'delete', nationality, method: :delete, data: { confirm: 'Are you sure?' } %></td>
 				</tr>
 			<% end %>
 			<tr class="btnRow">
-				<td class="dataColumn"><%= link_to 'New Nationality', new_nationality_path, id: "newNationalityBtn", remote: false  %></td>
-				<td class="btnColumn"><%= link_to "Back", request.referer.present? ? request.referer : "/home", class: "formLink" %></td>
+				<td class="dataColumn"><%= link_to 'New Nationality', "", id: "newNationalityBtn", remote: false  %></td>
+				<td class="btnColumn"><%= link_to "Back", request.referer.present? ? request.referer : "/home" %></td>
 				<td class="btnColumn">&nbsp;</td>
 			</tr>
 		</tbody>

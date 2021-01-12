@@ -1670,7 +1670,9 @@ $(document).on('turbolinks:load', function() {
 
 		var popupHtml = "";
 
-		if (type == "search") {
+		if (type == "mgmt") {
+			popupHtml = popupHtml + "<p>Please enter a value.</p>";
+		} else if (type == "search") {
 			popupHtml = popupHtml + "<p>Please enter a search value.</p>";
 		} else if (type == "noText") {
 			popupHtml = popupHtml + "<p>Please enter new " + data + " text or click the <span>Cancel</span> button.</p>";
@@ -1859,6 +1861,19 @@ $(document).on('turbolinks:load', function() {
 			makeNewNationality();
 			e.stopPropagation();
 		});
+		$('.mgmtEditBtn').click(function(e) {
+			console.log("== click: mgmtEditBtn ==");
+			e.preventDefault();
+			var itemId = $(this).attr('id').split('_')[1];
+			editNationalityText(itemId);
+			e.stopPropagation();
+		});
+
+	}
+
+	function editNationalityText(itemId) {
+		console.log("== editNationalityText ==");
+		console.log("itemId: ", itemId);
 	}
 
 	function makeNewNationality() {
@@ -1866,10 +1881,11 @@ $(document).on('turbolinks:load', function() {
 
 		var btnColor;
 
-		var inputHtml = "<input type='text' id='newNationality' name='newNationality'>";
-		var btnsHtml = "<div class='saveBtn'> save </div> <div class='cancelBtn'> cancel </div> ";
+		var inputHtml = "<input type='text' id='newNationality' name='newNationality' >";
+		var btnsHtml = "<div id='nationalitySaveBtn' class='saveBtn'> save </div>";
+		btnsHtml = btnsHtml + "<div class='cancelBtn'> cancel </div> ";
 		var editHtml = inputHtml + btnsHtml;
-		$('#newNationalityBtn').after(editHtml);
+		$('#newNationalityBtn').replaceWith(editHtml);
 
 		$('.saveBtn').click(function(e) {
 			e.preventDefault();
@@ -1885,7 +1901,11 @@ $(document).on('turbolinks:load', function() {
 
 	function cancelNewNationality() {
 		console.log("== cancelNewNationality ==");
+
 		$('#newNationality, .saveBtn, .cancelBtn').remove();
+		var saveHtml = "<a id='newNationalityBtn' href=''>New Nationality</a>";
+		$('.btnRow > .dataColumn').append(saveHtml);
+		activateNationalities();
 	}
 
 	function saveNewNationality() {
@@ -1893,22 +1913,27 @@ $(document).on('turbolinks:load', function() {
 
 		var url = "/new_nationality";
 		var nationalityText = $('#newNationality').val();
-		var jsonData = JSON.stringify({newNationality:nationalityText});
-
-		$.ajax({
-			url: url,
-			data: jsonData,
-			method: "POST",
-			dataType: "json",
-			contentType: "application/json; charset=utf-8"
-		}).done(function(jsonData) {
-			console.log("*** ajax success ***");
-			console.dir(jsonData)
-			updateNoticeMessage(jsonData);
-		}).fail(function(unknown){
-			console.log("*** ajax fail ***");
-			console.log("unknown:", unknown);
-		});
+		if (nationalityText != "") {
+			var jsonData = JSON.stringify({newNationality:nationalityText});
+			$.ajax({
+				url: url,
+				data: jsonData,
+				method: "POST",
+				dataType: "json",
+				contentType: "application/json; charset=utf-8"
+			}).done(function(jsonData) {
+				console.log("*** ajax success ***");
+				console.dir(jsonData)
+				updateNoticeMessage(jsonData);
+				cancelNewNationality();
+				location.reload();
+			}).fail(function(unknown){
+				console.log("*** ajax fail ***");
+				console.log("unknown:", unknown);
+			});
+		} else {
+			displayPopup("mgmt", "");
+		}
 	}
 
 

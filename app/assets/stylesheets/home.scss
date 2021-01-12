@@ -603,81 +603,105 @@ h1, h2 {
 	color: Navy;
 }
 
-//
-// /* ======= ======= ======= tables ======= ======= ======= */
-// table, th, td {
-// 	border: 1px solid white;
-// }
-// .AEDtable, .userTable {
-// 	width: 90%;
-// 	border-collapse: collapse;
-// }
-// .AEDtable > tbody > tr > td, .userTable > tbody > tr > td {
-// 	padding: 5px;
-// }
-// .dataColumn {
-// 	width: 70%;
-// 	min-width: 480px;
-// }
-// .btnColumn {
-// 	width: 15%;
-// }
-// .btnColumn > a {
-// 	display: inline-block;
-//     height: 20px;
-// 	padding: 5px;
-//     text-align: center;
-//     font-size: 16px;
-//     text-decoration: none;
-// 	border-radius: 2px;
-//     background-color: Linen;
-//     color: navy;
-// }
-// .btnColumn > a {
-// 	width: 80px;
-// }
-// .btnColumn > a {
-// 	width: 120px;
-// }
-// .btnColumn > a:hover {
-// 	background-color: mediumslateblue;
-//     color: white;
-// }
-// .btnRow {
-// 	height: 40px;
-//     margin: 0;
-//     padding: 8px;
-// }
-// .btnRow {
-// 	background-color: LightSkyBlue;
-// }
-// .btnRow > td > a {
-// 	display: inline-block;
-//     height: 24px;
-// 	margin: 0 4px;
-// 	padding: 0 10px;
-//     text-align: center;
-//     font-size: 16px;
-//     line-height: 24px;
-//     text-decoration: none;
-// 	border-radius: 5px;
-// 	background-color: #0073e6;
-//     color: navy;
-// }
-//
-// /* ======= ======= ======= mgmt ======= ======= ======= */
+
+/* ======= ======= ======= mgmt ======= ======= ======= */
+table, th, td {
+	border: 1px solid white;
+}
+.AEDtable, .userTable {
+	width: 90%;
+	border-collapse: collapse;
+}
+
+/* ======= column width ======= */
+.headerRow {
+	height: 50px;
+    margin: 0;
+	padding: 0;
+	background-color: LightSkyBlue;
+}
+.dataRow {
+	height: 30px;
+	margin: 0;
+	padding: 0;
+}
+.btnRow {
+	height: 50px;
+    margin: 0;
+	padding: 0;
+	background-color: LightSkyBlue;
+}
+.dataColumn {
+	width: 70%;
+	min-width: 480px;
+	padding: 0 20px;
+	text-align: left;
+}
+.btnColumn {
+	width: 15%;
+	padding: 0 5px;
+	text-align: center;
+}
+
+/* ======= links (data) ======= */
+.dataRow > .btnColumn > a {
+	width: 100%;
+	margin: 0;
+	padding: 2% 15%;
+	font-family: "Ariel", sans-serif;
+	text-align: center;
+	font-size: 14px;
+	line-height: 16px;
+	border-radius: 3px;
+    text-decoration: none;
+	background-color:Bisque;
+    color: navy;
+}
+.dataRow > .btnColumn > a:hover {
+	background-color: mediumslateblue;
+    color: white;
+}
+
+/* ======= links (buttons) ======= */
+.btnRow > td > a {
+	display: inline-block;
+	font-family: "Ariel", sans-serif;
+	text-align: center;
+	font-size: 14px;
+	line-height: 16px;
+	border-radius: 3px;
+    text-decoration: none;
+	background-color: #0073e6;
+    color: white;
+}
+.btnRow > .dataColumn > a, .btnRow > .btnColumn > a {
+	margin: 2%;
+	padding: 5px 10px;
+}
+.btnRow > .dataColumn > a:hover, .btnRow > .btnColumn > a:hover {
+	background-color: Plum;
+    color: navy;
+}
+
+/* ======= edit ======= */
+#newNationality {
+	float: left;
+	display: inline;
+	margin: 10px 20px;
+    padding: 2px;
+	width: 30%;
+	font-size: 14px;
+	color: navy;
+}
+
+
+
+
+/* ======= ======= ======= mgmt ======= ======= ======= */
 // #newNationalityBtn {
 // 	float: left;
 // }
-// #newNationality {
-// 	display: inline;
-// 	margin-left: 9px;
-//     padding: 2px;
-// 	width: 30%;
-// 	font-size: 14px;
-// 	color: navy;
-// }
-//
+
 // /* ======= ======= ======= forms ======= ======= ======= */
 // #formTitle {
 // 	width: 72%;
