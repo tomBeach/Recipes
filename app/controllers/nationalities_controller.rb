@@ -13,13 +13,34 @@ class NationalitiesController < ApplicationController
 		puts "params: #{params}"
 		@nationality = Nationality.new
 
-		@nationality = Nationality.create(:nationality => params[:newNationality])
+		@nationality = Nationality.create(:nationality => params[:new_classify])
 
 		if @nationality.save
-			message = params[:newNationality] + " was added to the Nationalities collection."
+			message = params[:new_classify] + " was added to the Nationalities collection."
 		end
 
 		respond_to do |format|
+			format.json {
+				render json: {:message => message}
+			}
+		end
+	end
+
+	# ======= update_nationality =======
+	def update_nationality
+		puts "\n******* update_nationality *******"
+		puts "params: #{params}"
+
+		okay_params = nationality_params()
+		nationality = Nationality.find(okay_params[:item_id])
+		puts "nationality.inspect: #{nationality.inspect}"
+
+		respond_to do |format|
+			if nationality.update(:nationality => params[:nationality])
+				message = params[:nationality] + " has been stored as a nationality."
+			else
+				message = "An error prevented this change: " + params[:nationality] + "."
+			end
 			format.json {
 				render json: {:message => message}
 			}
@@ -73,28 +94,16 @@ class NationalitiesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /nationalities/1
-  # PATCH/PUT /nationalities/1.json
-  def update
-    respond_to do |format|
-      if @nationality.update(nationality_params)
-        format.html { redirect_to @nationality, notice: 'Nationality was successfully updated.' }
-        format.json { render :show, status: :ok, location: @nationality }
-      else
-        format.html { render :edit }
-        format.json { render json: @nationality.errors, status: :unprocessable_entity }
-      end
-    end
-  end
+	private
+		# Use callbacks to share common setup or constraints between actions.
+		def set_nationality
+			@nationality = Nationality.find(params[:id])
+		end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_nationality
-      @nationality = Nationality.find(params[:id])
-    end
-
-    # Only allow a list of trusted parameters through.
-    def nationality_params
-      params.fetch(:nationality, {})
-    end
+		# Only allow a list of trusted parameters through.
+		def nationality_params
+			puts "\n******* nationality_params *******"
+			puts "params.inspect: #{params.inspect}"
+			params.permit(:item_id, :nationality)
+		end
 end

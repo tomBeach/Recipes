@@ -6,7 +6,7 @@
 
 	<table class="AEDtable">
 		<thead>
-			<tr class="btnRow">
+			<tr class="headerRow">
 				<th class="dataColumn">rating</th>
 				<th class="btnColumn">edit</th>
 				<th class="btnColumn">delete</th>
@@ -14,15 +14,18 @@
 		</thead>
 
 		<tbody>
+			<%# == @rating_texts structure: [rating_text, rating[:id]] %>
 			<% @rating_texts.each do |rating| %>
+				<% id_item_html = "classify_" + rating[1].to_s %>
+				<% id_btn_html = "editClassifyBtn_" + rating[1].to_s %>
 				<tr class="dataRow">
-					<td class="dataColumn"><%= rating[0] %></td>
-					<td class="btnColumn"><%= link_to 'edit', "edit_rating_" + rating[1].to_s, remote: true %></td>
+					<td id="<%= id_item_html %>" class="dataColumn"><%= rating[0] %></td>
+					<td class="btnColumn"><%= link_to 'edit', "", id: id_btn_html, class: "editClassifyBtn", remote: true  %></td>
 					<td class="btnColumn"><%= link_to 'delete', "delete_rating_" + rating[1].to_s, method: :delete, data: { confirm: 'Are you sure?' }, remote: true %></td>
 				</tr>
 			<% end %>
 			<tr class="btnRow">
-				<td class="dataColumn"><%= link_to 'New Rating', new_rating_path, id: "newRatingBtn", remote: false  %></td>
+				<td class="dataColumn"><%= link_to 'New Rating', "", id: "newClassifyBtn", remote: false  %></td>
 				<td class="btnColumn"><%= link_to "Back", request.referer.present? ? request.referer : "/home" %></td>
 				<td class="btnColumn">&nbsp;</td>
 			</tr>

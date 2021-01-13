@@ -148,8 +148,8 @@ $(document).on('turbolinks:load', function() {
 			// ======= enable ingredients/instructions editing =======
 			activateEditLinks();
 
-		} else if (pathParts[1] == "nationalities") {
-			activateNationalities();
+		} else if ((pathParts[1] == "ratings") || (pathParts[1] == "categories") || (pathParts[1] == "nationalities")) {
+			activateClassifyActions();
 		}
 	}
 	activateMainMenu();
@@ -1851,70 +1851,64 @@ $(document).on('turbolinks:load', function() {
 	// ======= ======= ======= MGMT ======= ======= =======
 	// ======= ======= ======= MGMT ======= ======= =======
 
-	// ======= activateNationalities =======
-    function activateNationalities() {
-		console.log("== activateNationalities ==");
+	// ======= activateClassifyActions =======
+    function activateClassifyActions() {
+		console.log("== activateClassifyActions ==");
 
-		$('#newNationalityBtn').click(function(e) {
-			console.log("== click: newNationalityBtn ==");
+		$('#newClassifyBtn').click(function(e) {
+			console.log("== click: newClassifyBtn ==");
 			e.preventDefault();
-			makeNewNationality();
+			makeNewClassify();
 			e.stopPropagation();
 		});
-		$('.mgmtEditBtn').click(function(e) {
-			console.log("== click: mgmtEditBtn ==");
+		$('.editClassifyBtn').click(function(e) {
+			console.log("== click: editClassifyBtn ==");
 			e.preventDefault();
 			var itemId = $(this).attr('id').split('_')[1];
-			editNationalityText(itemId);
+			editClassifyText(itemId);
 			e.stopPropagation();
 		});
-
 	}
 
-	function editNationalityText(itemId) {
-		console.log("== editNationalityText ==");
-		console.log("itemId: ", itemId);
-	}
-
-	function makeNewNationality() {
-		console.log("== makeNewNationality ==");
+	// ======= makeNewClassify =======
+	function makeNewClassify() {
+		console.log("== makeNewClassify ==");
 
 		var btnColor;
 
-		var inputHtml = "<input type='text' id='newNationality' name='newNationality' >";
-		var btnsHtml = "<div id='nationalitySaveBtn' class='saveBtn'> save </div>";
+		var inputHtml = "<input type='text' id='newClassify' name='newClassify' class='newClassify'>";
+		var btnsHtml = "<div class='saveBtn'> save </div>";
 		btnsHtml = btnsHtml + "<div class='cancelBtn'> cancel </div> ";
 		var editHtml = inputHtml + btnsHtml;
-		$('#newNationalityBtn').replaceWith(editHtml);
+		$('#newClassifyBtn').replaceWith(editHtml);
 
 		$('.saveBtn').click(function(e) {
 			e.preventDefault();
-			saveNewNationality();
+			saveNewClassify();
 			e.stopPropagation();
 		});
-		$('.cancelBtn').click(function(e, currentId) {
+		$('.cancelBtn').click(function(e) {
 			e.preventDefault();
-			cancelNewNationality();
+			cancelNewClassify();
 			e.stopPropagation();
 		});
 	}
 
-	function cancelNewNationality() {
-		console.log("== cancelNewNationality ==");
+	// ======= saveNewClassify =======
+	function saveNewClassify() {
+		console.log("== saveNewClassify ==");
 
-		$('#newNationality, .saveBtn, .cancelBtn').remove();
-		var saveHtml = "<a id='newNationalityBtn' href=''>New Nationality</a>";
-		$('.btnRow > .dataColumn').append(saveHtml);
-		activateNationalities();
-	}
+		if (pathParts[1] == "ratings") {
+			var url = "/new_rating";
+		} else if (pathParts[1] == "categories") {
+			var url = "/new_category";
+		} else if (pathParts[1] == "nationalities") {
+			var url = "/new_nationality";
+		}
 
-	function saveNewNationality() {
-		console.log("== saveNewNationality ==");
-
-		var url = "/new_nationality";
-		var nationalityText = $('#newNationality').val();
-		if (nationalityText != "") {
-			var jsonData = JSON.stringify({newNationality:nationalityText});
+		var newText = $('#newClassify').val();
+		if (newText != "") {
+			var jsonData = JSON.stringify({new_classify:newText});
 			$.ajax({
 				url: url,
 				data: jsonData,
@@ -1925,7 +1919,7 @@ $(document).on('turbolinks:load', function() {
 				console.log("*** ajax success ***");
 				console.dir(jsonData)
 				updateNoticeMessage(jsonData);
-				cancelNewNationality();
+				cancelNewClassify();
 				location.reload();
 			}).fail(function(unknown){
 				console.log("*** ajax fail ***");
@@ -1934,6 +1928,87 @@ $(document).on('turbolinks:load', function() {
 		} else {
 			displayPopup("mgmt", "");
 		}
+	}
+
+	// ======= editClassifyText =======
+	function editClassifyText(itemId) {
+		console.log("== editClassifyText ==");
+		console.log("itemId: ", itemId);
+
+		var currentText = $('#classify_' + itemId).text();
+		console.log("currentText: ", currentText);
+
+		var inputHtml = "<input type='text' id='editClassify_" + itemId + "' class='editItemText' >";
+		var btnsHtml = "<div id='saveItem_" + itemId + "' class='saveBtn'> save </div>";
+		btnsHtml = btnsHtml + "<div id='cancelItem_" + itemId + "' class='cancelBtn'> cancel </div> ";
+		var editHtml = inputHtml + btnsHtml;
+		$("td[id='nationality_" + itemId + "']").html(editHtml);
+
+		$('.saveBtn').click(function(e) {
+			e.preventDefault();
+			var itemId = $(this).first().attr('id').split("_")[1];
+			saveEditClassify(itemId);
+			e.stopPropagation();
+		});
+		$('.cancelBtn').click(function(e) {
+			e.preventDefault();
+			console.log("currentText: ", currentText);
+			cancelEditClassify();
+			e.stopPropagation();
+		});
+	}
+
+	// ======= saveEditClassify =======
+	function saveEditClassify(itemId) {
+		console.log("== saveEditClassify ==");
+		console.log("itemId: ", itemId);
+
+		var newText = $('#editClassify_' + itemId).val();
+		var url = "/update_nationality";
+		console.log("newText: ", newText);
+
+		if (newText != "") {
+			var jsonData = JSON.stringify({item_id:itemId, nationality:newText});
+			$.ajax({
+				url: url,
+				data: jsonData,
+				method: "POST",
+				dataType: "json",
+				contentType: "application/json; charset=utf-8"
+			}).done(function(jsonData) {
+				console.log("*** ajax success ***");
+				console.dir(jsonData)
+				updateNoticeMessage(jsonData);
+				cancelEditClassify();
+				location.reload();
+			}).fail(function(unknown){
+				console.log("*** ajax fail ***");
+				console.log("unknown:", unknown);
+			});
+		} else {
+			displayPopup("mgmt", "");
+		}
+	}
+
+	function cancelEditClassify() {
+		console.log("== cancelEditClassify ==");
+	}
+
+	function cancelNewClassify() {
+		console.log("== cancelNewClassify ==");
+
+		if (pathParts[1] == "ratings") {
+			var btnText = "New Rating";
+		} else if (pathParts[1] == "categories") {
+			var btnText = "New Category";
+		} else if (pathParts[1] == "nationalities") {
+			var btnText = "New Nationality";
+		}
+
+		$('#newClassify, .saveBtn, .cancelBtn').remove();
+		var saveHtml = "<a id='newClassifyBtn' href=''>" + btnText + "</a>";
+		$('.btnRow > .dataColumn').append(saveHtml);
+		activateClassifyActions();
 	}
 
 
