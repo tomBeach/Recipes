@@ -308,7 +308,6 @@ class HomeController < ApplicationController
 
 
 		# ======= selected rating/category/nationality =======
-		puts "@recipe.rating_id: #{@recipe.rating_id}"
 		if @recipe.rating_id == nil
 			puts "no rating"
 			@rating_ids.push(["no rating", nil])
@@ -317,9 +316,7 @@ class HomeController < ApplicationController
 		else
 			@rating = @recipe.rating_id
 		end
-		puts "@rating_ids: #{@rating_ids}"
 
-		puts "@recipe.category_id: #{@recipe.category_id}"
 		if @recipe.category_id == nil
 			puts "no category"
 			@category_ids.push(["no category", nil])
@@ -328,17 +325,28 @@ class HomeController < ApplicationController
 		else
 			@category = @recipe.category_id
 		end
-		puts "@category_ids: #{@category_ids}"
 
-		puts "@recipe.nationality_id: #{@recipe.nationality_id}"
 		if @recipe.nationality_id == nil
+			puts "no nationality"
 			@nationality_ids.push(["no nationality", nil])
 			@nationality = ["no nationality", nil]
 			@recipe.nationality_id = 0
 		else
 			@nationality = @recipe.nationality_id
 		end
+
+		if @recipe.shared == nil
+			puts "not shared"
+			@recipe.shared = 0
+		end
+
+		puts "@rating_ids: #{@rating_ids}"
+		puts "@category_ids: #{@category_ids}"
 		puts "@nationality_ids: #{@nationality_ids}"
+		puts "@recipe.rating_id: #{@recipe.rating_id}"
+		puts "@recipe.category_id: #{@recipe.category_id}"
+		puts "@recipe.nationality_id: #{@recipe.nationality_id}"
+		puts "@recipe.shared: #{@recipe.shared}"
 
     end
 
@@ -389,6 +397,9 @@ class HomeController < ApplicationController
 		end
 		if params[:nationality_id] == 0
 			params[:nationality_id] = nil
+		end
+		if params[:shared] == 0
+			params[:shared] = nil
 		end
 
 		# == identify edited recipe and update to new json data values

@@ -1,24 +1,17 @@
-# README
+RECIPES
+This is a simple recipe database app for uploading recipes from text documents, then categorizing them by popularity, type and nationality.  Recipes can be searched by these categories as well as title text and ingredients.
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+# == Details:
+Ruby version				ruby '2.7.0'
+database					postgresql
 
-Things you may want to cover:
+# == added gems
+httparty
+devise
 
-* Ruby version
-
+# == other topics:
 * System dependencies
-
 * Configuration
-
 * Database creation
-
 * Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
 * Deployment instructions
-
-* ...

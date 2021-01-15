@@ -7,64 +7,62 @@ class CategoriesController < ApplicationController
 		@categories = Category.all
 	end
 
-	# ======= new =======
-	def new
-		puts "\n******* new *******"
+	# ======= new_category =======
+	def new_category
+		puts "\n******* new_category *******"
+		puts "params: #{params}"
 		@category = Category.new
-		puts "@category.inspect: #{@category.inspect}"
+
+		@category = Category.create(:category => params[:new_classify])
+
+		if @category.save
+			message = params[:new_classify] + " was added to the Nationalities collection."
+		end
+
+		respond_to do |format|
+			format.json {
+				render json: {:message => message}
+			}
+		end
 	end
 
-	# ======= create =======
-	def create
-		puts "\n******* create *******"
-		puts "params.inspect: #{params.inspect}"
+	# ======= update_category =======
+	def update_category
+		puts "\n******* update_category *******"
+		puts "params: #{params}"
 
-		@category = Category.new(category_params)
+		okay_params = category_params()
+		category = Category.find(okay_params[:item_id])
+		puts "category.inspect: #{category.inspect}"
 
-        respond_to do |format|
-            if @category.save
-				puts "*** SAVED"
-                format.html { redirect_to @category, notice: 'Category was successfully created.' }
-            else
-				puts "*** FAIL"
-                format.html { render :new }
-            end
-        end
+		respond_to do |format|
+			if category.update(:category => params[:category])
+				message = params[:category] + " has been stored as a category."
+			else
+				message = "An error prevented this change: " + params[:category] + "."
+			end
+			format.json {
+				render json: {:message => message}
+			}
+		end
 	end
 
-	# ======= show =======
-	def show
-		puts "\n******* show *******"
-		puts "params.inspect: #{params.inspect}"
+	# ======= destroy =======
+	def destroy
+		puts "\n******* destroy *******"
+
+		category_text = @category[:category]
+		recipes = Recipe.where(:category_id => params[:id])
+		recipes.each do |next_recipe|
+			puts "next_recipe.inspect: #{next_recipe.inspect}"
+			next_recipe.update(:category_id => nil)
+		end
+
+	    @category.destroy
+	    respond_to do |format|
+	      format.html { redirect_to categories_url, notice: "Category " + category_text + " was successfully destroyed." }
+	    end
 	end
-
-  # GET /categories/1/edit
-  def edit
-  end
-
-  # PATCH/PUT /categories/1
-  # PATCH/PUT /categories/1.json
-  def update
-    respond_to do |format|
-      if @category.update(category_params)
-        format.html { redirect_to @category, notice: 'Category was successfully updated.' }
-        format.json { render :show, status: :ok, location: @category }
-      else
-        format.html { render :edit }
-        format.json { render json: @category.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /categories/1
-  # DELETE /categories/1.json
-  def destroy
-    @category.destroy
-    respond_to do |format|
-      format.html { redirect_to categories_url, notice: 'Category was successfully destroyed.' }
-      format.json { head :no_content }
-    end
-  end
 
 	private
 		# Use callbacks to share common setup or constraints between actions.
@@ -77,6 +75,6 @@ class CategoriesController < ApplicationController
 		def category_params
 			puts "\n******* category_params *******"
 			puts "params.inspect: #{params.inspect}"
-			params.require(:category).permit(:category)
+			params.permit(:item_id, :category)
 		end
 end

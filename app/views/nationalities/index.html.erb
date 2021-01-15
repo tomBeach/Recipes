@@ -1,8 +1,18 @@
-<div id="recipeBox1" class="fullBox">
-	<h2 id="outputTitle">Nationalities</h2>
-</div>
-
 <div id="output">
+
+	<div class="recipeBox1" class="fullBox">
+		<h2 id="outputTitle">Nationalities</h2>
+	</div>
+
+	<!-- ======= recipe edits [hidden] ======= -->
+	<div id="recipeBox2">
+		<div class="halfBox">
+			<%= link_to "Save", save_recipe_edits_path, id: "saveRecipeEdits", class: "addEditDelete", remote: true %>
+		</div>
+		<div class="halfBox">
+			<%= link_to "Cancel", "", id: "cancelRecipeEdits", class: "addEditDelete", remote: true %>
+		</div>
+	</div>
 
 	<table class="AEDtable">
 		<thead>

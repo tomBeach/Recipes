@@ -29,14 +29,15 @@ $(document).on('turbolinks:load', function() {
 
 			// == add local placeholder for previous value (for undo/cancel options)
 			$('#titleData').data().prev_title = $('#titleData').data().title;
-			$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
 			$('#sharedData').data().prev_shared = $('#sharedData').data().shared;
+			$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
 			$('#categoryData').data().prev_categoryid = $('#categoryData').data().categoryid;
 			$('#nationalityData').data().prev_nationalityid = $('#nationalityData').data().nationalityid;
-			console.log("$('#ratingData').data().ratingid: ", $('#ratingData').data().ratingid);
-			console.log("$('#ratingData').data().prev_ratingid: ", $('#ratingData').data().prev_ratingid);
-			console.log("$('#sharedData').data().shared: ", $('#sharedData').data().shared);
-			console.log("$('#sharedData').data().prev_shared: ", $('#sharedData').data().prev_shared);
+			console.log("title: ", $('#titleData').data().title);
+			console.log("shared: ", $('#sharedData').data().shared);
+			console.log("ratingid: ", $('#ratingData').data().ratingid);
+			console.log("categoryid: ", $('#categoryData').data().categoryid);
+			console.log("nationalityid: ", $('#nationalityData').data().nationalityid);
 
 			// ======= ======= ======= enable drag-n-drop ======= ======= =======
 			// ======= ======= ======= enable drag-n-drop ======= ======= =======
@@ -353,8 +354,6 @@ $(document).on('turbolinks:load', function() {
 		$('#recipeBox2').css('display', 'block');
 		var saveState = $('#saveRecipeEdits').hasClass("active");
 		var cancelState = $('#cancelRecipeEdits').hasClass("active");
-		console.log("saveState: ", saveState);
-		console.log("cancelState: ", cancelState);
 
 		// == select to send changes to database
 		if (!saveState) {
@@ -380,20 +379,6 @@ $(document).on('turbolinks:load', function() {
 			});
 		}
 	}
-
-	// // ======= updateLocalIngrinst =======
-	// function updateLocalIngrinst(jsonData) {
-	// 	console.log("== updateLocalIngrinst ==");
-	//
-	// 	// == store updated data from database in local data elements
-	// 	var updatedIngredients = JSON.parse(jsonData.updated_ingredients);
-	// 	var updatedInstructions = JSON.parse(jsonData.updated_instructions);
-	// 	$('#ingredientsData').data('ingredients', updatedIngredients);
-	// 	$('#instructionsData').data('instructions', updatedInstructions);
-	// 	console.log("$('#ingredientsData').data(): ", $('#ingredientsData').data());
-	// 	console.log("$('#instructionsData').data(): ", $('#instructionsData').data());
-	//
-	// }
 
 	// ======= saveRecipeEdits =======
 	function saveRecipeEdits() {
@@ -447,6 +432,9 @@ $(document).on('turbolinks:load', function() {
 		}
 		if (!nationalityData.nationalityid) {
 			nationalityData.nationalityid = 0;
+		}
+		if (!sharedData.shared) {
+			sharedData.shared = 0;
 		}
 
 		// == package data for send
@@ -853,7 +841,6 @@ $(document).on('turbolinks:load', function() {
 			// == update html string with changes
 			sequenceElement.remove();
 			$('#' + currentId).parent().remove();
-			// $('.saveBtn, .cancelBtn, .deleteBtn').remove();
 
 			// == activate save and cancel buttons
 			activateSaveCancel();
@@ -1649,8 +1636,6 @@ $(document).on('turbolinks:load', function() {
 				displayRecipeTitles(jsonData);
 				activateListHeaders();
 				makeTitleText(jsonData, "import");
-			// } else {
-			// 	updateLocalIngrinst(jsonData);
 			}
 			updateNoticeMessage(jsonData);
 		}).fail(function(unknown){
@@ -1670,7 +1655,11 @@ $(document).on('turbolinks:load', function() {
 
 		var popupHtml = "";
 
-		if (type == "mgmt") {
+		if (type == "delete") {
+			popupHtml = popupHtml + "<p>NOTE: This will destroy the classification for all recipes.</p>";
+			popupHtml = popupHtml + "<p>Do this (via <span>Save</span>) only for items entered erroneously.</p>";
+			popupHtml = popupHtml + "<p>Otherwise, click <span>Cancel</span> to avoid lost data.</p>";
+		} else if (type == "mgmt") {
 			popupHtml = popupHtml + "<p>Please enter a value.</p>";
 		} else if (type == "search") {
 			popupHtml = popupHtml + "<p>Please enter a search value.</p>";
@@ -1855,12 +1844,14 @@ $(document).on('turbolinks:load', function() {
     function activateClassifyActions() {
 		console.log("== activateClassifyActions ==");
 
+		$('#newClassifyBtn').off('click');
 		$('#newClassifyBtn').click(function(e) {
 			console.log("== click: newClassifyBtn ==");
 			e.preventDefault();
 			makeNewClassify();
 			e.stopPropagation();
 		});
+		$('.editClassifyBtn').off('click');
 		$('.editClassifyBtn').click(function(e) {
 			console.log("== click: editClassifyBtn ==");
 			e.preventDefault();
@@ -1868,13 +1859,18 @@ $(document).on('turbolinks:load', function() {
 			editClassifyText(itemId);
 			e.stopPropagation();
 		});
+		$('.deleteClassifyBtn').on("click", function(e){
+			console.log("== click: deleteClassifyBtn ==");
+			e.preventDefault();
+			toggleEditButtons("show");
+			displayPopup("delete", "");
+			e.stopPropagation();
+		});
 	}
 
 	// ======= makeNewClassify =======
 	function makeNewClassify() {
 		console.log("== makeNewClassify ==");
-
-		var btnColor;
 
 		var inputHtml = "<input type='text' id='newClassify' name='newClassify' class='newClassify'>";
 		var btnsHtml = "<div class='saveBtn'> save </div>";
@@ -1930,70 +1926,7 @@ $(document).on('turbolinks:load', function() {
 		}
 	}
 
-	// ======= editClassifyText =======
-	function editClassifyText(itemId) {
-		console.log("== editClassifyText ==");
-		console.log("itemId: ", itemId);
-
-		var currentText = $('#classify_' + itemId).text();
-		console.log("currentText: ", currentText);
-
-		var inputHtml = "<input type='text' id='editClassify_" + itemId + "' class='editItemText' >";
-		var btnsHtml = "<div id='saveItem_" + itemId + "' class='saveBtn'> save </div>";
-		btnsHtml = btnsHtml + "<div id='cancelItem_" + itemId + "' class='cancelBtn'> cancel </div> ";
-		var editHtml = inputHtml + btnsHtml;
-		$("td[id='nationality_" + itemId + "']").html(editHtml);
-
-		$('.saveBtn').click(function(e) {
-			e.preventDefault();
-			var itemId = $(this).first().attr('id').split("_")[1];
-			saveEditClassify(itemId);
-			e.stopPropagation();
-		});
-		$('.cancelBtn').click(function(e) {
-			e.preventDefault();
-			console.log("currentText: ", currentText);
-			cancelEditClassify();
-			e.stopPropagation();
-		});
-	}
-
-	// ======= saveEditClassify =======
-	function saveEditClassify(itemId) {
-		console.log("== saveEditClassify ==");
-		console.log("itemId: ", itemId);
-
-		var newText = $('#editClassify_' + itemId).val();
-		var url = "/update_nationality";
-		console.log("newText: ", newText);
-
-		if (newText != "") {
-			var jsonData = JSON.stringify({item_id:itemId, nationality:newText});
-			$.ajax({
-				url: url,
-				data: jsonData,
-				method: "POST",
-				dataType: "json",
-				contentType: "application/json; charset=utf-8"
-			}).done(function(jsonData) {
-				console.log("*** ajax success ***");
-				console.dir(jsonData)
-				updateNoticeMessage(jsonData);
-				cancelEditClassify();
-				location.reload();
-			}).fail(function(unknown){
-				console.log("*** ajax fail ***");
-				console.log("unknown:", unknown);
-			});
-		} else {
-			displayPopup("mgmt", "");
-		}
-	}
-
-	function cancelEditClassify() {
-		console.log("== cancelEditClassify ==");
-	}
-
+	// ======= cancelNewClassify =======
 	function cancelNewClassify() {
 		console.log("== cancelNewClassify ==");
 
@@ -2011,5 +1944,93 @@ $(document).on('turbolinks:load', function() {
 		activateClassifyActions();
 	}
 
+	// ======= editClassifyText =======
+	function editClassifyText(itemId) {
+		console.log("== editClassifyText ==");
+		console.log("itemId: ", itemId);
+
+		var currentText = $('#classify_' + itemId).text();
+		console.log("currentText: ", currentText);
+
+		var inputHtml = "<input type='text' id='editClassify_" + itemId + "' class='editItemText' value='" + currentText + "' >";
+		var btnsHtml = "<div id='saveItem_" + itemId + "' class='saveBtn'> save </div>";
+		btnsHtml = btnsHtml + "<div id='cancelItem_" + itemId + "' class='cancelBtn'> cancel </div> ";
+		var editHtml = inputHtml + btnsHtml;
+		$("td[id='classify_" + itemId + "']").html(editHtml);
+
+		$('.saveBtn').click(function(e) {
+			e.preventDefault();
+			var itemId = $(this).first().attr('id').split("_")[1];
+			var newText = $('#editClassify_' + itemId).val();
+			saveEditClassify(itemId, newText);
+			e.stopPropagation();
+		});
+		$('.cancelBtn').click(function(e) {
+			e.preventDefault();
+			var itemId = $(this).first().attr('id').split("_")[1];
+			cancelEditClassify(itemId, currentText);
+			e.stopPropagation();
+		});
+	}
+
+	// ======= saveEditClassify =======
+	function saveEditClassify(itemId, newText) {
+		console.log("== saveEditClassify ==");
+		console.log("itemId: ", itemId);
+		console.log("newText: ", newText);
+
+		if (pathParts[1] == "ratings") {
+			var url = "/update_rating";
+			var jsonData = JSON.stringify({item_id:itemId, rating:newText});
+		} else if (pathParts[1] == "categories") {
+			var url = "/update_category";
+			var jsonData = JSON.stringify({item_id:itemId, category:newText});
+		} else if (pathParts[1] == "nationalities") {
+			var url = "/update_nationality";
+			var jsonData = JSON.stringify({item_id:itemId, nationality:newText});
+		}
+
+		var newText = $('#editClassify_' + itemId).val();
+		console.log("newText: ", newText);
+
+		if (newText != "") {
+			$.ajax({
+				url: url,
+				data: jsonData,
+				method: "POST",
+				dataType: "json",
+				contentType: "application/json; charset=utf-8"
+			}).done(function(jsonData) {
+				console.log("*** ajax success ***");
+				console.dir(jsonData)
+				updateNoticeMessage(jsonData);
+				cancelEditClassify(itemId, newText);
+				location.reload();
+			}).fail(function(unknown){
+				console.log("*** ajax fail ***");
+				console.log("unknown:", unknown);
+			});
+		} else {
+			displayPopup("mgmt", "");
+		}
+	}
+
+	function cancelEditClassify(itemId, currentText) {
+		console.log("== cancelEditClassify ==");
+		console.log("itemId:", itemId);
+		console.log("currentText:", currentText);
+
+		// if (pathParts[1] == "ratings") {
+		// 	var prevTextId = "New Rating";
+		// } else if (pathParts[1] == "categories") {
+		// 	var prevTextId = "New Category";
+		// } else if (pathParts[1] == "nationalities") {
+		// 	var prevTextId = "New Nationality";
+		// }
+
+		$('#editClassify_' + itemId + ', .saveBtn, .cancelBtn').remove();
+		$("td[id='classify_" + itemId + "']").html(currentText);
+
+	}
 
 });

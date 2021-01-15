@@ -53,9 +53,7 @@ class NationalitiesController < ApplicationController
 		puts "params: #{params}"
 
 		nationality_text = @nationality[:nationality]
-
 		recipes = Recipe.where(:nationality_id => params[:id])
-
 		recipes.each do |next_recipe|
 			puts "next_recipe.inspect: #{next_recipe.inspect}"
 			next_recipe.update(:nationality_id => nil)
@@ -67,32 +65,6 @@ class NationalitiesController < ApplicationController
 			format.html { redirect_to nationalities_url, notice: message }
 		end
 	end
-
-
-  # GET /nationalities/1
-  # GET /nationalities/1.json
-  def show
-  end
-
-  # GET /nationalities/1/edit
-  def edit
-  end
-
-  # POST /nationalities
-  # POST /nationalities.json
-  def create
-    @nationality = Nationality.new(nationality_params)
-
-    respond_to do |format|
-      if @nationality.save
-        format.html { redirect_to @nationality, notice: 'Nationality was successfully created.' }
-        format.json { render :show, status: :created, location: @nationality }
-      else
-        format.html { render :new }
-        format.json { render json: @nationality.errors, status: :unprocessable_entity }
-      end
-    end
-  end
 
 	private
 		# Use callbacks to share common setup or constraints between actions.

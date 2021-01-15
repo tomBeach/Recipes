@@ -12,58 +12,61 @@ before_action :set_rating, only: [:show, :edit, :update, :destroy]
 		end
 	end
 
-	# GET /ratings/1
-	# GET /ratings/1.json
-	def show
+	# ======= new_rating =======
+	def new_rating
+		puts "\n******* new_rating *******"
+		puts "params: #{params}"
+		@rating = Rating.new
+
+		@rating = Rating.create(:rating => params[:new_classify])
+
+		if @rating.save
+			message = params[:new_classify] + " was added to the Nationalities collection."
+		end
+
+		respond_to do |format|
+			format.json {
+				render json: {:message => message}
+			}
+		end
 	end
 
-	# GET /ratings/new
-	def new
-	@rating = Rating.new
+	# ======= update_rating =======
+	def update_rating
+		puts "\n******* update_rating *******"
+		puts "params: #{params}"
+
+		okay_params = rating_params()
+		rating = Rating.find(okay_params[:item_id])
+		puts "rating.inspect: #{rating.inspect}"
+
+		respond_to do |format|
+			if rating.update(:rating => params[:rating])
+				message = params[:rating] + " has been stored as a rating."
+			else
+				message = "An error prevented this change: " + params[:rating] + "."
+			end
+			format.json {
+				render json: {:message => message}
+			}
+		end
 	end
 
-	# GET /ratings/1/edit
-	def edit
-	end
-
-	# POST /ratings
-	# POST /ratings.json
-	def create
-	@rating = Rating.new(rating_params)
-
-	respond_to do |format|
-	if @rating.save
-	format.html { redirect_to @rating, notice: 'Rating was successfully created.' }
-	format.json { render :show, status: :created, location: @rating }
-	else
-	format.html { render :new }
-	format.json { render json: @rating.errors, status: :unprocessable_entity }
-	end
-	end
-	end
-
-	# PATCH/PUT /ratings/1
-	# PATCH/PUT /ratings/1.json
-	def update
-	respond_to do |format|
-	if @rating.update(rating_params)
-	format.html { redirect_to @rating, notice: 'Rating was successfully updated.' }
-	format.json { render :show, status: :ok, location: @rating }
-	else
-	format.html { render :edit }
-	format.json { render json: @rating.errors, status: :unprocessable_entity }
-	end
-	end
-	end
-
-	# DELETE /ratings/1
-	# DELETE /ratings/1.json
+	# ======= destroy =======
 	def destroy
-	@rating.destroy
-	respond_to do |format|
-	format.html { redirect_to ratings_url, notice: 'Rating was successfully destroyed.' }
-	format.json { head :no_content }
-	end
+		puts "\n******* destroy *******"
+
+		rating_text = @rating[:comment]
+		recipes = Recipe.where(:rating_id => params[:id])
+		recipes.each do |next_recipe|
+			puts "next_recipe.inspect: #{next_recipe.inspect}"
+			next_recipe.update(:rating_id => nil)
+		end
+
+		@rating.destroy
+		respond_to do |format|
+			format.html { redirect_to ratings_url, notice: "Rating " + rating_text + " was successfully destroyed." }
+		end
 	end
 
 	private
@@ -74,6 +77,8 @@ before_action :set_rating, only: [:show, :edit, :update, :destroy]
 
 		# Only allow a list of trusted parameters through.
 		def rating_params
-		params.fetch(:rating, {})
+			puts "\n******* rating_params *******"
+			puts "params.inspect: #{params.inspect}"
+			params.permit(:item_id, :rating)
 		end
 end

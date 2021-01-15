@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+	root 'home#index'
+
 	# == devise
 	devise_for :users
 	devise_scope :user do
@@ -16,6 +18,10 @@ Rails.application.routes.draw do
 	resources :nationalities
 
 	# == groups
+	post "/new_rating" => "ratings#new_rating"
+	post "/update_rating" => "ratings#update_rating"
+	post "/new_category" => "categories#new_category"
+	post "/update_category" => "categories#update_category"
 	post "/new_nationality" => "nationalities#new_nationality"
 	post "/update_nationality" => "nationalities#update_nationality"
 
