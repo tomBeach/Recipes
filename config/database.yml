@@ -13,6 +13,6 @@ test:
 
 production:
   <<: *default
-  database: recipes_prod
-  username: recipes
-  password: <%= ENV['RAILS_DEVISE_JAVASCRIPT_DATABASE_PASSWORD'] %>
+  database: ENV['DB_NAME']
+  username: ENV['DB_USERNAME']
+  password: ENV['DB_PASSWORD']
