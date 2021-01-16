@@ -3,6 +3,7 @@ class CreateIngredients < ActiveRecord::Migration[6.0]
     create_table :ingredients do |t|
       t.references :recipe, null: false, foreign_key: true
       t.string :ingredient
+	  t.integer :sequence
 
       t.timestamps
     end

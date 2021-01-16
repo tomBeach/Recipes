@@ -31,7 +31,7 @@
 					<tr class="dataRow">
 						<td id="<%= id_item_html %>" class="dataColumn"><%= category[:category] %></td>
 						<td class="btnColumn"><%= link_to 'edit', "", id: id_btn_html, class: "editClassifyBtn", remote: true %></td>
-					<td class="btnColumn"><%= link_to 'delete', category, method: :delete, class: "deleteClassifyBtn", remote: true  %></td>
+					<td class="btnColumn"><%= link_to 'delete', category, method: :delete, class: "deleteClassifyBtn" %></td>
 				</tr>
 			<% end %>
 			<tr class="btnRow">

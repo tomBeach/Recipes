@@ -51,17 +51,24 @@ class CategoriesController < ApplicationController
 	def destroy
 		puts "\n******* destroy *******"
 
-		category_text = @category[:category]
-		recipes = Recipe.where(:category_id => params[:id])
-		recipes.each do |next_recipe|
-			puts "next_recipe.inspect: #{next_recipe.inspect}"
-			next_recipe.update(:category_id => nil)
+		notice = ""
+		if current_user[:id] == 2
+			category_text = @category[:category]
+			recipes = Recipe.where(:category_id => params[:id])
+			recipes.each do |next_recipe|
+				puts "next_recipe.inspect: #{next_recipe.inspect}"
+				next_recipe.update(:category_id => nil)
+			end
+			notice = notice + recipes.length.to_s + " recipies are no longer classified as " + category_text
+			notice = notice + " because " + category_text + " was successfully destroyed. "
+		    @category.destroy
+		else
+			notice = notice + "You must be an administrator to delete these classifications."
 		end
 
-	    @category.destroy
-	    respond_to do |format|
-	      format.html { redirect_to categories_url, notice: "Category " + category_text + " was successfully destroyed." }
-	    end
+		respond_to do |format|
+		  format.html { redirect_to categories_url, notice: notice }
+		end
 	end
 
 	private

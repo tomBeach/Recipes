@@ -50,17 +50,22 @@ class NationalitiesController < ApplicationController
 	# ======= destroy =======
 	def destroy
 		puts "\n******* destroy *******"
-		puts "params: #{params}"
 
-		nationality_text = @nationality[:nationality]
-		recipes = Recipe.where(:nationality_id => params[:id])
-		recipes.each do |next_recipe|
-			puts "next_recipe.inspect: #{next_recipe.inspect}"
-			next_recipe.update(:nationality_id => nil)
+		notice = ""
+		if current_user[:id] == 2
+			nationality_text = @nationality[:nationality]
+			recipes = Recipe.where(:nationality_id => params[:id])
+			recipes.each do |next_recipe|
+				puts "next_recipe.inspect: #{next_recipe.inspect}"
+				next_recipe.update(:nationality_id => nil)
+			end
+			notice = notice + recipes.length.to_s + " recipies are no longer classified as " + nationality_text
+			notice = notice + " because " + nationality_text + " was successfully destroyed. "
+			@nationality.destroy
+		else
+			notice = notice + "You must be an administrator to delete these classifications."
 		end
 
-		@nationality.destroy
-		message = "Nationality " + nationality_text + " was successfully removed."
 		respond_to do |format|
 			format.html { redirect_to nationalities_url, notice: message }
 		end

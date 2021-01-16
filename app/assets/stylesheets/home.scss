@@ -514,9 +514,25 @@ h1, h2 {
 .popup-content.active {
 	visibility: visible;
 }
+#popup-message > h3 {
+	margin: 5px;
+}
+#popup-message > p {
+	margin: 8px;
+}
+#popup-message > p > .popupDelete {
+    height: 24px;
+	padding: 2px 20px;
+    font-size: 12px;
+    line-height: 12px;
+	background-color: Crimson;
+	color: white;
+	border-radius: 2px;
+}
 #popup-message > p > span {
 	color: Crimson;
 }
+
 
 /* ======= ======= ======= custom styles ======= ======= ======= */
 

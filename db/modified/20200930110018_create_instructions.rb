@@ -3,6 +3,7 @@ class CreateInstructions < ActiveRecord::Migration[6.0]
     create_table :instructions do |t|
       t.references :recipe, null: false, foreign_key: true
       t.string :instruction
+	  t.integer :sequence
 
       t.timestamps
     end

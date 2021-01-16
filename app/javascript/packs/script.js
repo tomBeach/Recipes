@@ -1657,8 +1657,10 @@ $(document).on('turbolinks:load', function() {
 
 		if (type == "delete") {
 			popupHtml = popupHtml + "<p>NOTE: This will destroy the classification for all recipes.</p>";
-			popupHtml = popupHtml + "<p>Do this (via <span>Save</span>) only for items entered erroneously.</p>";
-			popupHtml = popupHtml + "<p>Otherwise, click <span>Cancel</span> to avoid lost data.</p>";
+			popupHtml = popupHtml + "<p>Do this only for items misspelled or entered erroneously.</p>";
+			popupHtml = popupHtml + "<p>Click <button class='popupDelete'>Delete</button>";
+			popupHtml = popupHtml + " if you are sure you want to do this.</p>";
+			popupHtml = popupHtml + "<p>Otherwise click Okay below.</p>";
 		} else if (type == "mgmt") {
 			popupHtml = popupHtml + "<p>Please enter a value.</p>";
 		} else if (type == "search") {
@@ -1676,14 +1678,33 @@ $(document).on('turbolinks:load', function() {
 
 		$('#popup-message').html(popupHtml);
 		$(".popup-overlay, .popup-content").addClass("active");
+
+		$(".popupDelete").off("click");
+		$(".popupDelete").on("click", function(){
+			console.log("== popup: delete ==");
+			console.log("data: ", data);
+			console.log("pathname: ", pathname);
+			$('#popup-message').html("");
+			$(".popup-overlay, .popup-content").removeClass("active");
+			// window.location = pathname + data;
+		});
+
 	}
 
-	$(".close, .popup").off("click");
-	$(".close, .popup").on("click", function(){
+	$(".close").off("click");
+	$(".close").on("click", function(){
 		console.log("== popup: close ==");
 		$('#popup-message').html("");
 		$(".popup-overlay, .popup-content").removeClass("active");
 	});
+
+	// ======= deleteClassifyItem =======
+	function deleteClassifyItem(whichClassify, itemId) {
+		console.log("== deleteClassifyItem ==");
+		console.log("whichClassify: ", whichClassify);
+		console.log("itemId: ", itemId);
+		window.location = link.href;
+	}
 
 	// ======= updateSequenceDisplay =======
 	function updateSequenceDisplay() {
@@ -1859,13 +1880,14 @@ $(document).on('turbolinks:load', function() {
 			editClassifyText(itemId);
 			e.stopPropagation();
 		});
-		$('.deleteClassifyBtn').on("click", function(e){
-			console.log("== click: deleteClassifyBtn ==");
-			e.preventDefault();
-			toggleEditButtons("show");
-			displayPopup("delete", "");
-			e.stopPropagation();
-		});
+		// $('.deleteClassifyBtn').on("click", function(e){
+		// 	console.log("== click: deleteClassifyBtn ==");
+		// 	e.preventDefault();
+		// 	var deleteItemHref = $(this).attr('href');
+		// 	toggleEditButtons("show");
+		// 	displayPopup("delete", deleteItemHref);
+		// 	e.stopPropagation();
+		// });
 	}
 
 	// ======= makeNewClassify =======

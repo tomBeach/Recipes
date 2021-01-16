@@ -56,16 +56,23 @@ before_action :set_rating, only: [:show, :edit, :update, :destroy]
 	def destroy
 		puts "\n******* destroy *******"
 
-		rating_text = @rating[:comment]
-		recipes = Recipe.where(:rating_id => params[:id])
-		recipes.each do |next_recipe|
-			puts "next_recipe.inspect: #{next_recipe.inspect}"
-			next_recipe.update(:rating_id => nil)
+		notice = ""
+		if current_user[:id] == 2
+			rating_text = @rating[:comment]
+			recipes = Recipe.where(:rating_id => params[:id])
+			recipes.each do |next_recipe|
+				puts "next_recipe.inspect: #{next_recipe.inspect}"
+				next_recipe.update(:rating_id => nil)
+			end
+			notice = notice + recipes.length.to_s + " recipies are no longer classified as " + rating_text
+			notice = notice + " because " + rating_text + " was successfully destroyed. "
+			@rating.destroy
+		else
+			notice = notice + "You must be an administrator to delete these classifications."
 		end
 
-		@rating.destroy
 		respond_to do |format|
-			format.html { redirect_to ratings_url, notice: "Rating " + rating_text + " was successfully destroyed." }
+		  format.html { redirect_to ratings_url, notice: notice }
 		end
 	end
 
