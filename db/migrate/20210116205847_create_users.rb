@@ -1,4 +1,4 @@
-class CreateNewUsers < ActiveRecord::Migration[6.0]
+class CreateUsers < ActiveRecord::Migration[6.0]
   def change
     create_table :new_users do |t|
       t.string :firstname
