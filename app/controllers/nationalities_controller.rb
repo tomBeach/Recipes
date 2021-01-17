@@ -52,7 +52,7 @@ class NationalitiesController < ApplicationController
 		puts "\n******* destroy *******"
 
 		notice = ""
-		if current_user[:id] == 2
+		if current_user[:usertype] == "admin"
 			nationality_text = @nationality[:nationality]
 			recipes = Recipe.where(:nationality_id => params[:id])
 			recipes.each do |next_recipe|

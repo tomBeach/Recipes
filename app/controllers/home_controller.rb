@@ -8,8 +8,6 @@ class HomeController < ApplicationController
 	def index
 		puts "\n******* index *******"
 
-		# @categories = Category.all
-		# @nationalities = Nationality.all
 		if current_user
 			puts "** current_user: #{current_user.inspect}"
 		else

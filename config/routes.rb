@@ -41,6 +41,5 @@ Rails.application.routes.draw do
 	post "/save_recipe_edits" => "home#save_recipe_edits"
 	get "/delete_recipe/:id" => "home#delete_recipe"
 	get "/show_recipe/:id" => "home#show_recipe"
-	# post "/show_recipe/:id" => "home#show_recipe"
 
 end

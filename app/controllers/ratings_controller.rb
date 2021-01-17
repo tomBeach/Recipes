@@ -57,7 +57,7 @@ before_action :set_rating, only: [:show, :edit, :update, :destroy]
 		puts "\n******* destroy *******"
 
 		notice = ""
-		if current_user[:id] == 2
+		if current_user[:usertype] == "admin"
 			rating_text = @rating[:comment]
 			recipes = Recipe.where(:rating_id => params[:id])
 			recipes.each do |next_recipe|

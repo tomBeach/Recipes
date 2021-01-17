@@ -52,7 +52,7 @@ class CategoriesController < ApplicationController
 		puts "\n******* destroy *******"
 
 		notice = ""
-		if current_user[:id] == 2
+		if current_user[:usertype] == "admin"
 			category_text = @category[:category]
 			recipes = Recipe.where(:category_id => params[:id])
 			recipes.each do |next_recipe|
