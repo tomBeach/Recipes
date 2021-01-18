@@ -60,7 +60,7 @@ class NationalitiesController < ApplicationController
 				next_recipe.update(:nationality_id => nil)
 			end
 			notice = notice + recipes.length.to_s + " recipies are no longer classified as " + nationality_text
-			notice = notice + " because " + nationality_text + " was successfully destroyed. "
+			notice = notice + " because " + nationality_text + " was removed. "
 			@nationality.destroy
 		else
 			notice = notice + "You must be an administrator to delete these classifications."

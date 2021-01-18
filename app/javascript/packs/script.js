@@ -7,6 +7,34 @@ $(document).on('turbolinks:load', function() {
     var pathPartsCount = (pathname.split("/").length - 1);
 	console.log("pathParts: ", pathParts);
 
+	// ======= window size displays =======
+	var windowFlag = 1250;
+	var windowW = $(window).width();
+	if (windowW < windowFlag) {
+		$('#getMyRecipes').text('My');
+		$('#getAllRecipes').text('All');
+	} else {
+		$('#getMyRecipes').text('My Recipes');
+		$('#getAllRecipes').text('All Recipes');
+	}
+
+	$(window).on('resize', modifyMenuText);
+
+	function modifyMenuText() {
+		// console.log("== resize: modifyMenuText ==");
+		if ($(this).width() !== windowW) {
+			windowW = $(this).width();
+			if (windowW < windowFlag) {
+				$('#getMyRecipes').text('My');
+				$('#getAllRecipes').text('All');
+				// console.log(windowW);
+			} else {
+				$('#getMyRecipes').text('My Recipes');
+				$('#getAllRecipes').text('All Recipes');
+			}
+		}
+	}
+
 
 	// ======= import recipes =======
     if (pathname == "/import_recipes") {
@@ -31,13 +59,9 @@ $(document).on('turbolinks:load', function() {
 			$('#titleData').data().prev_title = $('#titleData').data().title;
 			$('#sharedData').data().prev_shared = $('#sharedData').data().shared;
 			$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
+			$('#userRatingData').data().prev_userratingid = $('#userRatingData').data().userratingid;
 			$('#categoryData').data().prev_categoryid = $('#categoryData').data().categoryid;
 			$('#nationalityData').data().prev_nationalityid = $('#nationalityData').data().nationalityid;
-			console.log("title: ", $('#titleData').data().title);
-			console.log("shared: ", $('#sharedData').data().shared);
-			console.log("ratingid: ", $('#ratingData').data().ratingid);
-			console.log("categoryid: ", $('#categoryData').data().categoryid);
-			console.log("nationalityid: ", $('#nationalityData').data().nationalityid);
 
 			// ======= ======= ======= enable drag-n-drop ======= ======= =======
 			// ======= ======= ======= enable drag-n-drop ======= ======= =======
@@ -55,8 +79,9 @@ $(document).on('turbolinks:load', function() {
 				},
 				stop: function (event, ui) {
 					console.log("== stop ==");
-					activateSaveCancel();						// ingredient moved: enable cancel button
-					self.updateItemPositions(ui.item);
+					editFlag = true;
+					activateSaveCancel();						// ingredient moved: enable save/cancel buttons
+					self.updateItemPositions(ui.item);			// ui.item is container div for ingredient sequence/text
 					self.updateItemSequences("ingr");
 				}
 			}).disableSelection();
@@ -73,8 +98,9 @@ $(document).on('turbolinks:load', function() {
 				},
 				stop: function (event, ui) {
 					console.log("== stop ==");
-					activateSaveCancel();						// instruction moved: enable cancel button
-					updateItemPositions(ui.item);
+					editFlag = true;
+					activateSaveCancel();						// instruction moved: enable save/cancel buttons
+					updateItemPositions(ui.item);				// ui.item is container div for instruction sequence/text
 					updateItemSequences("inst");
 				}
 			}).disableSelection();
@@ -92,7 +118,6 @@ $(document).on('turbolinks:load', function() {
 			    var newIndex = $item.index() + 1;
 
 			    if (newIndex != startIndex) {
-					var itemIndexData = { id: $item.attr("id"), oldPosition: startIndex, newPosition: newIndex };
 					ingredientsInOrder = $("#ingredients").sortable("toArray");
 					instructionsInOrder = $("#instructions").sortable("toArray");
 			    }
@@ -122,20 +147,20 @@ $(document).on('turbolinks:load', function() {
 					nextItemNum = nextItemId.split("_")[1];
 					nextItemName = nextItemId.split("_")[0];
 					nextItemEl = $('#' + nextItemId)[0];
-					nextItemSeq = $(nextItemEl).children()[0];
+					nextItemSeq = $(nextItemEl).children()[0];		// sequence number element is first child
 					nextItemSeq.innerHTML = (i + 1).toString();
 
 					// == cycle through local database data to update sequence numbers
 					for (var j = 0; j < localDataItems.length; j++) {
 						checkItemId = localDataItems[j].id;
 
-						// == existing item (id is an integer)
+						// == existing item (id is the id integer from database)
 						if (!isNaN(checkItemId)) {
 							if (checkItemId == nextItemNum) {
 								localDataItems[j].sequence = i + 1;
 							}
 
-						// == new item (id format: NEW_XX)
+						// == new item (id integer "XX" determined from count of items; format: NEW_XX)
 						} else {
 							checkItemNum = checkItemId.split("_")[1];
 							if (checkItemNum == nextItemNum) {
@@ -177,7 +202,7 @@ $(document).on('turbolinks:load', function() {
 				toggleEditButtons("hide");
 				searchRecipes("", "my");
 			} else {
-				displayPopup("edit", "");
+				displayPopup("edit", "");		// prevent new display if edits are unsaved
 			}
 			e.stopPropagation();
 		});
@@ -190,7 +215,7 @@ $(document).on('turbolinks:load', function() {
 				toggleEditButtons("hide");
 				searchRecipes("", "all");
 			} else {
-				displayPopup("edit", "");
+				displayPopup("edit", "");		// prevent new display if edits are unsaved
 			}
 			e.stopPropagation();
 		});
@@ -206,10 +231,10 @@ $(document).on('turbolinks:load', function() {
 					toggleEditButtons("hide");
 					searchRecipes("title", "text");
 				} else {
-					displayPopup("edit", "");
+					displayPopup("edit", "");		// prevent new display if edits are unsaved
 				}
 			} else {
-				displayPopup("search", "");
+				displayPopup("search", "");			// prevent new display if no search value
 			}
 			e.stopPropagation();
 		});
@@ -224,10 +249,10 @@ $(document).on('turbolinks:load', function() {
 					toggleEditButtons("hide");
 					searchRecipes("ingredients", "text");
 				} else {
-					displayPopup("edit", "");
+					displayPopup("edit", "");		// prevent new display if edits are unsaved
 				}
 			} else {
-				displayPopup("search", "");
+				displayPopup("search", "");			// prevent new display if no search value
 			}
 			e.stopPropagation();
 		});
@@ -245,7 +270,7 @@ $(document).on('turbolinks:load', function() {
 					searchRecipes(searchString, "rating");
 				}
 			} else {
-				displayPopup("edit", "");
+				displayPopup("edit", "");			// prevent new display if edits are unsaved
 			}
 			e.stopPropagation();
 	    });
@@ -263,7 +288,7 @@ $(document).on('turbolinks:load', function() {
 					searchRecipes(searchString, "category");
 				}
 			} else {
-				displayPopup("edit", "");
+				displayPopup("edit", "");			// prevent new display if edits are unsaved
 			}
 			e.stopPropagation();
 	    });
@@ -281,7 +306,7 @@ $(document).on('turbolinks:load', function() {
 					searchRecipes(searchString, "nationality");
 				}
 			} else {
-				displayPopup("edit", "");
+				displayPopup("edit", "");			// prevent new display if edits are unsaved
 			}
 			e.stopPropagation();
 	    });
@@ -305,7 +330,7 @@ $(document).on('turbolinks:load', function() {
 				var url = "/all_recipes";
 				break;
 			case "text":
-				var searchText = $('#searchInput').val();	// search in title or ingredients
+				var searchText = $('#searchInput').val();	// search text for title or ingredients
 				searchString = [searchString, searchText];	// pass type and title/ingredient selection
 				var url = "/search_text";
 				break;
@@ -335,7 +360,7 @@ $(document).on('turbolinks:load', function() {
 			activateListHeaders();
 			makeTitleText(jsonData, searchType);
 			updateNoticeMessage(jsonData);
-			deactivateTitleEdit();
+			deactivateTitleEdit();				// title edit functionality is not for recipe lists (specific recipe only)
 		}).fail(function(unknown){
 			console.log("*** ajax fail ***");
 			console.log("unknown:", unknown);
@@ -351,12 +376,11 @@ $(document).on('turbolinks:load', function() {
 	function activateSaveCancel() {
 		console.log("== activateSaveCancel ==");
 
-		$('#recipeBox2').css('display', 'block');
-		var saveState = $('#saveRecipeEdits').hasClass("active");
-		var cancelState = $('#cancelRecipeEdits').hasClass("active");
+		console.log("editFlag: ", editFlag);
 
 		// == select to send changes to database
-		if (!saveState) {
+		if (editFlag) {
+			$('#recipeBox2').css('display', 'block');		// edits have been made; show save or cancel options
 			$('#saveRecipeEdits').addClass('active');
 			$('#saveRecipeEdits').click(function(e) {
 				console.log("== click: saveRecipeEdits ==");
@@ -365,10 +389,6 @@ $(document).on('turbolinks:load', function() {
 				saveRecipeEdits();
 				e.stopPropagation();
 			});
-		}
-
-		// == select to cancel changes
-		if (!cancelState) {
 			$('#cancelRecipeEdits').addClass('active');
 			$('#cancelRecipeEdits').click(function(e) {
 				console.log("== click: cancelRecipeEdits ==");
@@ -396,6 +416,7 @@ $(document).on('turbolinks:load', function() {
 		var sharedData = $('#sharedData').data().shared;
 		var titleData = $('#titleData').data().title;
 		var ratingData = $('#ratingData').data().ratingid;
+		var userRatingData = $('#userRatingData').data().userratingid;
 		var categoryData = $('#categoryData').data().categoryid;
 		var nationalityData = $('#nationalityData').data().nationalityid;
 		var ingredientsData = $('#ingredientsData').data().ingredients;		// with NEW or DELETE flag (if any) and revised text
@@ -433,6 +454,9 @@ $(document).on('turbolinks:load', function() {
 		if (!nationalityData.nationalityid) {
 			nationalityData.nationalityid = 0;
 		}
+		if (!userRatingData.userratingid) {
+			userRatingData.userratingid = 0;
+		}
 		if (!sharedData.shared) {
 			sharedData.shared = 0;
 		}
@@ -445,6 +469,7 @@ $(document).on('turbolinks:load', function() {
 			rating_id: ratingData,
 			category_id: categoryData,
 			nationality_id: nationalityData,
+			user_rating_id: userRatingData,
 			ingredients: ingredientsData,
 			instructions: instructionsData
 		};
@@ -1004,6 +1029,8 @@ $(document).on('turbolinks:load', function() {
 	// ======= displayRecipeTitles =======
 	function displayRecipeTitles(jsonData) {
 		console.log("== displayRecipeTitles ==");
+		console.log("jsonData.user_rating_id: ", jsonData.user_rating_id);
+
 
 		var nextId, nextTitle, recipeHtml, categoryStyle, nationalityStyle;
 		var ratingText, categoryText, nationalityText;
@@ -1027,6 +1054,7 @@ $(document).on('turbolinks:load', function() {
 		recipeHtml = recipeHtml + "<tr class='menuHeaders'>";
 		recipeHtml = recipeHtml + "<th id='shareHeader' class='menuListHeader'>shared</th>";
 		recipeHtml = recipeHtml + "<th id='ratingHeader' class='menuListHeader'>rating</th>";
+		recipeHtml = recipeHtml + "<th id='userRatingHeader' class='menuListHeader'>your rating</th>";
 		recipeHtml = recipeHtml + "<th id='categoryHeader' class='menuListHeader'>category</th>";
 		recipeHtml = recipeHtml + "<th id='nationalityHeader' class='menuListHeader'>nationality</th>";
 		recipeHtml = recipeHtml + "<th id='titleHeader' class='menuListHeader'>title</th>";
@@ -1036,20 +1064,30 @@ $(document).on('turbolinks:load', function() {
 			for (var k = 0; k < jsonData.recipeArray.length; k++) {
 				nextId = jsonData.recipeArray[k].id;
 				nextShared = jsonData.recipeArray[k].shared;
-				console.log("nextShared: ", nextShared);
 				nextRatingId = jsonData.recipeArray[k].rating_id;
+				nextUserRatingId = jsonData.recipeArray[k].user_rating_id;
 				nextCategoryId = jsonData.recipeArray[k].category_id;
 				nextNationalityId = jsonData.recipeArray[k].nationality_id;
 				nextTitle = jsonData.recipeArray[k].title;
 
 				// == rating
 				if (nextRatingId) {
-					ratingText = ratingObj[nextRatingId].rating[0] + ": " + ratingObj[nextRatingId].rating[1];
+					ratingText = ratingObj[nextRatingId].rating[1];
 					ratingStyle = "color:" + ratingObj[nextRatingId].color;
 				} else {
 					selectedRating = "&nbsp;";
 					ratingText = "&nbsp;";
 					ratingStyle = "";
+				}
+
+				// == rating
+				if (nextUserRatingId) {
+					userRatingText = ratingObj[nextUserRatingId].rating[1];
+					userRatingStyle = "color:" + ratingObj[nextUserRatingId].color;
+				} else {
+					selectedRating = "&nbsp;";
+					userRatingText = "&nbsp;";
+					userRatingStyle = "";
 				}
 
 				// == category
@@ -1077,6 +1115,7 @@ $(document).on('turbolinks:load', function() {
 				}
 				recipeHtml = recipeHtml + "</td>";
 				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + ratingStyle + ";'>" + ratingText + "</td>";
+				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + userRatingStyle + ";'>" + userRatingText + "</td>";
 				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + categoryStyle + ";'>" + categoryText + "</td>";
 				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + nationalityStyle + ";'>" + nationalityText + "</td>";
 				recipeHtml = recipeHtml + "<td class='menuListItem recipeLink'>";
@@ -1106,44 +1145,23 @@ $(document).on('turbolinks:load', function() {
 		// jsonData.search for "text" type: [title OR ingredients, string to search for] e.g. ["title", "garlic"]
 
 		if (jsonData != "") {
-			if (jsonData.recipeArray.length > 0) {
-				if ((type == "text") && (jsonData.search[0] == "title")) {
-					titleText = "Recipes with '" + jsonData.search[1] + "' in title";
-				} else if ((type == "text") && (jsonData.search[0] == "ingredients")) {
-					titleText = "Recipes with '" + jsonData.search[1] + "' as an ingredient";
-				} else if (type == "category") {
-					titleText = "Recipes in the '" + jsonData.search + "' category";
-				} else if (type == "nationality") {
-					titleText = "Recipes classified as '" + jsonData.search + "'";
-				} else if (type == "rating") {
-					ratingText = ratingText + ratingObj[jsonData.search].rating[0];
-					ratingText = ratingText + ": ";
-					ratingText = ratingText + ratingObj[jsonData.search].rating[1];
-					titleText = "Recipes rated as '" + ratingText + "'";
-				} else if (type == "my") {
-					titleText = "My Database Recipes";
-				} else if (type == "all") {
-					titleText = "All Database Recipes";
-				}
-			} else {
-				if ((type == "text") && (jsonData.search[0] == "title")) {
-					titleText = "No recipes found with '" + jsonData.search + "' in the title.";
-				} else if ((type == "text") && (jsonData.search[0] == "ingredients")) {
-					titleText = "No recipes were found with '" + jsonData.search + "' as an ingredient.";
-				} else if (type == "category") {
-					titleText = "No recipes found in the '" + jsonData.search + "' category.";
-				} else if (type == "nationality") {
-					titleText = "No recipes classified as '" + jsonData.search + "' were found.";
-				} else if (type == "rating") {
-					ratingText = ratingText + ratingObj[jsonData.search].rating[0];
-					ratingText = ratingText + ": ";
-					ratingText = ratingText + ratingObj[jsonData.search].rating[1];
-					titleText = "No recipes rated as '" + ratingText + "' were found.";
-				} else if (type == "my") {
-					titleText = "You do not have any recipes yet.  Import some!";
-				} else if (type == "all") {
-					titleText = "All Database Recipes";
-				}
+			if ((type == "text") && (jsonData.search[0] == "title")) {
+				titleText = jsonData.search[1] + " in title";
+			} else if ((type == "text") && (jsonData.search[0] == "ingredients")) {
+				titleText = jsonData.search[1] + " in ingredients";
+			} else if (type == "category") {
+				titleText =  jsonData.search + " recipes";
+			} else if (type == "nationality") {
+				titleText = jsonData.search + " recipes";
+			} else if (type == "rating") {
+				// ratingText = ratingText + ratingObj[jsonData.search].rating[0];
+				// ratingText = ratingText + ": ";
+				ratingText = ratingText + ratingObj[jsonData.search].rating[1];
+				titleText = ratingText + " recipes";
+			} else if (type == "my") {
+				titleText = "My Database Recipes";
+			} else if (type == "all") {
+				titleText = "All Shared Database Recipes";
 			}
 		} else {
 			titleText = "Please enter a search value";
@@ -1157,6 +1175,10 @@ $(document).on('turbolinks:load', function() {
 		console.log("== activateListHeaders ==");
 		$('#ratingHeader').click(function() {
 			console.log("== click: ratingHeader ==");
+			sortRecipeList(1, 'text');
+		});
+		$('#userRatingHeader').click(function() {
+			console.log("== click: userRatingHeader ==");
 			sortRecipeList(1, 'text');
 		});
 		$('#categoryHeader').click(function() {

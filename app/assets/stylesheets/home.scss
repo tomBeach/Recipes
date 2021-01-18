@@ -15,6 +15,12 @@ h1, h2 {
     margin: 0;
 }
 
+@media all and (max-width: 980px) {
+	// body {
+	// 	background-color: red;
+	// }
+}
+
 /* ======= ======= ======= sections ======= ======= ======= */
 #wrapper {
     width: 90%;
@@ -70,13 +76,13 @@ h1, h2 {
 	margin-left: 2px;
 }
 #searchOwner {
-	width: 18%;
+	width: 22%;
 }
 #searchText {
 	width: 24.5%;
 }
 #searchClassify {
-	width: 57%;
+	width: 53%;
 }
 
 /* ======= banner bar ======= */
@@ -84,9 +90,12 @@ h1, h2 {
 	float: left;
 	width: 54%;
 	margin: 0;
-	padding: 10px 0;
-	font-size: 24px;
+	padding: 4px 0;
+	font-size: 32px;
 	text-align: center;
+	font-style: bold;
+	font-family: "Monaco";
+	text-shadow: 2px 2px #aab;
 }
 #profile {
 	float: right;
@@ -134,7 +143,7 @@ h1, h2 {
 	padding: 0;
 	font-style: italic;
 }
-.userBtn:hover, .searchBtn:hover {
+#homeBtn:hover, .userBtn:hover, .searchBtn:hover {
 	background-color: navy;
 	color: red;
 }
@@ -202,19 +211,22 @@ h1, h2 {
 	background-color: #eee;
 }
 .menuListHeader:nth-of-type(1) {
-	width: 5%;
+	width: 4%;
 }
 .menuListHeader:nth-of-type(2) {
 	width: 12%;
 }
 .menuListHeader:nth-of-type(3) {
-	width: 10%;
+	width: 12%;
 }
 .menuListHeader:nth-of-type(4) {
-	width: 13%;
+	width: 12%;
 }
 .menuListHeader:nth-of-type(5) {
-	width: 60%;
+	width: 12%;
+}
+.menuListHeader:nth-of-type(6) {
+	width: 48%;
 }
 .menuListItem {
 	padding: 5px 10px;
@@ -364,7 +376,7 @@ h1, h2 {
 	float: left;
 	width: 50%;
 	height: 100%;
-	min-width: 460px;
+	min-width: 300px;
 	margin: 0;
 	font-family: "Monaco";
 }
@@ -586,6 +598,15 @@ h1, h2 {
 	width: 22%;
 	margin-left: 4%;
 }
+@media all and (max-width: 1200px) {
+	#searchClassify {
+		width: 50%;
+	}
+	.dropdown-menu {
+		width: 80%;
+	}
+}
+
 
 /* ======= checkbox ======= */
 .listShare {

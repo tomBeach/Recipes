@@ -24,6 +24,14 @@
 <% end %>
 <%= content_tag :div, id: "nationalityData", data: {nationalityid: @recipe.nationality_id} do %>
 <% end %>
+
+<%= content_tag :div, id: "ratingIdData", data: {ratingid: @rating_id} do %>
+<% end %>
+<%= content_tag :div, id: "ratingTextData", data: {ratingtext: @rating_text} do %>
+<% end %>
+<%= content_tag :div, id: "userRatingData", data: {userratingid: @user_rating_id} do %>
+<% end %>
+
 <%= content_tag :div, id: "ingredientsData", data: {ingredients: ingredients_sorted} do %>
 <% end %>
 <%= content_tag :div, id: "instructionsData", data: {instructions: instructions_sorted} do %>
@@ -36,7 +44,7 @@
 	<!-- ======= recipe title ======= -->
 	<div class="recipeBox1">
 		<h2 id="outputTitle"><%= @recipe.title %></h2>
-		<%= select_tag "rating_edit_select", options_for_select(@rating_ids, @rating), class: "editSelect", remote: true %>
+		<%= select_tag "rating_edit_select", options_for_select(@rating_ids, @rating_id), class: "editSelect", remote: true %>
 		<%= select_tag "category_edit_select", options_for_select(@category_ids, @category), class: "editSelect", remote: true %>
 		<%= select_tag "nationality_edit_select", options_for_select(@nationality_ids, @nationality), class: "editSelect", remote: true %>
 		<% puts "@recipe.shared: #{@recipe.shared}" %>

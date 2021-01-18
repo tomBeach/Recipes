@@ -65,7 +65,7 @@ before_action :set_rating, only: [:show, :edit, :update, :destroy]
 				next_recipe.update(:rating_id => nil)
 			end
 			notice = notice + recipes.length.to_s + " recipies are no longer classified as " + rating_text
-			notice = notice + " because " + rating_text + " was successfully destroyed. "
+			notice = notice + " because " + rating_text + " was removed. "
 			@rating.destroy
 		else
 			notice = notice + "You must be an administrator to delete these classifications."

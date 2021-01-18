@@ -60,7 +60,7 @@ class CategoriesController < ApplicationController
 				next_recipe.update(:category_id => nil)
 			end
 			notice = notice + recipes.length.to_s + " recipies are no longer classified as " + category_text
-			notice = notice + " because " + category_text + " was successfully destroyed. "
+			notice = notice + " because " + category_text + " was removed. "
 		    @category.destroy
 		else
 			notice = notice + "You must be an administrator to delete these classifications."

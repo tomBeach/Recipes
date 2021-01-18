@@ -91,6 +91,7 @@ class HomeController < ApplicationController
 		# == all recipes designated for sharing (function to be added)
 		elsif search_type == "all"
 			recipes = Recipe.where(:shared => true).order(:updated_at).reverse_order
+
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
@@ -162,21 +163,30 @@ class HomeController < ApplicationController
 		recipe_array = []
 		recipe_count = 0
 		recipe_data = {}
+		user_rating = 0
 		message = ""
 
 		if recipes.length > 0
 			recipes.each do |next_recipe|
 
+				user_rating = nil
 				if search_type == "ingredients"
 					target_ingredients = next_recipe.ingredients.where("ingredient LIKE ?", "%" + search_term + "%")
-					puts "target_ingredients.length: #{target_ingredients.length}"
 					if target_ingredients.length > 0
+
+						user_rating_check = UserRating.where(:recipe_id => next_recipe[:id], :user_id => current_user[:id])
+						if user_rating_check.length > 0
+							puts "\n user_rating_check.inspect: #{user_rating_check.inspect}"
+							user_rating = user_rating_check[0].rating_id
+						end
+
 						recipe_data = {
 							id: next_recipe.id,
 							shared: next_recipe.shared,
 							rating_id: next_recipe.rating_id,
 							category_id: next_recipe.category_id,
 							nationality_id: next_recipe.nationality_id,
+							user_rating_id: user_rating,
 							title: next_recipe.title,
 							ingredients: next_recipe.ingredients,
 							instructions: next_recipe.instructions }
@@ -186,12 +196,20 @@ class HomeController < ApplicationController
 						puts "NO RECORDS"
 					end
 				else
+
+					user_rating_check = UserRating.where(:recipe_id => next_recipe[:id], :user_id => current_user[:id])
+					if user_rating_check.length > 0
+						puts "\n user_rating_check.inspect: #{user_rating_check.inspect}"
+						user_rating = user_rating_check[0].rating_id
+					end
+
 					recipe_data = {
 						id: next_recipe.id,
 						shared: next_recipe.shared,
 						rating_id: next_recipe.rating_id,
 						category_id: next_recipe.category_id,
 						nationality_id: next_recipe.nationality_id,
+						user_rating_id: user_rating,
 						title: next_recipe.title,
 						ingredients: next_recipe.ingredients,
 						instructions: next_recipe.instructions }
@@ -202,6 +220,7 @@ class HomeController < ApplicationController
 		else
 			puts "NO RECORDS"
 		end
+
 		if search_type != "import"
 			message = make_message_text(search_type, search_term, recipe_count)
 		end
@@ -285,7 +304,9 @@ class HomeController < ApplicationController
 
 		# == @rating @category @nationality from application controller callback
 		@recipe = Recipe.find(params[:id])
+		user_rating = UserRating.where(:user_id => current_user[:id], :recipe_id => @recipe[:id]).first
 		puts "@recipe: #{@recipe.inspect}"
+		puts "user_rating: #{user_rating.inspect}"
 
 		# ======= rating/category/nationality options =======
 		@rating_ids = []
@@ -306,13 +327,18 @@ class HomeController < ApplicationController
 
 
 		# ======= selected rating/category/nationality =======
-		if @recipe.rating_id == nil
+		if user_rating == nil
 			puts "no rating"
 			@rating_ids.push(["no rating", nil])
 			@rating = ["no rating", nil]
-			@recipe.rating_id = 0
+			@rating_id = 0
+			@rating_text = ""
+			@user_rating_id = 0
 		else
-			@rating = @recipe.rating_id
+			rating = Rating.where(:id => user_rating[:rating_id]).first
+			@rating_id = rating[:id]
+			@rating_text = rating[:comment]
+			@user_rating_id = user_rating[:id]
 		end
 
 		if @recipe.category_id == nil
@@ -344,6 +370,9 @@ class HomeController < ApplicationController
 		puts "@recipe.rating_id: #{@recipe.rating_id}"
 		puts "@recipe.category_id: #{@recipe.category_id}"
 		puts "@recipe.nationality_id: #{@recipe.nationality_id}"
+		puts "rating_id: #{@rating_id}"
+		puts "rating_text: #{@rating_text}"
+		puts "user_rating_id: #{@user_rating_id}"
 		puts "@recipe.shared: #{@recipe.shared}"
 
     end
@@ -378,6 +407,7 @@ class HomeController < ApplicationController
 		puts "params[:rating_id]: #{params[:rating_id]}"
 		puts "params[:category_id]: #{params[:category_id]}"
 		puts "params[:nationality_id]: #{params[:nationality_id]}"
+		puts "params[:user_rating_id]: #{params[:user_rating_id]}"
 
 		# == json data: recipe_id, recipe, rating_id, category_id, nationality_id, ingredients, instructions,
 
@@ -395,6 +425,9 @@ class HomeController < ApplicationController
 		end
 		if params[:nationality_id] == 0
 			params[:nationality_id] = nil
+		end
+		if params[:user_rating_id] == 0
+			params[:user_rating_id] = nil
 		end
 		if params[:shared] == 0
 			params[:shared] = nil
