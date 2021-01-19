@@ -25,6 +25,10 @@
 <%= content_tag :div, id: "nationalityData", data: {nationalityid: @recipe.nationality_id} do %>
 <% end %>
 
+<%# @rating_id 						# rating id from ratings table %>
+<%# @rating_text					# rating text ("comment" column) from ratings table %>
+<%# @user_rating_id					# id from user_ratings join table (links user/recipe/rating) %>
+
 <%= content_tag :div, id: "ratingIdData", data: {ratingid: @rating_id} do %>
 <% end %>
 <%= content_tag :div, id: "ratingTextData", data: {ratingtext: @rating_text} do %>
@@ -44,9 +48,13 @@
 	<!-- ======= recipe title ======= -->
 	<div class="recipeBox1">
 		<h2 id="outputTitle"><%= @recipe.title %></h2>
+
+		<% puts "@rating_ids: #{@rating_ids}" %>
+		<% puts "@rating_id: #{@rating_id}" %>
+
 		<%= select_tag "rating_edit_select", options_for_select(@rating_ids, @rating_id), class: "editSelect", remote: true %>
-		<%= select_tag "category_edit_select", options_for_select(@category_ids, @category), class: "editSelect", remote: true %>
-		<%= select_tag "nationality_edit_select", options_for_select(@nationality_ids, @nationality), class: "editSelect", remote: true %>
+		<%= select_tag "category_edit_select", options_for_select(@category_ids, @category_id), class: "editSelect", remote: true %>
+		<%= select_tag "nationality_edit_select", options_for_select(@nationality_ids, @nationality_id), class: "editSelect", remote: true %>
 		<% puts "@recipe.shared: #{@recipe.shared}" %>
 		<p class="label">shared</p>
 		<% if @recipe.shared === true %>

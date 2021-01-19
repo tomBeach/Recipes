@@ -302,63 +302,65 @@ class HomeController < ApplicationController
         puts "\n******* show_recipe *******"
 		puts "params: #{params}"
 
-		# == @rating @category @nationality from application controller callback
-		@recipe = Recipe.find(params[:id])
-		user_rating = UserRating.where(:user_id => current_user[:id], :recipe_id => @recipe[:id]).first
-		puts "@recipe: #{@recipe.inspect}"
-		puts "user_rating: #{user_rating.inspect}"
+		# == Note: @rating @category @nationality from application controller callback
 
 		# ======= rating/category/nationality options =======
-		@rating_ids = []
+		@rating_ids = [["no rating", nil]]
 		@ratings.each_with_index do |rating, index|
-			rating_text = rating.rating.to_s + ": " + rating.comment
-			@rating_ids << [rating_text, rating[:id]]
+			@rating_ids << [rating.comment, rating[:id]]
 		end
 
-		@category_ids = []
+		@category_ids = [["no category", nil]]
 		@categories.each_with_index do |category, index|
 		    @category_ids << [category.category, category[:id]]
 		end
 
-		@nationality_ids = []
+		@nationality_ids = [["no nationality", nil]]
 		@nationalities.each_with_index do |nationality, index|
 		    @nationality_ids << [nationality.nationality, nationality[:id]]
 		end
 
 
-		# ======= selected rating/category/nationality =======
+		# == get selected recipe and user rating
+		@recipe = Recipe.find(params[:id])
+
+		# ======= selected user rating =======
+		user_rating = UserRating.where(:user_id => current_user[:id], :recipe_id => @recipe[:id]).first
+		puts "@recipe: #{@recipe.inspect}"
+		puts "user_rating: #{user_rating.inspect}"
+
 		if user_rating == nil
 			puts "no rating"
-			@rating_ids.push(["no rating", nil])
-			@rating = ["no rating", nil]
 			@rating_id = 0
 			@rating_text = ""
 			@user_rating_id = 0
+			@recipe.rating_id = 0
 		else
-			rating = Rating.where(:id => user_rating[:rating_id]).first
-			@rating_id = rating[:id]
-			@rating_text = rating[:comment]
-			@user_rating_id = user_rating[:id]
+			rating = Rating.where(:id => user_rating[:rating_id]).first		# user_ratings table contains selected rating_id
+			@rating_id = rating[:id]										# rating id from ratings table
+			@rating_text = rating[:comment]									# rating text ("comment" column) from ratings table
+			@user_rating_id = user_rating[:id]								# id from user_ratings join table (links user/recipe/rating)
 		end
 
+		# ======= selected category =======
 		if @recipe.category_id == nil
 			puts "no category"
-			@category_ids.push(["no category", nil])
-			@category = ["no category", nil]
+			@category_id = 0
 			@recipe.category_id = 0
 		else
-			@category = @recipe.category_id
+			@category_id = @recipe.category_id
 		end
 
+		# ======= selected nationality =======
 		if @recipe.nationality_id == nil
 			puts "no nationality"
-			@nationality_ids.push(["no nationality", nil])
-			@nationality = ["no nationality", nil]
+			@nationality_id = 0
 			@recipe.nationality_id = 0
 		else
-			@nationality = @recipe.nationality_id
+			@nationality_id = @recipe.nationality_id
 		end
 
+		# ======= shared option =======
 		if @recipe.shared == nil
 			puts "not shared"
 			@recipe.shared = 0
@@ -401,6 +403,14 @@ class HomeController < ApplicationController
     # ======= ======= ======= EDIT ======= ======= =======
     # ======= ======= ======= EDIT ======= ======= =======
 
+	# ======= calc_average_rating =======
+    def calc_average_rating(which_recipe_id, new_rating_id)
+        puts "\n******* calc_average_rating *******"
+		rating_avg = UserRating.where(:recipe_id => which_recipe_id).average(:rating_id).round()
+		puts "\nrating_avg: #{rating_avg}"
+		return rating_avg
+	end
+
 	# ======= save_recipe_edits =======
     def save_recipe_edits
         puts "\n******* save_recipe_edits *******"
@@ -433,11 +443,19 @@ class HomeController < ApplicationController
 			params[:shared] = nil
 		end
 
-		# == identify edited recipe and update to new json data values
-		recipe = Recipe.find(params[:recipe_id])
-		if !recipe.update(:title => params[:title], :shared => params[:shared], :rating_id => params[:rating_id], :category_id => params[:category_id], :nationality_id => params[:nationality_id])
-			recipe_fails_array.push(params[:recipe_id])
-			puts "*** RECIPE UPDATE ERROR"
+		# == update user rating
+		if params[:user_rating_id]										# id for join table record
+			user_rating = UserRating.find(params[:user_rating_id])		# find join table record
+			puts "user_rating.inspect: #{user_rating.inspect}"
+			if !user_rating.update(:rating_id => params[:rating_id])	# update rating_id value in user_rating join table record
+				puts "*** USER_RATING UPDATE ERROR"
+			end
+		else
+			if params[:rating_id]
+				if !UserRating.create(:user_id => current_user[:id], :recipe_id => params[:recipe_id], :rating_id => params[:rating_id])
+					puts "*** NEW USER_RATING CREATE ERROR"
+				end
+			end
 		end
 
 		# == update ingredients
@@ -461,7 +479,6 @@ class HomeController < ApplicationController
 
 			# == update existing ingredient text and sequence
 			else
-				puts "*** UPDATE ingredient ***"
 				ingredient = Ingredient.find(ingredient_id)
 				if !ingredient.update(:ingredient => next_ingredient[:ingredient], :sequence => next_ingredient[:sequence])
 					ingredient_fails_array.push(ingredient_id)
@@ -490,7 +507,6 @@ class HomeController < ApplicationController
 
 			# == update existing instruction text and sequence
 			else
-				puts "*** UPDATE instruction ***"
 				instruction = Instruction.find(instruction_id)
 				if !instruction.update(:instruction => next_instruction[:instruction], :sequence => next_instruction[:sequence])
 					instruction_fails_array.push(instruction_id)
@@ -499,6 +515,17 @@ class HomeController < ApplicationController
 			end
         end
 
+		# == calculate average rating for recipe
+		average_rating = calc_average_rating(params[:recipe_id], params[:rating_id])
+
+		# == identify edited recipe and update to new json data values
+		recipe = Recipe.find(params[:recipe_id])
+		if !recipe.update(:title => params[:title], :shared => params[:shared], :rating_id => average_rating, :category_id => params[:category_id], :nationality_id => params[:nationality_id])
+			recipe_fails_array.push(params[:recipe_id])
+			puts "*** RECIPE UPDATE ERROR"
+		end
+
+		# == create message from update status
 		if deleteIngredientCount > 0
 			if deleteIngredientCount == 1
 				message = message + "1 ingredient was removed "

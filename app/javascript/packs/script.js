@@ -421,6 +421,8 @@ $(document).on('turbolinks:load', function() {
 		var nationalityData = $('#nationalityData').data().nationalityid;
 		var ingredientsData = $('#ingredientsData').data().ingredients;		// with NEW or DELETE flag (if any) and revised text
 		var instructionsData = $('#instructionsData').data().instructions;	// with NEW or DELETE flag (if any) and revised text
+		console.log("ratingData: ", ratingData);
+		console.log("userRatingData: ", userRatingData);
 
 		// == update ingredient/instruction sequence values to capture sort changes
 		for (var i = 0; i < ingredientsInOrder.length; i++) {
@@ -509,14 +511,12 @@ $(document).on('turbolinks:load', function() {
 		$('#rating_edit_select').change(function(e) {
 			console.log("== change: rating_edit_select ==");
 			e.preventDefault();
-
-			// == temporarily store previous value for this item (rating)
 			editFlag = true;
 
-			var rating = $('#rating_edit_select option:selected').text();
-			var ratingId = $('#rating_edit_select option:selected').val();
+			// == temporarily store previous value for this item (rating)
 			$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
-			$('#ratingData').data().ratingid = ratingId;
+			$('#ratingData').data().ratingid = $('#rating_edit_select option:selected').val();
+			console.log("$('#userRatingData').data().userratingid: ", $('#userRatingData').data().userratingid);
 			console.log("$('#ratingData').data().prev_ratingid: ", $('#ratingData').data().prev_ratingid);
 			console.log("$('#ratingData').data().ratingid: ", $('#ratingData').data().ratingid);
 
@@ -528,14 +528,11 @@ $(document).on('turbolinks:load', function() {
 		$('#category_edit_select').change(function(e) {
 			console.log("== change: category_edit_select ==");
 			e.preventDefault();
-
-			// == temporarily store previous value for this item (category)
 			editFlag = true;
 
-			var category = $('#category_edit_select option:selected').text();
-			var categoryId = $('#category_edit_select option:selected').val();
+			// == temporarily store previous value for this item (category)
 			$('#categoryData').data().prev_categoryid = $('#categoryData').data().categoryid;
-			$('#categoryData').data().categoryid = categoryId;
+			$('#categoryData').data().categoryid = $('#category_edit_select option:selected').val();
 
 			// == activate save and cancel buttons
 			activateSaveCancel();
@@ -545,14 +542,11 @@ $(document).on('turbolinks:load', function() {
 		$('#nationality_edit_select').change(function(e) {
 			console.log("== change: nationality_edit_select ==");
 			e.preventDefault();
-
-			// == temporarily store previous value for this item (nationality)
 			editFlag = true;
 
-			var nationality = $('#nationality_edit_select option:selected').text();
-			var nationalityId = $('#nationality_edit_select option:selected').val();
+			// == temporarily store previous value for this item (nationality)
 			$('#nationalityData').data().prev_nationalityid = $('#nationalityData').data().nationalityid;
-			$('#nationalityData').data().nationalityid = nationalityId;
+			$('#nationalityData').data().nationalityid = $('#nationality_edit_select option:selected').val();
 
 			// == activate save and cancel buttons
 			activateSaveCancel();
@@ -1179,19 +1173,19 @@ $(document).on('turbolinks:load', function() {
 		});
 		$('#userRatingHeader').click(function() {
 			console.log("== click: userRatingHeader ==");
-			sortRecipeList(1, 'text');
+			sortRecipeList(2, 'text');
 		});
 		$('#categoryHeader').click(function() {
 			console.log("== click: categoryHeader ==");
-			sortRecipeList(2, 'text');
+			sortRecipeList(3, 'text');
 		});
 		$('#nationalityHeader').click(function() {
 			console.log("== click: nationalityHeader ==");
-			sortRecipeList(3, 'text');
+			sortRecipeList(4, 'text');
 		});
 		$('#titleHeader').click(function() {
 			console.log("== click: titleHeader ==");
-			sortRecipeList(4, 'text');
+			sortRecipeList(5, 'text');
 		});
 	}
 
