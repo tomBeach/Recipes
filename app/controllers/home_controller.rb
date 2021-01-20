@@ -406,7 +406,12 @@ class HomeController < ApplicationController
 	# ======= calc_average_rating =======
     def calc_average_rating(which_recipe_id, new_rating_id)
         puts "\n******* calc_average_rating *******"
-		rating_avg = UserRating.where(:recipe_id => which_recipe_id).average(:rating_id).round()
+		rating_avg = UserRating.where(:recipe_id => which_recipe_id).average(:rating_id)
+		puts "\nrating_avg: #{rating_avg}"
+		if rating_avg
+			puts "*** FOUND RATINGS ***"
+			rating_avg = rating_avg.round()
+		end
 		puts "\nrating_avg: #{rating_avg}"
 		return rating_avg
 	end
@@ -670,10 +675,12 @@ class HomeController < ApplicationController
 					message = message  + "Also, " + error_message
 				end
 			else
-				if recipe_count > 0
-					message = recipe_count.to_s + " recipes were added to your recipe collection. "
-				elsif recipe_count == 1
+				if recipe_count == 1
 					message = recipe_count.to_s + " recipe was added to your recipe collection. "
+				elsif recipe_count > 1
+					message = recipe_count.to_s + " recipes were added to your recipe collection. "
+				else
+					message = "There was a problem adding to your recipe. "
 				end
 				if error_count > 0
 					message = message  + "Also, " + error_message

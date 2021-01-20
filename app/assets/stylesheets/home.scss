@@ -329,6 +329,34 @@ h1, h2 {
 	color: red;
 }
 
+/* ======= home ======= */
+.middleBox {
+	height: 360px;
+	width: 80%;
+	margin: 20px 10%;
+	padding: 20px;
+	background-color: #eee;
+	border: solid 2px Tomato;
+}
+#welcomeText {
+	font-size: 18px;
+}
+#welcomeText > p > span {
+	font-size: 16px;
+	color: Tomato;
+	font-family: "Monaco";
+}
+.infoList {
+	font-size: 16px;
+	font-family: "Monaco";
+	margin: 3px 20px;
+}
+.indented {
+	font-size: 16px;
+	font-family: "Monaco";
+	margin: 3px 40px;
+}
+
 /* ======= recipeBox3 ======= */
 .halfBox {
 	height: 40px;
@@ -391,11 +419,12 @@ h1, h2 {
 	font-size: 16px;
 	color: navy;
 }
-.newIngredient, .newInstruction {
-	width: 96%;
-}
 .ingredient, .instruction {
 	width: 86%;
+}
+.newIngredient, .newInstruction {
+	width: 96%;
+	margin-left: 20px;
 }
 .ingrSequence, .instSequence {
 	float: left;
@@ -409,10 +438,32 @@ h1, h2 {
 	text-align: center;
 	background-color: #eee;
 }
+
+/* ======= import recipes ======= */
+.newRecipeBox {
+	width: 80%;
+	margin: 0 10%;
+	font-family: "Monaco";
+}
+.recipeTitle {
+	float: left;
+	width: 50%;
+	margin: 4px 20px;
+	font-family: "Monaco";
+	font-size: 22px;
+	color: Tomato;
+}
 .newRecipeLabel {
 	float: left;
 	margin: 20px 0 0 20px;
 	font-size: 18px;
+	color: #999;
+}
+#inputfile, #cancelImport {
+	margin: 0 20px;
+}
+#cancelImport {
+	width: 85px;
 }
 
 /* ======= edit title ======= */
@@ -852,7 +903,3 @@ input[type=submit]:hover, .btnRow > a:hover, .inputText > a:hover {
 //     color: white;
 // }
 //
-/* ======= ======= ======= import ======= ======= ======= */
-#inputfile {
-	margin: 0 20px;
-}

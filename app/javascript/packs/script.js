@@ -35,9 +35,23 @@ $(document).on('turbolinks:load', function() {
 		}
 	}
 
+	// ======= activateFileCancel =======
+    function activateFileCancel() {
+		console.log("== activateFileCancel ==");
+
+		// == show my recipes
+		$('#cancelImport').off('click');
+		$('#cancelImport').click(function(e) {
+			console.log("== click: cancelImport ==");
+			window.location = "/";
+		});
+	}
+
 
 	// ======= import recipes =======
     if (pathname == "/import_recipes") {
+
+		activateFileCancel();
 		loadFileReader();
 
 
@@ -108,6 +122,10 @@ $(document).on('turbolinks:load', function() {
 			// ======= init unedited sort order =======
 			var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
 			var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
+			console.log("ingredientsData: ", ingredientsData);
+			console.log("instructionsData: ", instructionsData);
+			console.log("ingredientsInOrder: ", ingredientsInOrder);
+			console.log("instructionsInOrder: ", instructionsInOrder);
 
 			// ======= update sort order =======
 			updateItemPositions = function($item) {
@@ -122,6 +140,8 @@ $(document).on('turbolinks:load', function() {
 					instructionsInOrder = $("#instructions").sortable("toArray");
 			    }
 			}
+			console.log("ingredientsInOrder: ", ingredientsInOrder);
+			console.log("instructionsInOrder: ", instructionsInOrder);
 
 			// ======= update sort order =======
 			updateItemSequences = function(ingrOrInst) {
@@ -382,6 +402,7 @@ $(document).on('turbolinks:load', function() {
 		if (editFlag) {
 			$('#recipeBox2').css('display', 'block');		// edits have been made; show save or cancel options
 			$('#saveRecipeEdits').addClass('active');
+			$('#saveRecipeEdits').off('click');
 			$('#saveRecipeEdits').click(function(e) {
 				console.log("== click: saveRecipeEdits ==");
 				e.preventDefault();
@@ -390,6 +411,7 @@ $(document).on('turbolinks:load', function() {
 				e.stopPropagation();
 			});
 			$('#cancelRecipeEdits').addClass('active');
+			$('#cancelRecipeEdits').off('click');
 			$('#cancelRecipeEdits').click(function(e) {
 				console.log("== click: cancelRecipeEdits ==");
 				e.preventDefault();
@@ -502,11 +524,6 @@ $(document).on('turbolinks:load', function() {
 		var textColor;
 		var currentText, currentId;
 
-
-		// ======= ======= ======= classification ======= ======= =======
-		// ======= ======= ======= classification ======= ======= =======
-		// ======= ======= ======= classification ======= ======= =======
-
 		// == set recipe rating
 		$('#rating_edit_select').change(function(e) {
 			console.log("== change: rating_edit_select ==");
@@ -571,11 +588,6 @@ $(document).on('turbolinks:load', function() {
 			// == activate save and cancel buttons
 			activateSaveCancel();
 	    });
-
-
-		// ======= ======= ======= save/cancel/delete ======= ======= =======
-		// ======= ======= ======= save/cancel/delete ======= ======= =======
-		// ======= ======= ======= save/cancel/delete ======= ======= =======
 
 		// == select to delete recipe entirely from database
 		$('#deleteRecipe').click(function(e) {
@@ -1046,8 +1058,8 @@ $(document).on('turbolinks:load', function() {
 		// == column headers html
 		recipeHtml = recipeHtml + "<table class='menuList'><thead>";
 		recipeHtml = recipeHtml + "<tr class='menuHeaders'>";
-		recipeHtml = recipeHtml + "<th id='shareHeader' class='menuListHeader'>shared</th>";
-		recipeHtml = recipeHtml + "<th id='ratingHeader' class='menuListHeader'>rating</th>";
+		recipeHtml = recipeHtml + "<th id='shareHeader' class='menuListHeader'>&nbsp;</th>";
+		recipeHtml = recipeHtml + "<th id='ratingHeader' class='menuListHeader'>avg rating</th>";
 		recipeHtml = recipeHtml + "<th id='userRatingHeader' class='menuListHeader'>your rating</th>";
 		recipeHtml = recipeHtml + "<th id='categoryHeader' class='menuListHeader'>category</th>";
 		recipeHtml = recipeHtml + "<th id='nationalityHeader' class='menuListHeader'>nationality</th>";
@@ -1557,7 +1569,7 @@ $(document).on('turbolinks:load', function() {
 				var fileText = fr.result;
 				var recipeData = importRecipeData(fileText);
 				displayImportedRecipes(recipeData);
-				updateMenuLinks(recipeData);
+				activateFileSave(recipeData);
 			}
 			fr.readAsText(this.files[0]);
 		})
@@ -1571,6 +1583,7 @@ $(document).on('turbolinks:load', function() {
 		var nextRecipe, nextTitle, nextIngredients, nextInstructions;
 		var nextQuantity, nextUnits, nextIngredient, nextText, nextHtml;
 		var nextInstruction, nextDuration, nextDurUnits;
+
 		var recipeHtml = "";
 
 		for (var i = 0; i < recipeData.length; i++) {
@@ -1582,9 +1595,13 @@ $(document).on('turbolinks:load', function() {
 			console.log("nextInstructions.length: ", nextInstructions.length);
 
 			// == recipe title
+			recipeHtml = recipeHtml + "<div class='recipeBox1'>";
 			recipeHtml = recipeHtml + "<p class='recipeTitle'>" + nextTitle + "</p>";
+			recipeHtml = recipeHtml + "<div class='saveBtn' id='fileSaveBtn'> Save </div>";
+			recipeHtml = recipeHtml + "</div>";
 
 			// == ingredients label
+			recipeHtml = recipeHtml + "<div class='newRecipeBox'>";
 			recipeHtml = recipeHtml + "<p class='newRecipeLabel'>ingredients</p>";
 
 			// == ingredients lines: ingredientObj = {quantity:___, units:___, ingredient:___};
@@ -1616,11 +1633,12 @@ $(document).on('turbolinks:load', function() {
 				nextHtml = "<p class='newInstruction'>" + nextInstruction + "</p>";
 				recipeHtml = recipeHtml + nextHtml;
 			}
+			recipeHtml = recipeHtml + "</div>"
 		}
 		$('#output').html(recipeHtml);
 		$('#inputfile').remove();
 		updateTitleText("Imported Recipes");
-		var messageString = "You can modify new recipes by clicking 'My Recipes' and selecting the recipe."
+		var messageString = "Click Save to import your recipe(s). You can edit them later via 'My Recipes'."
 		$('#notice').html(messageString);
 
 	}
@@ -1702,7 +1720,6 @@ $(document).on('turbolinks:load', function() {
 			console.log("pathname: ", pathname);
 			$('#popup-message').html("");
 			$(".popup-overlay, .popup-content").removeClass("active");
-			// window.location = pathname + data;
 		});
 
 	}
@@ -1777,13 +1794,9 @@ $(document).on('turbolinks:load', function() {
 		$('#notice').html(htmlString);
 	}
 
-	// ======= updateMenuLinks =======
-    function updateMenuLinks(recipeData) {
-        console.log("== updateMenuLinks ==");
-
-		var saveBtnHtml = "";
-		saveBtnHtml = saveBtnHtml + "<div class='saveBtn' id='fileSaveBtn'> save </div>";
-		$('.recipeBox1').append(saveBtnHtml);
+	// ======= activateFileSave =======
+    function activateFileSave(recipeData) {
+        console.log("== activateFileSave ==");
 
 		$('#fileSaveBtn').click(function(e) {
 			console.log("== click: fileSaveBtn ==");
@@ -1896,14 +1909,6 @@ $(document).on('turbolinks:load', function() {
 			editClassifyText(itemId);
 			e.stopPropagation();
 		});
-		// $('.deleteClassifyBtn').on("click", function(e){
-		// 	console.log("== click: deleteClassifyBtn ==");
-		// 	e.preventDefault();
-		// 	var deleteItemHref = $(this).attr('href');
-		// 	toggleEditButtons("show");
-		// 	displayPopup("delete", deleteItemHref);
-		// 	e.stopPropagation();
-		// });
 	}
 
 	// ======= makeNewClassify =======
