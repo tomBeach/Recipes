@@ -97,7 +97,7 @@ h1, h2 {
 	font-family: "Monaco";
 	text-shadow: 2px 2px #aab;
 }
-#profile {
+#userMenu {
 	float: right;
 }
 
@@ -320,11 +320,11 @@ h1, h2 {
 	float: left;
 	margin-left: 10%;
 }
-.addEditDelete.active {
+.addEditDelete {
 	background-color: Plum;
 	color: navy;
 }
-.addEditDelete.active:hover {
+.addEditDelete:hover {
 	background-color: navy;
 	color: red;
 }

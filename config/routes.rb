@@ -8,9 +8,11 @@ Rails.application.routes.draw do
 		get '/users/sign_out' => 'devise/sessions#destroy'
 	end
 
-	# == home
+	# == mgmt
     get "/" => "home#index"
     get "/home" => "home#index"
+	get "/profile" => "home#profile"
+	get "/type_recipe" => "home#type_recipe"
 
 	# == groups
 	resources :ratings

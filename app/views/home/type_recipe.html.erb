@@ -1,0 +1,86 @@
+<%# ======= recipe data => javascript ======= %>
+<%= content_tag :div, id: "recipeId", data: {recipeid: 0} do %>
+<% end %>
+<%= content_tag :div, id: "titleData", data: {title: ""} do %>
+<% end %>
+<%= content_tag :div, id: "sharedData", data: {shared: 0} do %>
+<% end %>
+<%= content_tag :div, id: "ratingData", data: {ratingid: 0} do %>
+<% end %>
+<%= content_tag :div, id: "categoryData", data: {categoryid: 0} do %>
+<% end %>
+<%= content_tag :div, id: "nationalityData", data: {nationalityid: 0} do %>
+<% end %>
+
+<%# @rating_id 						# rating id from ratings table %>
+<%# @rating_text					# rating text ("comment" column) from ratings table %>
+<%# @user_rating_id					# id from user_ratings join table (links user/recipe/rating) %>
+
+<%= content_tag :div, id: "ratingIdData", data: {ratingid: 0} do %>
+<% end %>
+<%= content_tag :div, id: "ratingTextData", data: {ratingtext: ""} do %>
+<% end %>
+<%= content_tag :div, id: "userRatingData", data: {userratingid: 0} do %>
+<% end %>
+
+<%= content_tag :div, id: "ingredientsData", data: {ingredients: []} do %>
+<% end %>
+<%= content_tag :div, id: "instructionsData", data: {instructions: []} do %>
+<% end %>
+
+
+<!-- ======= output ======= -->
+<div id="output">
+
+	<!-- ======= recipe title ======= -->
+	<div class="recipeBox1">
+		<input type='text' id='editTitleText' name='editTitleText' value=''>
+		<div id='titleSaveBtn' class='saveBtn'> save </div> <div id='titleCancelBtn' class='cancelBtn'> cancel </div>
+
+		<% puts "@rating_ids: #{@rating_ids}" %>
+		<% puts "@rating_id: #{@rating_id}" %>
+		<%= select_tag "rating_edit_select", options_for_select(@rating_ids, 0), class: "editSelect", remote: true %>
+		<%= select_tag "category_edit_select", options_for_select(@category_ids, 0), class: "editSelect", remote: true %>
+		<%= select_tag "nationality_edit_select", options_for_select(@nationality_ids, 0), class: "editSelect", remote: true %>
+		<p id="sharedLabel" class="label">shared</p>
+		<input type="checkbox" id="shared" name="shared" class="recipeShare" value="0">
+	</div>
+
+	<!-- ======= recipe edits [hidden] ======= -->
+	<div id="recipeBox2">
+		<div class="halfBox">
+			<%= link_to "Save", save_recipe_file_path, id: "saveRecipeEdits", class: "addEditDelete", remote: true %>
+		</div>
+		<div class="halfBox">
+			<%= link_to "Cancel", "", id: "cancelRecipeEdits", class: "addEditDelete", remote: true %>
+		</div>
+	</div>
+
+	<!-- ======= headers ======= -->
+	<div class="recipeBox3">
+		<div class="halfBox">
+			<p class="recipeHeader">ingredients</p>
+			<div id="ingrAdd" class='addBtn'> add ingredient</div>
+		</div>
+		<div class="halfBox">
+			<p class="recipeHeader">instructions</p>
+			<div id="instAdd" class='addBtn'> add instruction</div>
+		</div>
+	</div>
+
+	<!-- ======= ingredients/instructions ======= -->
+	<div id="recipeContent">
+		<div id="ingredients" class="list-group">
+			<div class="recipeLine" id="ingrLine_1">
+				<!-- <div id="ingrSeq_1" class="ingrSequence">1</div> -->
+				<!-- <p class="ingredient" id="ingredient_1">ingredient</p> -->
+			</div>
+		</div>
+		<div id="instructions" class="list-group">
+			<div class="recipeLine" id="instLine_1">
+				<!-- <div id="instSeq_1" class="instSequence">1</div> -->
+				<!-- <p class="instruction" id="instruction_1">instruction</p> -->
+			</div>
+		</div>
+	</div>
+</div>

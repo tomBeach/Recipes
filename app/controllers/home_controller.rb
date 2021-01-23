@@ -15,6 +15,32 @@ class HomeController < ApplicationController
 		end
 	end
 
+	# ======= profile =======
+	def profile
+		puts "\n******* profile *******"
+	end
+
+	# ======= type_recipe =======
+	def type_recipe
+		puts "\n******* type_recipe *******"
+
+		# ======= rating/category/nationality options =======
+		@rating_ids = [["no rating", nil]]
+		@ratings.each_with_index do |rating, index|
+			@rating_ids << [rating.comment, rating[:id]]
+		end
+
+		@category_ids = [["no category", nil]]
+		@categories.each_with_index do |category, index|
+		    @category_ids << [category.category, category[:id]]
+		end
+
+		@nationality_ids = [["no nationality", nil]]
+		@nationalities.each_with_index do |nationality, index|
+		    @nationality_ids << [nationality.nationality, nationality[:id]]
+		end
+	end
+
 	# ======= ======= ======= SEARCH ======= ======= =======
     # ======= ======= ======= SEARCH ======= ======= =======
     # ======= ======= ======= SEARCH ======= ======= =======
@@ -320,7 +346,6 @@ class HomeController < ApplicationController
 		    @nationality_ids << [nationality.nationality, nationality[:id]]
 		end
 
-
 		# == get selected recipe and user rating
 		@recipe = Recipe.find(params[:id])
 
@@ -466,8 +491,11 @@ class HomeController < ApplicationController
 		# == update ingredients
 		addIngredientCount = 0
 		deleteIngredientCount = 0
+		puts "\n *** params[:ingredients]: #{params[:ingredients]}"
         params[:ingredients].each_with_index do |next_ingredient, index|
             ingredient_id = next_ingredient[:id]
+			puts "\n next_ingredient[:id]: #{next_ingredient[:id]}"
+			puts "next_ingredient[:sequence]: #{next_ingredient[:sequence]}"
 
 			# == identify if ingredient is new
 			if next_ingredient[:new_delete] == "NEW"
