@@ -541,10 +541,9 @@ $(document).on('turbolinks:load', function() {
 			editFlag = true;
 
 			// == temporarily store previous value for this item (rating)
-			$('#userRatingData').data().prev_userratingid = $('#userRatingData').data().userratingid;
-			$('#userRatingData').data().userratingid = $('#rating_edit_select option:selected').val();
-			console.log("$('#userRatingData').data().prev_userratingid: ", $('#ratingData').data().prev_userratingid);
-			console.log("$('#userRatingData').data().userratingid: ", $('#userRatingData').data().userratingid);
+			$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
+			$('#ratingData').data().ratingid = $('#rating_edit_select option:selected').val();
+			console.log("$('#ratingData').data().prev_ratingid: ", $('#ratingData').data().prev_ratingid);
 			console.log("$('#ratingData').data().ratingid: ", $('#ratingData').data().ratingid);
 
 			// == activate save and cancel buttons
@@ -668,11 +667,15 @@ $(document).on('turbolinks:load', function() {
 				updateRecipeTitle();
 				e.stopPropagation();
 			});
-			$('.cancelBtn').click(function(e) {
-				e.preventDefault();
-				cancelTitleEdits(currentText);
-				e.stopPropagation();
-			});
+			console.log("$('.cancelBtn').length: ", $('.cancelBtn').length);
+
+			if ($('.cancelBtn').length > 0) {
+				$('.cancelBtn').click(function(e) {
+					e.preventDefault();
+					cancelTitleEdits(currentText);
+					e.stopPropagation();
+				});
+			}
 		}
 
 		// ======= updateRecipeTitle =======
@@ -1060,10 +1063,17 @@ $(document).on('turbolinks:load', function() {
 			    console.log("*** ajax success ***");
 			    console.dir(jsonData)
 				updateNoticeMessage(jsonData);
+				clearOutputBox();
 			}).fail(function(unknown){
 			    console.log("*** ajax fail ***");
 				console.log("unknown:", unknown);
 			});
+		}
+
+		// ======= clearOutputBox =======
+		function clearOutputBox() {
+			console.log("== clearOutputBox ==");
+			$('#output').html('<p>The recipe was removed.</p>')
 		}
 	}
 
