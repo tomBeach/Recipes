@@ -409,21 +409,21 @@ class HomeController < ApplicationController
         puts "\n******* delete_recipe *******"
 		puts "params: #{params}"
 
-		@recipe = Recipe.find(params[:id])
-		puts "@recipe.inspect: #{@recipe.inspect}"
-		if @recipe
+		recipe = Recipe.find(params[:id])
+		puts "recipe.inspect: #{recipe.inspect}"
+		if recipe
 			if Recipe.destroy(params[:id])
-				message = "The " + @recipe[:title] + " recipe was removed successfully."
+				message = "The " + recipe[:title] + " recipe was removed successfully."
 			else
-				message = "There was an error.  The " + @recipe[:title] + " recipe was not removed."
+				message = "There was an error.  The " + recipe[:title] + " recipe was not removed."
 			end
 		else
-			message = "There was an error.  " + @recipe[:title] + " recipe was already removed."
+			message = "There was an error.  " + recipe[:title] + " recipe was already removed."
 		end
 
 		respond_to do |format|
 			format.json {
-				render json: {:message => message}
+				render json: {:title => recipe[:title], :message => message}
 			}
 		end
 	end

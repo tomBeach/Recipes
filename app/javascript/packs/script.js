@@ -1063,17 +1063,22 @@ $(document).on('turbolinks:load', function() {
 			    console.log("*** ajax success ***");
 			    console.dir(jsonData)
 				updateNoticeMessage(jsonData);
-				clearOutputBox();
+				displayDeleteView(jsonData);
 			}).fail(function(unknown){
 			    console.log("*** ajax fail ***");
 				console.log("unknown:", unknown);
 			});
 		}
 
-		// ======= clearOutputBox =======
-		function clearOutputBox() {
-			console.log("== clearOutputBox ==");
-			$('#output').html('<p>The recipe was removed.</p>')
+		// ======= displayDeleteView =======
+		function displayDeleteView(jsonData) {
+			console.log("== displayDeleteView ==");
+			var recipeTitle = jsonData.title;
+			var htmlText = "";
+			htmlText = htmlText + "<div class='recipeBox1'><h2 id='outputTitle'>" + recipeTitle + "</h2></div>";
+			htmlText = htmlText + "<div id='recipeBox2'><div class='halfBox'></div><div class='halfBox'></div></div>"
+			htmlText = htmlText + "<div id='welcomeText' class='middleBox'> <p>" + recipeTitle + "</span> has been deleted.</p></div>"
+			$('#output').html(htmlText);
 		}
 	}
 
