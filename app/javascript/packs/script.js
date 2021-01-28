@@ -20,40 +20,14 @@ $(document).on('turbolinks:load', function() {
 
 	$(window).on('resize', modifyMenuText);
 
-	function modifyMenuText() {
-		// console.log("== resize: modifyMenuText ==");
-		if ($(this).width() !== windowW) {
-			windowW = $(this).width();
-			if (windowW < windowFlag) {
-				$('#getMyRecipes').text('My');
-				$('#getAllRecipes').text('All');
-				// console.log(windowW);
-			} else {
-				$('#getMyRecipes').text('My Recipes');
-				$('#getAllRecipes').text('All Recipes');
-			}
-		}
-	}
 
-	// ======= activateFileCancel =======
-    function activateFileCancel() {
-		console.log("== activateFileCancel ==");
-
-		// == show my recipes
-		$('#cancelImport').off('click');
-		$('#cancelImport').click(function(e) {
-			console.log("== click: cancelImport ==");
-			window.location = "/";
-		});
-	}
+	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
+	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
+	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
 
 	// ======= activateSortableLists =======
     function activateSortableLists() {
 		console.log("== activateSortableLists ==");
-
-		// ======= ======= ======= enable drag-n-drop ======= ======= =======
-		// ======= ======= ======= enable drag-n-drop ======= ======= =======
-		// ======= ======= ======= enable drag-n-drop ======= ======= =======
 
 		// ======= ingredients =======
 		$('#ingredients').sortable({
@@ -176,6 +150,18 @@ $(document).on('turbolinks:load', function() {
 	}
 
 
+	// ======= ======= ======= PAGE-SPECIFIC BEHAVIORS ======= ======= =======
+	// ======= ======= ======= PAGE-SPECIFIC BEHAVIORS ======= ======= =======
+	// ======= ======= ======= PAGE-SPECIFIC BEHAVIORS ======= ======= =======
+
+
+	// ======= initialize variables =======
+	var recipesArray = [];		// will contain any imported recipe file data
+	var editFlag = false;		// stays false until recipe data is changed
+	var noShowFlag = false;		// false: allows for popup display (noShow unchecked)
+
+	activateMainMenu();
+
 	// ======= import recipes =======
     if (pathname == "/import_recipes") {
 
@@ -187,7 +173,7 @@ $(document).on('turbolinks:load', function() {
 	} else if (pathname == "/type_recipe") {
 
 		activateSortableLists();
-		activateEditLinks();
+		activateEditMenu();
 		var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
 		var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
 
@@ -195,7 +181,7 @@ $(document).on('turbolinks:load', function() {
 		$('#category_edit_select').hide();
 		$('#nationality_edit_select').hide();
 		$('#deleteRecipe').hide();
-		$('.recipeShare').hide();
+		$('#shared').hide();
 		$('.label').hide();
 
 	// ======= show recipe =======
@@ -222,7 +208,8 @@ $(document).on('turbolinks:load', function() {
 
 			// ======= enable ingredients/instructions editing =======
 			activateSortableLists()
-			activateEditLinks();
+			activateEditMenu();
+			activateLineEdits();
 
 			var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
 			var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
@@ -231,17 +218,11 @@ $(document).on('turbolinks:load', function() {
 			activateClassifyActions();
 		}
 	}
-	activateMainMenu();
 
 
-	// ======= initialize variables =======
-	var recipesArray = [];		// will contain any imported recipe file data
-	var editFlag = false;		// stays false until recipe data is changed
-
-
-	// ======= ======= ======= MAIN MENU: SEARCH ======= ======= =======
-	// ======= ======= ======= MAIN MENU: SEARCH ======= ======= =======
-	// ======= ======= ======= MAIN MENU: SEARCH ======= ======= =======
+	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
+	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
+	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
 
 	// ======= activateMainMenu =======
     function activateMainMenu() {
@@ -253,7 +234,7 @@ $(document).on('turbolinks:load', function() {
 			e.preventDefault();
 			if (editFlag == false) {
 				toggleEditButtons("hide");
-				searchRecipes("", "my");
+				makeSearchRequest("", "my");
 			} else {
 				displayPopup("edit", "");		// prevent new display if edits are unsaved
 			}
@@ -266,7 +247,7 @@ $(document).on('turbolinks:load', function() {
 			e.preventDefault();
 			if (editFlag == false) {
 				toggleEditButtons("hide");
-				searchRecipes("", "all");
+				makeSearchRequest("", "all");
 			} else {
 				displayPopup("edit", "");		// prevent new display if edits are unsaved
 			}
@@ -282,7 +263,7 @@ $(document).on('turbolinks:load', function() {
 			if (searchValue != "") {
 				if (editFlag == false) {
 					toggleEditButtons("hide");
-					searchRecipes("title", "text");
+					makeSearchRequest("title", "text");
 				} else {
 					displayPopup("edit", "");		// prevent new display if edits are unsaved
 				}
@@ -300,7 +281,7 @@ $(document).on('turbolinks:load', function() {
 			if (searchValue != "") {
 				if (editFlag == false) {
 					toggleEditButtons("hide");
-					searchRecipes("ingredients", "text");
+					makeSearchRequest("ingredients", "text");
 				} else {
 					displayPopup("edit", "");		// prevent new display if edits are unsaved
 				}
@@ -320,7 +301,7 @@ $(document).on('turbolinks:load', function() {
 				if (searchString.length == 0) {
 					makeTitleText("", "no search");
 				} else {
-					searchRecipes(searchString, "rating");
+					makeSearchRequest(searchString, "rating");
 				}
 			} else {
 				displayPopup("edit", "");			// prevent new display if edits are unsaved
@@ -338,7 +319,7 @@ $(document).on('turbolinks:load', function() {
 				if (searchString.length == 0) {
 					makeTitleText("", "no search");
 				} else {
-					searchRecipes(searchString, "category");
+					makeSearchRequest(searchString, "category");
 				}
 			} else {
 				displayPopup("edit", "");			// prevent new display if edits are unsaved
@@ -356,7 +337,7 @@ $(document).on('turbolinks:load', function() {
 				if (searchString.length == 0) {
 					makeTitleText("", "no search");
 				} else {
-					searchRecipes(searchString, "nationality");
+					makeSearchRequest(searchString, "nationality");
 				}
 			} else {
 				displayPopup("edit", "");			// prevent new display if edits are unsaved
@@ -366,12 +347,12 @@ $(document).on('turbolinks:load', function() {
 	}
 
 
-	// ======= ======= ======= set SEARCH type ======= ======= =======
-	// ======= ======= ======= set SEARCH type ======= ======= =======
-	// ======= ======= ======= set SEARCH type ======= ======= =======
+	// ======= ======= ======= SEARCH REQUEST ======= ======= =======
+	// ======= ======= ======= SEARCH REQUEST ======= ======= =======
+	// ======= ======= ======= SEARCH REQUEST ======= ======= =======
 
-	function searchRecipes(searchString, searchType) {
-		console.log("== searchRecipes ==");
+	function makeSearchRequest(searchString, searchType) {
+		console.log("== makeSearchRequest ==");
 		console.log("searchString: ", searchString);
 		console.log("searchType: ", searchType);
 
@@ -424,6 +405,543 @@ $(document).on('turbolinks:load', function() {
 	// ======= ======= ======= RECIPE EDIT MENU ======= ======= =======
 	// ======= ======= ======= RECIPE EDIT MENU ======= ======= =======
 	// ======= ======= ======= RECIPE EDIT MENU ======= ======= =======
+
+	// ======= activateEditMenu =======
+    function activateEditMenu() {
+		console.log("== activateEditMenu ==");
+
+		var btnColor;
+		var textColor;
+		var currentText, currentId;
+
+		if (pathname == "/type_recipe") {
+			activateTitleBtns();
+		}
+
+		// == set recipe rating
+		$('#rating_edit_select').change(function(e) {
+			console.log("== change: rating_edit_select ==");
+			e.preventDefault();
+			editFlag = true;
+
+			// == temporarily store previous value for this item (rating)
+			$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
+			$('#ratingData').data().ratingid = $('#rating_edit_select option:selected').val();
+			console.log("$('#ratingData').data().prev_ratingid: ", $('#ratingData').data().prev_ratingid);
+			console.log("$('#ratingData').data().ratingid: ", $('#ratingData').data().ratingid);
+
+			// == activate save and cancel buttons
+			activateSaveCancel();
+	    });
+
+		// == set recipe category
+		$('#category_edit_select').change(function(e) {
+			console.log("== change: category_edit_select ==");
+			e.preventDefault();
+			editFlag = true;
+
+			// == temporarily store previous value for this item (category)
+			$('#categoryData').data().prev_categoryid = $('#categoryData').data().categoryid;
+			$('#categoryData').data().categoryid = $('#category_edit_select option:selected').val();
+
+			// == activate save and cancel buttons
+			activateSaveCancel();
+	    });
+
+		// == set recipe nationality
+		$('#nationality_edit_select').change(function(e) {
+			console.log("== change: nationality_edit_select ==");
+			e.preventDefault();
+			editFlag = true;
+
+			// == temporarily store previous value for this item (nationality)
+			$('#nationalityData').data().prev_nationalityid = $('#nationalityData').data().nationalityid;
+			$('#nationalityData').data().nationalityid = $('#nationality_edit_select option:selected').val();
+
+			// == activate save and cancel buttons
+			activateSaveCancel();
+	    });
+
+		// == set shared status
+		$('#shared').change(function(e) {
+			console.log("== change: recipeShare ==");
+			e.preventDefault();
+
+			editFlag = true;
+
+			var shared = $(this).val();
+			if (shared === "true") {
+				shared = "false";
+			} else if (shared === "false") {
+				shared = "true";
+			}
+			$('#sharedData').data().prev_shared = $('#sharedData').data().shared;
+			$('#sharedData').data().shared = shared;
+
+			// == activate save and cancel buttons
+			activateSaveCancel();
+	    });
+
+		// == select to delete recipe entirely from database
+		$('#deleteRecipe').click(function(e) {
+			console.log("== click: deleteRecipe ==");
+			e.preventDefault();
+			editFlag = false;
+			deleteRecipe($('#recipeId').data().recipeid);
+			e.stopPropagation();
+		});
+	}
+
+
+	// ======= ======= ======= EDIT RECIPE ======= ======= =======
+	// ======= ======= ======= EDIT RECIPE ======= ======= =======
+	// ======= ======= ======= EDIT RECIPE ======= ======= =======
+
+	// ======= activateLineEdits =======
+	function activateLineEdits() {
+		console.log("== activateLineEdits ==");
+
+		$('#outputTitle').on('mouseover', hiliteLink);
+		$('#outputTitle').on('mouseout', restoreLink);
+		$('#outputTitle').on('click', editRecipeTitle);
+		$('.ingredient, .instruction').on('mouseover', hiliteLink);
+		$('.ingredient, .instruction').on('mouseout', restoreLink);
+		$('.ingredient, .instruction').on('click', editRecipeLine);
+		$('.addBtn').on('click', inputNewLine);
+		$('body').on('keyup', function(e) {
+			console.log("== keyup: saveNewLine ==");
+			console.log("$(':focus').attr('id'): ", $(':focus').attr('id'));
+			if ((e.keyCode === 13) && ($(':focus').attr('id') === 'newIngr')) {
+				saveNewLine("ingrSave");
+			} else if ((e.keyCode === 13) && ($(':focus').attr('id') === 'newInst')) {
+				saveNewLine("instSave");
+			}
+		});
+	}
+
+
+	// ======= ======= ======= EDIT TITLE ======= ======= =======
+	// ======= ======= ======= EDIT TITLE ======= ======= =======
+	// ======= ======= ======= EDIT TITLE ======= ======= =======
+
+	// ======= editRecipeTitle =======
+	function editRecipeTitle() {
+		console.log("== editRecipeTitle ==");
+
+		// == store existing title text (for restore if edits cancelled)
+		currentText = $(this).text();
+
+		$('#rating_edit_select').hide();
+		$('#category_edit_select').hide();
+		$('#nationality_edit_select').hide();
+		$('#deleteRecipe').hide();
+		$('#shared').hide();
+		$('.label').hide();
+
+		// == create textbox and button controls for revised title
+		var inputHtml = "<input type='text' id='editTitleText' name='editTitleText' value='" + currentText + "'>";
+		var btnsHtml = "<div id='titleSaveBtn' class='saveBtn'> save </div> <div id='titleCancelBtn' class='cancelBtn'> cancel </div> ";
+		var editHtml = inputHtml + btnsHtml;
+		$(this).replaceWith(editHtml);
+		activateTitleBtns();
+
+	}
+
+	// ======= activateTitleBtns =======
+	function activateTitleBtns() {
+		console.log("== activateTitleBtns ==");
+
+		$('.saveBtn').click(function(e) {
+			e.preventDefault();
+			editFlag = true;
+			updateRecipeTitle();
+			e.stopPropagation();
+		});
+		console.log("$('.cancelBtn').length: ", $('.cancelBtn').length);
+
+		if ($('.cancelBtn').length > 0) {
+			$('.cancelBtn').click(function(e) {
+				e.preventDefault();
+				cancelTitleEdits(currentText);
+				e.stopPropagation();
+			});
+		}
+	}
+
+	// ======= updateRecipeTitle =======
+	function updateRecipeTitle() {
+		console.log("== updateRecipeTitle ==");
+
+		var newText = $('#editTitleText').val();
+		var currentId = $(this).attr('id');
+		console.log("currentId: ", currentId);
+		if (!currentId) {
+			currentId = "outputTitle";
+		}
+
+		if (newText == "") {
+			displayPopup("noText", "title");
+		} else {
+			// == save previous title; save new value for ajax submit
+			$('#titleData').data().prev_title = $('#titleData').data().title;
+			$('#titleData').data().title = newText;
+
+			// == update html string with changes
+			var saveHtml = "<h2 id='outputTitle'>" + newText + "</h2>";
+			$('#editTitleText').replaceWith(saveHtml);
+			$('.saveBtn, .cancelBtn').remove();
+
+			// == restore line hilites and click behavior
+			$('#' + currentId).on('mouseover', hiliteLink);
+			$('#' + currentId).on('mouseout', restoreLink);
+			$('#' + currentId).on('click', editRecipeTitle);
+
+			activateSaveCancel();
+			toggleEditButtons("show");
+		}
+	}
+
+	// ======= cancelTitleEdits =======
+	function cancelTitleEdits(currentText) {
+		console.log("== cancelTitleEdits ==");
+
+		// == restore html string
+		var saveHtml = "<h2 id='outputTitle'>" + currentText + "</h2>";
+		$('#editTitleText').replaceWith(saveHtml);
+		$('.saveBtn, .cancelBtn').remove();
+
+		$('#rating_edit_select').show();
+		$('#category_edit_select').show();
+		$('#nationality_edit_select').show();
+		$('#deleteRecipe').show();
+		$('#shared').show();
+		$('.label').show();
+
+		// == restore line hilites and click behavior
+		$('#outputTitle').on('mouseover', hiliteLink);
+		$('#outputTitle').on('mouseout', restoreLink);
+		$('#outputTitle').on('click', editRecipeTitle);
+	}
+
+
+	// ======= ======= ======= EDIT LINES ======= ======= =======
+	// ======= ======= ======= EDIT LINES ======= ======= =======
+	// ======= ======= ======= EDIT LINES ======= ======= =======
+
+	// ======= editRecipeLine =======
+	function editRecipeLine() {
+		console.log("== editRecipeLine ==");
+
+		editFlag = true;
+		var btnsHtml = "";
+		var inputHtml = "";
+
+		// == get existing id and text values for currently selected element
+		currentText = $(this).text();
+		currentId = $(this).attr('id');
+
+		// == currentId format: ingredient_XXXX or instruction_XXXX (XXXX = database id)
+		var itemId = currentId.split("_")[1];
+		var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
+
+		// == remove existing edit mode elements if any/restore line functionality
+		if ($('.editLineBox').length > 0) {
+			var activeEditId = $('.editLineBox').children('textarea').attr('id');
+			var activeEditText = $('.editLineBox').children('textarea').text();
+			var saveHtml = "<p class='" + ingrOrInst + "' id='" + activeEditId + "'>" + activeEditText + "</p>";
+			$('.editLineBox').replaceWith(saveHtml);
+			$('#' + activeEditId).on('mouseover', hiliteLink);
+			$('#' + activeEditId).on('mouseout', restoreLink);
+			$('#' + activeEditId).on('click', editRecipeLine);
+		}
+
+		// == replace selected line with edit functionality
+		inputHtml = inputHtml + "<div class='editLineBox'>";
+		inputHtml = inputHtml + "<textarea class='editItem' id='" + currentId + "' name='" + currentId + "'";
+		inputHtml = inputHtml + " cols='40' rows='5'>" + currentText + "</textarea>";
+		var btnsHtml = btnsHtml + "<div class='editBtnsBox'>";
+		var btnsHtml = btnsHtml + "<div class='saveBtn'>save</div>";
+		var btnsHtml = btnsHtml + "<div class='cancelBtn'>cancel</div>";
+		var btnsHtml = btnsHtml + "<div class='deleteBtn'>delete</div> ";
+		var btnsHtml = btnsHtml + "</div></div>";
+		var editHtml = inputHtml + btnsHtml;
+		$(this).replaceWith(editHtml);
+
+		// == activate save/cancel/delete buttons
+		$('.saveBtn').on('click', updateRecipeLine);
+		$('.cancelBtn').on('click', cancelLineEdits);
+		$('.deleteBtn').on('click', deleteRecipeLine);
+	}
+
+	// ======= updateRecipeLine =======
+	function updateRecipeLine() {
+		console.log("== updateRecipeLine ==");
+
+		var nextId, nextSequence;
+
+		// == currentId format: ingredient_XXXX or instruction_XXXX (XXXX = database id)
+		var itemId = currentId.split("_")[1];
+		var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
+
+		// == get database record stored in local div (data value)
+		var ingredientsData = $('#ingredientsData').data();
+		var instructionsData = $('#instructionsData').data();
+		var newText = $('#' + currentId).val();
+
+		// == save ingredient changes to local data
+		if (ingrOrInst == "ingredient") {
+			for (var i = 0; i < ingredientsData.ingredients.length; i++) {
+				nextId = ingredientsData.ingredients[i].id;
+				nextSequence = parseInt($('#ingrSeq_' + nextId).val());
+				ingredientsData.ingredients[i].sequence = nextSequence;
+				if (nextId == itemId) {
+					ingredientsData.ingredients[i].ingredient = newText;
+					break;
+				}
+			}
+
+		// == save instruction changes to local data
+		} else if (ingrOrInst == "instruction") {
+			for (var i = 0; i < instructionsData.instructions.length; i++) {
+				nextId = instructionsData.instructions[i].id;
+				nextSequence = parseInt($('#instSeq_' + nextId).val());
+				instructionsData.instructions[i].sequence = nextSequence;
+				if (nextId == itemId) {
+					instructionsData.instructions[i].instruction = newText;
+					break;
+				}
+			}
+		}
+
+		// == update html string with changes
+		var saveHtml = "<p class='" + ingrOrInst + "' id='" + currentId + "'>" + newText + "</p>";
+		$('.editLineBox').replaceWith(saveHtml);
+
+		// == restore line hilites and click behavior
+		$('#' + currentId).on('mouseover', hiliteLink);
+		$('#' + currentId).on('mouseout', restoreLink);
+		$('#' + currentId).on('click', editRecipeLine);
+
+		// == activate save and cancel buttons
+		activateSaveCancel();
+	}
+
+	// ======= deleteRecipeLine =======
+	function deleteRecipeLine() {
+		console.log("== deleteRecipeLine ==");
+
+		var nextItem;
+		var itemId = currentId.split("_")[1];
+		var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
+		console.log("itemId: ", itemId);
+
+		// == identify ingredient or instruction to be removed (update local data)
+		if (ingrOrInst == "ingredient") {
+			var sequenceElement = $('#ingrSeq_' + itemId);
+			var ingredientsData = $('#ingredientsData').data().ingredients;
+			ingredientsInOrder = $("#ingredients").sortable("toArray");			// ingredient element ids
+			for (var i = 0; i < ingredientsData.length; i++) {
+				nextItem = ingredientsData[i];
+				if (nextItem.id == itemId) {
+					var sortableDeleteItem = "ingrLine_" + itemId;
+					var deleteItemIndex = ingredientsInOrder.indexOf(sortableDeleteItem);
+					ingredientsInOrder.splice(deleteItemIndex, 1);				// remove item id from inOrder list
+					ingredientsData[i].new_delete = "DELETE";					// flag item for delete
+					$('#ingrLine_' + itemId).remove();
+				}
+			}
+			updateItemSequences("ingr");
+
+		} else if (ingrOrInst == "instruction") {
+			var sequenceElement = $('#instSeq_' + itemId);
+			var instructionsData = $('#instructionsData').data().instructions;
+			instructionsInOrder = $("#instructions").sortable("toArray");		// instruction element ids
+			console.log("instructionsInOrder1: ", instructionsInOrder);
+			for (var i = 0; i < instructionsData.length; i++) {
+				nextItem = instructionsData[i];
+				if (nextItem.id == itemId) {
+					var sortableDeleteItem = "instLine_" + itemId;
+					var deleteItemIndex = instructionsInOrder.indexOf(sortableDeleteItem);
+					instructionsInOrder.splice(deleteItemIndex, 1);				// remove item id from inOrder list
+					instructionsData[i].new_delete = "DELETE";					// flag item for delete
+					$('#instLine_' + itemId).remove();
+					console.log("instructionsInOrder2: ", instructionsInOrder);
+				}
+			}
+			updateItemSequences("inst");
+		}
+		console.log("ingredientsData: ", ingredientsData);
+		console.log("instructionsData: ", instructionsData);
+
+		// == update html string with changes
+		sequenceElement.remove();
+		$('#' + currentId).parent().remove();
+
+		// == activate save and cancel buttons
+		activateSaveCancel();
+	}
+
+	// ======= cancelLineEdits =======
+	function cancelLineEdits() {
+		console.log("== cancelLineEdits ==");
+		console.log("currentId: ", currentId);
+		editFlag = false;
+
+		// == currentId format: ingredient_XXXX or instruction_XXXX (XXXX = database id)
+		var itemId = currentId.split("_")[1];
+		var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
+		var saveHtml = "<p class='" + ingrOrInst + "' id='" + currentId + "'>" + currentText + "</p>";
+		$('.editLineBox').replaceWith(saveHtml);
+		$('#' + currentId).on('mouseover', hiliteLink);
+		$('#' + currentId).on('mouseout', restoreLink);
+		$('#' + currentId).on('click', editRecipeLine);
+	}
+
+
+	// ======= ======= ======= NEW LINES ======= ======= =======
+	// ======= ======= ======= NEW LINES ======= ======= =======
+	// ======= ======= ======= NEW LINES ======= ======= =======
+
+	// ======= inputNewLine =======
+	function inputNewLine() {
+		console.log("== inputNewLine ==");
+
+		var editHtml = "";
+
+		// == determine if ingredient or instruction add button was clicked
+		var ingrOrInst = $(this).attr('id');
+
+		if (ingrOrInst == "ingrAdd") {
+			var ingrCount = $('#ingredients').children().length + 1;
+			editHtml = editHtml + "<div id='ingrLine_" + ingrCount + "' class='recipeLine newRecipeLine iu-sortable-handle'>";
+			editHtml = editHtml + "<input type='text' class='newItem' id='newIngr' name='newIngr'>";
+			editHtml = editHtml + "<div class='saveBtn' id='ingrSave'> save </div>";
+			editHtml = editHtml + "<div class='cancelBtn' id='ingrCancel'> cancel </div>";
+			editHtml = editHtml + "</div>";
+			$('#ingredients').prepend(editHtml);
+			$('#newIngr').focus();
+		} else if (ingrOrInst == "instAdd") {
+			var instCount = $('#instructions').children().length + 1;
+			editHtml = editHtml + "<div id='instLine_" + instCount + "' class='recipeLine newRecipeLine iu-sortable-handle'>";
+			editHtml = editHtml + "<input type='text' class='newItem' id='newInst' name='newInst'>";
+			editHtml = editHtml + "<div class='saveBtn' id='instSave'> save </div>";
+			editHtml = editHtml + "<div class='cancelBtn' id='instCancel'> cancel </div>";
+			editHtml = editHtml + "</div>";
+			$('#instructions').prepend(editHtml);
+			$('#newInst').focus();
+		}
+
+		$('.saveBtn').on('click', saveNewLine);
+		$('.cancelBtn').on('click', cancelNewLine);
+	}
+
+	// ======= saveNewLine =======
+	function saveNewLine(ingrOrInst) {
+		console.log("== saveNewLine ==");
+		console.log("ingrOrInst: ", ingrOrInst);
+		console.log("$.type(ingrOrInst): ", $.type(ingrOrInst));
+
+		// == determine if ingredient or instruction add button was clicked
+		if ($.type(ingrOrInst) === 'object') {
+			console.log("*** button click");
+			console.log("ingrOrInst.currentTarget: ", ingrOrInst.currentTarget);
+			console.log("ingrOrInst.currentTarget.id: ", ingrOrInst.currentTarget.id);
+			ingrOrInst = ingrOrInst.currentTarget.id;
+		}
+
+		// == determine if ingredient or instruction is being entered
+		if (ingrOrInst == "ingrSave") {
+			var newText = $('#newIngr').val();
+			var lineType = "ingredient";
+		} else if (ingrOrInst == "instSave") {
+			var newText = $('#newInst').val();
+			var lineType = "instruction";
+		}
+
+		if (newText != "") {
+			// == identify recipe being edited
+			var recipeId = $('#recipeId').data().recipeid;
+
+			// == activate save and cancel buttons
+			if (editFlag == false) {
+				editFlag = true;
+				activateSaveCancel();
+			}
+
+			// == create save and cancel buttons for ingredients or instructions
+			var updateHtml = "";
+
+			// == save new ingedient line
+			if (ingrOrInst == "ingrSave") {
+				var ingredientsData = $('#ingredientsData').data().ingredients;
+				console.log("ingredientsData: ", ingredientsData);
+				if (ingredientsData.length == null) {		// no ingredients data on type recipe page yet
+					var newSequence = 1;
+				} else {
+					var newSequence = ingredientsData.length + 1;
+				}
+				var newText = $('#newIngr').val();
+				var newId = newSequence;			// no database id yet; sequence number used as temp id
+				var newIngredient = {id: newId, recipe_id: recipeId, ingredient: newText, sequence: newSequence, created_at: null, updated_at: null, new_delete: "NEW"};
+				ingredientsData.push(newIngredient);
+
+				updateHtml = updateHtml + "<div class='recipeLine ui-sortable-handle' id='ingrLine_" + newSequence +  "'>";
+				updateHtml = updateHtml + "<div id='ingrSeq_' class='ingrSequence'>" + newSequence +  "</div>";
+				updateHtml = updateHtml + "<p class='ingredient' id='ingredient_" + newSequence + "'>" + newText + "</p>";
+				updateHtml = updateHtml + "</div>";
+				$('#ingredients').append(updateHtml);
+				$('#ingredient_' + newSequence).on('mouseover', hiliteLink);
+				$('#ingredient_' + newSequence).on('mouseout', restoreLink);
+				$('#ingredient_' + newSequence).on('click', editRecipeLine);
+
+			// == save new instruction line
+			} else if (ingrOrInst == "instSave") {
+				var instructionsData = $('#instructionsData').data().instructions;
+				if (instructionsData.length == null) {		// no instructions data on type recipe page yet
+					var newSequence = 1;
+				} else {
+					var newSequence = instructionsData.length + 1;
+				}
+				var newText = $('#newInst').val();
+				var newId = newSequence;			// no database id yet; sequence number used as temp id
+				var newInstruction = {id: newId, recipe_id: recipeId, instruction: newText, sequence: newSequence, created_at: null, updated_at: null, new_delete: "NEW"};
+				instructionsData.push(newInstruction);
+
+				updateHtml = updateHtml + "<div class='recipeLine ui-sortable-handle' id='instLine_" + newSequence +  "'>";
+				updateHtml = updateHtml + "<div id='instSeq_' class='instSequence'>" + newSequence + "</div>";
+				updateHtml = updateHtml + "<p class='instruction' id='instruction_" + newSequence + "'>" + newText + "</p>";
+				updateHtml = updateHtml + "</div>";
+				$('#instructions').append(updateHtml);
+				console.log("newSequence: ", newSequence);
+				console.log("hiliteLink: ", hiliteLink);
+				$('#instruction_' + newSequence).on('mouseover', hiliteLink);
+				$('#instruction_' + newSequence).on('mouseout', restoreLink);
+				$('#instruction_' + newSequence).on('click', editRecipeLine);
+			}
+
+			// == remove previously existing buttons if any
+			$('.newRecipeLine').remove();
+			if (pathname != "/type_recipe") {
+				displayPopup("newLine", lineType);
+			}
+		} else {
+			displayPopup("noText", lineType);
+		}
+	}
+
+	// ======= cancelNewLine =======
+	function cancelNewLine() {
+		console.log("== cancelNewLine ==");
+		editFlag = false;
+
+		// == deactivate recipe save/cancel buttons; remove new line controls
+		$('.newRecipeLine, .newItem, .saveBtn, .cancelBtn').remove();
+	}
+
+
+	// ======= ======= ======= RECIPE EDIT REQUEST ======= ======= =======
+	// ======= ======= ======= RECIPE EDIT REQUEST ======= ======= =======
+	// ======= ======= ======= RECIPE EDIT REQUEST ======= ======= =======
 
 	// ======= activateSaveCancel =======
 	function activateSaveCancel() {
@@ -514,578 +1032,79 @@ $(document).on('turbolinks:load', function() {
 		location.reload();
 	}
 
-	// ======= deactivateTitleEdit =======
-    function deactivateTitleEdit() {
-		console.log("== deactivateTitleEdit ==");
-		$('#outputTitle').off('mouseover');
-		$('#outputTitle').off('mouseout');
-		$('#outputTitle').off('click');
+	// ======= saveRecipeData =======
+	function saveRecipeData(recipeData, importEdit) {
+		console.log("== saveRecipeData ==");
+
+		if (importEdit == "import") {
+			var url = "/save_recipe_file";
+			var dataType = "json";
+		} else {
+			var url = "/save_recipe_edits";
+			var dataType = "script";
+		}
+
+		var jsonData = JSON.stringify(recipeData);
+
+		$.ajax({
+		    url: url,
+			data: jsonData,
+		    method: "POST",
+			dataType: dataType,
+			contentType: "application/json; charset=utf-8"
+		}).done(function(jsonData) {
+		    console.log("*** ajax success ***");
+		    console.dir(jsonData);
+			if (importEdit == "import") {
+				displayRecipeTitles(jsonData);
+				activateListHeaders();
+				makeTitleText(jsonData, "import");
+			}
+			updateNoticeMessage(jsonData);
+		}).fail(function(unknown){
+		    console.log("*** ajax fail ***");
+			console.log("unknown:", unknown);
+		});
 	}
 
-	// ======= activateEditLinks =======
-    function activateEditLinks() {
-		console.log("== activateEditLinks ==");
+	// ======= deleteRecipe =======
+	function deleteRecipe(recipeId) {
+		console.log("== deleteRecipe ==");
+		console.log("recipeId: ", recipeId);
 
-		var btnColor;
-		var textColor;
-		var currentText, currentId;
+		var url = "/delete_recipe/" + recipeId.toString();
 
-		if (pathname == "/type_recipe") {
-			activateTitleBtns();
-		}
-
-		// == set recipe rating
-		$('#rating_edit_select').change(function(e) {
-			console.log("== change: rating_edit_select ==");
-			e.preventDefault();
-			editFlag = true;
-
-			// == temporarily store previous value for this item (rating)
-			$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
-			$('#ratingData').data().ratingid = $('#rating_edit_select option:selected').val();
-			console.log("$('#ratingData').data().prev_ratingid: ", $('#ratingData').data().prev_ratingid);
-			console.log("$('#ratingData').data().ratingid: ", $('#ratingData').data().ratingid);
-
-			// == activate save and cancel buttons
-			activateSaveCancel();
-	    });
-
-		// == set recipe category
-		$('#category_edit_select').change(function(e) {
-			console.log("== change: category_edit_select ==");
-			e.preventDefault();
-			editFlag = true;
-
-			// == temporarily store previous value for this item (category)
-			$('#categoryData').data().prev_categoryid = $('#categoryData').data().categoryid;
-			$('#categoryData').data().categoryid = $('#category_edit_select option:selected').val();
-
-			// == activate save and cancel buttons
-			activateSaveCancel();
-	    });
-
-		// == set recipe nationality
-		$('#nationality_edit_select').change(function(e) {
-			console.log("== change: nationality_edit_select ==");
-			e.preventDefault();
-			editFlag = true;
-
-			// == temporarily store previous value for this item (nationality)
-			$('#nationalityData').data().prev_nationalityid = $('#nationalityData').data().nationalityid;
-			$('#nationalityData').data().nationalityid = $('#nationality_edit_select option:selected').val();
-
-			// == activate save and cancel buttons
-			activateSaveCancel();
-	    });
-
-		// == set shared status
-		$('.recipeShare').change(function(e) {
-			console.log("== change: recipeShare ==");
-			e.preventDefault();
-
-			editFlag = true;
-
-			var shared = $(this).val();
-			if (shared === "true") {
-				shared = "false";
-			} else if (shared === "false") {
-				shared = "true";
-			}
-			$('#sharedData').data().prev_shared = $('#sharedData').data().shared;
-			$('#sharedData').data().shared = shared;
-
-			// == activate save and cancel buttons
-			activateSaveCancel();
-	    });
-
-		// == select to delete recipe entirely from database
-		$('#deleteRecipe').click(function(e) {
-			console.log("== click: deleteRecipe ==");
-			e.preventDefault();
-			editFlag = false;
-			deleteRecipe($('#recipeId').data().recipeid);
-			e.stopPropagation();
+		$.ajax({
+			url: url,
+			method: "GET",
+			dataType: "json",
+			contentType: "application/json; charset=utf-8"
+		}).done(function(jsonData) {
+			console.log("*** ajax success ***");
+			console.dir(jsonData)
+			updateNoticeMessage(jsonData);
+			displayDeleteView(jsonData);
+		}).fail(function(unknown){
+			console.log("*** ajax fail ***");
+			console.log("unknown:", unknown);
 		});
-
-
-		// ======= ======= ======= line behaviors ======= ======= =======
-		// ======= ======= ======= line behaviors ======= ======= =======
-		// ======= ======= ======= line behaviors ======= ======= =======
-
-		$('#outputTitle').on('mouseover', hiliteLink);
-		$('#outputTitle').on('mouseout', restoreLink);
-		$('#outputTitle').on('click', editRecipeTitle);
-		$('.ingredient, .instruction').on('mouseover', hiliteLink);
-		$('.ingredient, .instruction').on('mouseout', restoreLink);
-		$('.ingredient, .instruction').on('click', editRecipeLine);
-		$('.addBtn').on('click', inputNewLine);
-		$('body').on('keyup', function(e) {
-			console.log("== keyup: saveNewLine ==");
-			console.log("$(':focus').attr('id'): ", $(':focus').attr('id'));
-			if ((e.keyCode === 13) && ($(':focus').attr('id') === 'newIngr')) {
-				saveNewLine("ingrSave");
-			} else if ((e.keyCode === 13) && ($(':focus').attr('id') === 'newInst')) {
-				saveNewLine("instSave");
-			}
-		});
-
-
-		// ======= ======= ======= title edit/update/cancel ======= ======= =======
-		// ======= ======= ======= title edit/update/cancel ======= ======= =======
-		// ======= ======= ======= title edit/update/cancel ======= ======= =======
-
-		// ======= editRecipeTitle =======
-		function editRecipeTitle() {
-			console.log("== editRecipeTitle ==");
-
-			// == store existing title text (for restore if edits cancelled)
-			currentText = $(this).text();
-
-			$('#rating_edit_select').hide();
-			$('#category_edit_select').hide();
-			$('#nationality_edit_select').hide();
-			$('#deleteRecipe').hide();
-			$('.recipeShare').hide();
-			$('.label').hide();
-
-			// == create textbox and button controls for revised title
-			var inputHtml = "<input type='text' id='editTitleText' name='editTitleText' value='" + currentText + "'>";
-			var btnsHtml = "<div id='titleSaveBtn' class='saveBtn'> save </div> <div id='titleCancelBtn' class='cancelBtn'> cancel </div> ";
-			var editHtml = inputHtml + btnsHtml;
-			$(this).replaceWith(editHtml);
-			activateTitleBtns();
-
-		}
-
-		// ======= activateTitleBtns =======
-		function activateTitleBtns() {
-			console.log("== activateTitleBtns ==");
-
-			$('.saveBtn').click(function(e) {
-				e.preventDefault();
-				editFlag = true;
-				updateRecipeTitle();
-				e.stopPropagation();
-			});
-			console.log("$('.cancelBtn').length: ", $('.cancelBtn').length);
-
-			if ($('.cancelBtn').length > 0) {
-				$('.cancelBtn').click(function(e) {
-					e.preventDefault();
-					cancelTitleEdits(currentText);
-					e.stopPropagation();
-				});
-			}
-		}
-
-		// ======= updateRecipeTitle =======
-		function updateRecipeTitle() {
-			console.log("== updateRecipeTitle ==");
-
-			var newText = $('#editTitleText').val();
-
-			if (newText == "") {
-				displayPopup("noText", "title");
-			} else {
-				// == save previous title; save new value for ajax submit
-				$('#titleData').data().prev_title = $('#titleData').data().title;
-				$('#titleData').data().title = newText;
-
-				// == update html string with changes
-				var saveHtml = "<h2 id='outputTitle'>" + newText + "</h2>";
-				$('#editTitleText').replaceWith(saveHtml);
-				$('.saveBtn, .cancelBtn').remove();
-
-				// == restore line hilites and click behavior
-				$('#' + currentId).on('mouseover', hiliteLink);
-				$('#' + currentId).on('mouseout', restoreLink);
-				$('#' + currentId).on('click', editRecipeTitle);
-
-				activateSaveCancel();
-				toggleEditButtons("show");
-			}
-		}
-
-		// ======= cancelTitleEdits =======
-		function cancelTitleEdits(currentText) {
-			console.log("== cancelTitleEdits ==");
-
-			// == restore html string
-			var saveHtml = "<h2 id='outputTitle'>" + currentText + "</h2>";
-			$('#editTitleText').replaceWith(saveHtml);
-			$('.saveBtn, .cancelBtn').remove();
-
-			$('#rating_edit_select').show();
-			$('#category_edit_select').show();
-			$('#nationality_edit_select').show();
-			$('#deleteRecipe').show();
-			$('.recipeShare').show();
-			$('.label').show();
-
-			// == restore line hilites and click behavior
-			$('#outputTitle').on('mouseover', hiliteLink);
-			$('#outputTitle').on('mouseout', restoreLink);
-			$('#outputTitle').on('click', editRecipeTitle);
-		}
-
-
-		// ======= ======= ======= line edit/update/cancel ======= ======= =======
-		// ======= ======= ======= line edit/update/cancel ======= ======= =======
-		// ======= ======= ======= line edit/update/cancel ======= ======= =======
-
-		// ======= editRecipeLine =======
-		function editRecipeLine() {
-			console.log("== editRecipeLine ==");
-
-			editFlag = true;
-			var btnsHtml = "";
-			var inputHtml = "";
-
-			// == get existing id and text values for currently selected element
-			currentText = $(this).text();
-			currentId = $(this).attr('id');
-
-			// == currentId format: ingredient_XXXX or instruction_XXXX (XXXX = database id)
-			var itemId = currentId.split("_")[1];
-			var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
-
-			// == remove existing edit mode elements if any/restore line functionality
-			if ($('.editLineBox').length > 0) {
-				var activeEditId = $('.editLineBox').children('textarea').attr('id');
-				var activeEditText = $('.editLineBox').children('textarea').text();
-				var saveHtml = "<p class='" + ingrOrInst + "' id='" + activeEditId + "'>" + activeEditText + "</p>";
-				$('.editLineBox').replaceWith(saveHtml);
-				$('#' + activeEditId).on('mouseover', hiliteLink);
-				$('#' + activeEditId).on('mouseout', restoreLink);
-				$('#' + activeEditId).on('click', editRecipeLine);
-			}
-
-			// == replace selected line with edit functionality
-			inputHtml = inputHtml + "<div class='editLineBox'>";
-			inputHtml = inputHtml + "<textarea class='editItem' id='" + currentId + "' name='" + currentId + "'";
-			inputHtml = inputHtml + " cols='40' rows='5'>" + currentText + "</textarea>";
-			var btnsHtml = btnsHtml + "<div class='editBtnsBox'>";
-			var btnsHtml = btnsHtml + "<div class='saveBtn'>save</div>";
-			var btnsHtml = btnsHtml + "<div class='cancelBtn'>cancel</div>";
-			var btnsHtml = btnsHtml + "<div class='deleteBtn'>delete</div> ";
-			var btnsHtml = btnsHtml + "</div></div>";
-			var editHtml = inputHtml + btnsHtml;
-			$(this).replaceWith(editHtml);
-
-			// == activate save/cancel/delete buttons
-			$('.saveBtn').on('click', updateRecipeLine);
-			$('.cancelBtn').on('click', cancelLineEdits);
-			$('.deleteBtn').on('click', deleteRecipeLine);
-		}
-
-		// ======= cancelLineEdits =======
-		function cancelLineEdits() {
-			console.log("== cancelLineEdits ==");
-			console.log("currentId: ", currentId);
-			editFlag = false;
-
-			// == currentId format: ingredient_XXXX or instruction_XXXX (XXXX = database id)
-			var itemId = currentId.split("_")[1];
-			var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
-			var saveHtml = "<p class='" + ingrOrInst + "' id='" + currentId + "'>" + currentText + "</p>";
-			$('.editLineBox').replaceWith(saveHtml);
-			$('#' + currentId).on('mouseover', hiliteLink);
-			$('#' + currentId).on('mouseout', restoreLink);
-			$('#' + currentId).on('click', editRecipeLine);
-		}
-
-		// ======= updateRecipeLine =======
-		function updateRecipeLine() {
-			console.log("== updateRecipeLine ==");
-
-			var nextId, nextSequence;
-
-			// == currentId format: ingredient_XXXX or instruction_XXXX (XXXX = database id)
-			var itemId = currentId.split("_")[1];
-			var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
-
-			// == get database record stored in local div (data value)
-			var ingredientsData = $('#ingredientsData').data();
-			var instructionsData = $('#instructionsData').data();
-			var newText = $('#' + currentId).val();
-
-			// == save ingredient changes to local data
-			if (ingrOrInst == "ingredient") {
-				for (var i = 0; i < ingredientsData.ingredients.length; i++) {
-					nextId = ingredientsData.ingredients[i].id;
-					nextSequence = parseInt($('#ingrSeq_' + nextId).val());
-					ingredientsData.ingredients[i].sequence = nextSequence;
-					if (nextId == itemId) {
-						ingredientsData.ingredients[i].ingredient = newText;
-						break;
-					}
-				}
-
-			// == save instruction changes to local data
-			} else if (ingrOrInst == "instruction") {
-				for (var i = 0; i < instructionsData.instructions.length; i++) {
-					nextId = instructionsData.instructions[i].id;
-					nextSequence = parseInt($('#instSeq_' + nextId).val());
-					instructionsData.instructions[i].sequence = nextSequence;
-					if (nextId == itemId) {
-						instructionsData.instructions[i].instruction = newText;
-						break;
-					}
-				}
-			}
-
-			// == update html string with changes
-			var saveHtml = "<p class='" + ingrOrInst + "' id='" + currentId + "'>" + newText + "</p>";
-			$('.editLineBox').replaceWith(saveHtml);
-
-			// == restore line hilites and click behavior
-			$('#' + currentId).on('mouseover', hiliteLink);
-			$('#' + currentId).on('mouseout', restoreLink);
-			$('#' + currentId).on('click', editRecipeLine);
-
-			// == activate save and cancel buttons
-			activateSaveCancel();
-		}
-
-		// ======= deleteRecipeLine =======
-		function deleteRecipeLine() {
-			console.log("== deleteRecipeLine ==");
-
-			var nextItem;
-			var itemId = currentId.split("_")[1];
-			var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
-			console.log("itemId: ", itemId);
-
-			// == identify ingredient or instruction to be removed (update local data)
-			if (ingrOrInst == "ingredient") {
-				var sequenceElement = $('#ingrSeq_' + itemId);
-				var ingredientsData = $('#ingredientsData').data().ingredients;
-				ingredientsInOrder = $("#ingredients").sortable("toArray");			// ingredient element ids
-				for (var i = 0; i < ingredientsData.length; i++) {
-					nextItem = ingredientsData[i];
-					if (nextItem.id == itemId) {
-						var sortableDeleteItem = "ingrLine_" + itemId;
-						var deleteItemIndex = ingredientsInOrder.indexOf(sortableDeleteItem);
-						ingredientsInOrder.splice(deleteItemIndex, 1);				// remove item id from inOrder list
-						ingredientsData[i].new_delete = "DELETE";					// flag item for delete
-						$('#ingrLine_' + itemId).remove();
-					}
-				}
-				updateItemSequences("ingr");
-			} else if (ingrOrInst == "instruction") {
-				var sequenceElement = $('#instSeq_' + itemId);
-				var instructionsData = $('#instructionsData').data().instructions;
-				instructionsInOrder = $("#instructions").sortable("toArray");		// instruction element ids
-				console.log("instructionsInOrder1: ", instructionsInOrder);
-				for (var i = 0; i < instructionsData.length; i++) {
-					nextItem = instructionsData[i];
-					if (nextItem.id == itemId) {
-						var sortableDeleteItem = "instLine_" + itemId;
-						var deleteItemIndex = instructionsInOrder.indexOf(sortableDeleteItem);
-						instructionsInOrder.splice(deleteItemIndex, 1);				// remove item id from inOrder list
-						instructionsData[i].new_delete = "DELETE";					// flag item for delete
-						$('#instLine_' + itemId).remove();
-						console.log("instructionsInOrder2: ", instructionsInOrder);
-					}
-				}
-				updateItemSequences("inst");
-			}
-			console.log("ingredientsData: ", ingredientsData);
-			console.log("instructionsData: ", instructionsData);
-
-			// == update html string with changes
-			sequenceElement.remove();
-			$('#' + currentId).parent().remove();
-
-			// == activate save and cancel buttons
-			activateSaveCancel();
-		}
-
-
-		// ======= ======= ======= line add/save/delete ======= ======= =======
-		// ======= ======= ======= line add/save/delete ======= ======= =======
-		// ======= ======= ======= line add/save/delete ======= ======= =======
-
-		// ======= inputNewLine =======
-		function inputNewLine() {
-			console.log("== inputNewLine ==");
-
-			var editHtml = "";
-
-			// == determine if ingredient or instruction add button was clicked
-			var ingrOrInst = $(this).attr('id');
-
-			if (ingrOrInst == "ingrAdd") {
-				var ingrCount = $('#ingredients').children().length + 1;
-				editHtml = editHtml + "<div id='ingrLine_" + ingrCount + "' class='recipeLine newRecipeLine iu-sortable-handle'>";
-				editHtml = editHtml + "<input type='text' class='newItem' id='newIngr' name='newIngr'>";
-				editHtml = editHtml + "<div class='saveBtn' id='ingrSave'> save </div>";
-				editHtml = editHtml + "<div class='cancelBtn' id='ingrCancel'> cancel </div>";
-				editHtml = editHtml + "</div>";
-				$('#ingredients').prepend(editHtml);
-				$('#newIngr').focus();
-			} else if (ingrOrInst == "instAdd") {
-				var instCount = $('#instructions').children().length + 1;
-				editHtml = editHtml + "<div id='instLine_" + instCount + "' class='recipeLine newRecipeLine iu-sortable-handle'>";
-				editHtml = editHtml + "<input type='text' class='newItem' id='newInst' name='newInst'>";
-				editHtml = editHtml + "<div class='saveBtn' id='instSave'> save </div>";
-				editHtml = editHtml + "<div class='cancelBtn' id='instCancel'> cancel </div>";
-				editHtml = editHtml + "</div>";
-				$('#instructions').prepend(editHtml);
-				$('#newInst').focus();
-			}
-
-			$('.saveBtn').on('click', saveNewLine);
-			$('.cancelBtn').on('click', cancelNewLine);
-		}
-
-		// ======= saveNewLine =======
-		function saveNewLine(ingrOrInst) {
-			console.log("== saveNewLine ==");
-			console.log("ingrOrInst: ", ingrOrInst);
-			console.log("$.type(ingrOrInst): ", $.type(ingrOrInst));
-
-			// == determine if ingredient or instruction add button was clicked
-			if ($.type(ingrOrInst) === 'object') {
-				console.log("*** button click");
-				console.log("ingrOrInst.currentTarget: ", ingrOrInst.currentTarget);
-				console.log("ingrOrInst.currentTarget.id: ", ingrOrInst.currentTarget.id);
-				ingrOrInst = ingrOrInst.currentTarget.id;
-			}
-
-			// == determine if ingredient or instruction is being entered
-			if (ingrOrInst == "ingrSave") {
-				var newText = $('#newIngr').val();
-				var lineType = "ingredient";
-			} else if (ingrOrInst == "instSave") {
-				var newText = $('#newInst').val();
-				var lineType = "instruction";
-			}
-
-			if (newText != "") {
-				// == identify recipe being edited
-				var recipeId = $('#recipeId').data().recipeid;
-
-				// == activate save and cancel buttons
-				if (editFlag == false) {
-					editFlag = true;
-					activateSaveCancel();
-				}
-
-				// == create save and cancel buttons for ingredients or instructions
-				var updateHtml = "";
-
-				// == save new ingedient line
-				if (ingrOrInst == "ingrSave") {
-					var ingredientsData = $('#ingredientsData').data().ingredients;
-					console.log("ingredientsData: ", ingredientsData);
-					if (ingredientsData.length == null) {		// no ingredients data on type recipe page yet
-						var newSequence = 1;
-					} else {
-						var newSequence = ingredientsData.length + 1;
-					}
-					var newText = $('#newIngr').val();
-					var newId = newSequence;			// no database id yet; sequence number used as temp id
-					var newIngredient = {id: newId, recipe_id: recipeId, ingredient: newText, sequence: newSequence, created_at: null, updated_at: null, new_delete: "NEW"};
-					ingredientsData.push(newIngredient);
-
-					updateHtml = updateHtml + "<div class='recipeLine ui-sortable-handle' id='ingrLine_" + newSequence +  "'>";
-					updateHtml = updateHtml + "<div id='ingrSeq_' class='ingrSequence'>" + newSequence +  "</div>";
-					updateHtml = updateHtml + "<p class='ingredient' id='ingredient_" + newSequence + "'>" + newText + "</p>";
-					updateHtml = updateHtml + "</div>";
-					$('#ingredients').append(updateHtml);
-					$('#ingredient_' + newSequence).on('mouseover', hiliteLink);
-					$('#ingredient_' + newSequence).on('mouseout', restoreLink);
-					$('#ingredient_' + newSequence).on('click', editRecipeLine);
-
-				// == save new instruction line
-				} else if (ingrOrInst == "instSave") {
-					var instructionsData = $('#instructionsData').data().instructions;
-					if (instructionsData.length == null) {		// no instructions data on type recipe page yet
-						var newSequence = 1;
-					} else {
-						var newSequence = instructionsData.length + 1;
-					}
-					var newText = $('#newInst').val();
-					var newId = newSequence;			// no database id yet; sequence number used as temp id
-					var newInstruction = {id: newId, recipe_id: recipeId, instruction: newText, sequence: newSequence, created_at: null, updated_at: null, new_delete: "NEW"};
-					instructionsData.push(newInstruction);
-
-					updateHtml = updateHtml + "<div class='recipeLine ui-sortable-handle' id='instLine_" + newSequence +  "'>";
-					updateHtml = updateHtml + "<div id='instSeq_' class='instSequence'>" + newSequence + "</div>";
-					updateHtml = updateHtml + "<p class='instruction' id='instruction_" + newSequence + "'>" + newText + "</p>";
-					updateHtml = updateHtml + "</div>";
-					$('#instructions').append(updateHtml);
-					console.log("newSequence: ", newSequence);
-					console.log("hiliteLink: ", hiliteLink);
-					$('#instruction_' + newSequence).on('mouseover', hiliteLink);
-					$('#instruction_' + newSequence).on('mouseout', restoreLink);
-					$('#instruction_' + newSequence).on('click', editRecipeLine);
-				}
-
-				// == remove previously existing buttons if any
-				$('.newRecipeLine').remove();
-				if (pathname != "/type_recipe") {
-					displayPopup("newLine", lineType);
-				}
-			} else {
-				displayPopup("noText", lineType);
-			}
-		}
-
-		// ======= cancelNewLine =======
-		function cancelNewLine() {
-			console.log("== cancelNewLine ==");
-			editFlag = false;
-
-			// == deactivate recipe save/cancel buttons; remove new line controls
-			$('.newRecipeLine, .newItem, .saveBtn, .cancelBtn').remove();
-		}
-
-
-		// ======= ======= ======= recipe save/cancel/delete all edits ======= ======= =======
-		// ======= ======= ======= recipe save/cancel/delete all edits ======= ======= =======
-		// ======= ======= ======= recipe save/cancel/delete all edits ======= ======= =======
-
-		// ======= deleteRecipe =======
-		function deleteRecipe(recipeId) {
-			console.log("== deleteRecipe ==");
-			console.log("recipeId: ", recipeId);
-
-			var url = "/delete_recipe/" + recipeId.toString();
-
-			$.ajax({
-			    url: url,
-			    method: "GET",
-				dataType: "json",
-				contentType: "application/json; charset=utf-8"
-			}).done(function(jsonData) {
-			    console.log("*** ajax success ***");
-			    console.dir(jsonData)
-				updateNoticeMessage(jsonData);
-				displayDeleteView(jsonData);
-			}).fail(function(unknown){
-			    console.log("*** ajax fail ***");
-				console.log("unknown:", unknown);
-			});
-		}
-
-		// ======= displayDeleteView =======
-		function displayDeleteView(jsonData) {
-			console.log("== displayDeleteView ==");
-			var recipeTitle = jsonData.title;
-			var htmlText = "";
-			htmlText = htmlText + "<div class='recipeBox1'><h2 id='outputTitle'>" + recipeTitle + "</h2></div>";
-			htmlText = htmlText + "<div id='recipeBox2'><div class='halfBox'></div><div class='halfBox'></div></div>"
-			htmlText = htmlText + "<div id='welcomeText' class='middleBox'> <p>" + recipeTitle + "</span> has been deleted.</p></div>"
-			$('#output').html(htmlText);
-		}
+	}
+
+	// ======= displayDeleteView =======
+	function displayDeleteView(jsonData) {
+		console.log("== displayDeleteView ==");
+		var recipeTitle = jsonData.title;
+		var htmlText = "";
+		htmlText = htmlText + "<div class='recipeBox1'><h2 id='outputTitle'>" + recipeTitle + "</h2></div>";
+		htmlText = htmlText + "<div id='recipeBox2'><div class='halfBox'></div><div class='halfBox'></div></div>"
+		htmlText = htmlText + "<div id='welcomeText' class='middleBox'> <p>" + recipeTitle + "</span> has been deleted.</p></div>"
+		$('#output').html(htmlText);
 	}
 
 
-	// ======= ======= ======= VIEW/SAVE ======= ======= =======
-	// ======= ======= ======= VIEW/SAVE ======= ======= =======
-	// ======= ======= ======= VIEW/SAVE ======= ======= =======
+	// ======= ======= ======= DISPLAY RECIPE TITLES ======= ======= =======
+	// ======= ======= ======= DISPLAY RECIPE TITLES ======= ======= =======
+	// ======= ======= ======= DISPLAY RECIPE TITLES ======= ======= =======
 
 	// ======= displayRecipeTitles =======
 	function displayRecipeTitles(jsonData) {
@@ -1377,9 +1396,9 @@ $(document).on('turbolinks:load', function() {
 				var lineCount = (fileText.split("\n")).length;
 
 
-				// ======= ======= ======= MAIN LOOP ======= ======= =======
-				// ======= ======= ======= MAIN LOOP ======= ======= =======
-				// ======= ======= ======= MAIN LOOP ======= ======= =======
+				// ======= ======= ======= read file loop ======= ======= =======
+				// ======= ======= ======= read file loop ======= ======= =======
+				// ======= ======= ======= read file loop ======= ======= =======
 
 
 				// == line-by-line data extraction
@@ -1412,9 +1431,9 @@ $(document).on('turbolinks:load', function() {
 					} else if (((nextLine.match(/ingredients/g)) || (nextLine.match(/Ingredients/g)) || (nextLine.match(/ingredients:/g)) || (i == (lineCount - 1))) && (nextLine.length < 14)) {
 						ingredientsFlag = true;
 
-						// ======= ======= ======= collect recipe data (recipeObj) ======= ======= =======
-						// ======= ======= ======= collect recipe data (recipeObj) ======= ======= =======
-						// ======= ======= ======= collect recipe data (recipeObj) ======= ======= =======
+						// ======= ======= ======= make recipeObj ======= ======= =======
+						// ======= ======= ======= make recipeObj ======= ======= =======
+						// ======= ======= ======= make recipeObj ======= ======= =======
 
 						// == first recipe special case
 						if (ingredientsArray.length == 0) {
@@ -1698,49 +1717,42 @@ $(document).on('turbolinks:load', function() {
 
 	}
 
-	// ======= saveRecipeData =======
-	function saveRecipeData(recipeData, importEdit) {
-		console.log("== saveRecipeData ==");
+	// ======= ======= ======= UTILITIES ======= ======= =======
+	// ======= ======= ======= UTILITIES ======= ======= =======
+	// ======= ======= ======= UTILITIES ======= ======= =======
 
-		if (importEdit == "import") {
-			var url = "/save_recipe_file";
-			var dataType = "json";
-		} else {
-			var url = "/save_recipe_edits";
-			var dataType = "script";
-		}
-
-		var jsonData = JSON.stringify(recipeData);
-
-		$.ajax({
-		    url: url,
-			data: jsonData,
-		    method: "POST",
-			dataType: dataType,
-			contentType: "application/json; charset=utf-8"
-		}).done(function(jsonData) {
-		    console.log("*** ajax success ***");
-		    console.dir(jsonData);
-			if (importEdit == "import") {
-				displayRecipeTitles(jsonData);
-				activateListHeaders();
-				makeTitleText(jsonData, "import");
+	function modifyMenuText() {
+		// console.log("== resize: modifyMenuText ==");
+		if ($(this).width() !== windowW) {
+			windowW = $(this).width();
+			if (windowW < windowFlag) {
+				$('#getMyRecipes').text('My');
+				$('#getAllRecipes').text('All');
+				// console.log(windowW);
+			} else {
+				$('#getMyRecipes').text('My Recipes');
+				$('#getAllRecipes').text('All Recipes');
 			}
-			updateNoticeMessage(jsonData);
-		}).fail(function(unknown){
-		    console.log("*** ajax fail ***");
-			console.log("unknown:", unknown);
-		});
+		}
 	}
 
+	// ======= activateFileCancel =======
+    function activateFileCancel() {
+		console.log("== activateFileCancel ==");
 
-	// ======= ======= ======= UTILITIES ======= ======= =======
-	// ======= ======= ======= UTILITIES ======= ======= =======
-	// ======= ======= ======= UTILITIES ======= ======= =======
+		// == show my recipes
+		$('#cancelImport').off('click');
+		$('#cancelImport').click(function(e) {
+			console.log("== click: cancelImport ==");
+			window.location = "/";
+		});
+	}
 
 	// ======= displayPopup =======
 	function displayPopup(type, data) {
 		console.log("== displayPopup ==");
+		console.log("noShowFlag: ", noShowFlag);
+		console.log("$('#showAgain:checked').length: ", $('#showAgain:checked').length);
 
 		var popupHtml = "";
 
@@ -1763,21 +1775,36 @@ $(document).on('turbolinks:load', function() {
 			popupHtml = popupHtml + "<p>Your new " + data + " is at the bottom of the list.</p>";
 			popupHtml = popupHtml + "<p>Drag it to its proper place in the sequence,</p>";
 			popupHtml = popupHtml + "<p>then click <span>Save</span> or <span>Cancel</span>.</p>";
+			if ($('#showAgain:checked').length > 0) {
+				noShowFlag = true;
+			}
 		}
 
-		$('#popup-message').html(popupHtml);
-		$(".popup-overlay, .popup-content").addClass("active");
+		if (!noShowFlag) {
+			$('#popup-message').html(popupHtml);
+			$(".popup-overlay, .popup-content").addClass("active");
 
-		$(".popupDelete").off("click");
-		$(".popupDelete").on("click", function(){
-			console.log("== popup: delete ==");
-			console.log("data: ", data);
-			console.log("pathname: ", pathname);
-			$('#popup-message').html("");
-			$(".popup-overlay, .popup-content").removeClass("active");
-		});
+			$(".popupDelete").off("click");
+			$(".popupDelete").on("click", function(){
+				console.log("== popup: delete ==");
+				console.log("data: ", data);
+				console.log("pathname: ", pathname);
+				$('#popup-message').html("");
+				$(".popup-overlay, .popup-content").removeClass("active");
+			});
 
+		}
 	}
+
+	$('#showAgain').change(function(e){
+		console.log("== #showAgain: change ==");
+		console.log("noShowFlag: ", noShowFlag);
+		console.log("$('#showAgain:checked').length: ", $('#showAgain:checked').length);
+		if ($('#showAgain:checked').length > 0) {
+			noShowFlag = true;
+		}
+		console.log("noShowFlag: ", noShowFlag);
+	});
 
 	$(".close").off("click");
 	$(".close").on("click", function(){
@@ -1838,6 +1865,14 @@ $(document).on('turbolinks:load', function() {
 			$('#sharedLabel').show();
 			$('#shared').show();
 		}
+	}
+
+	// ======= deactivateTitleEdit =======
+	function deactivateTitleEdit() {
+		console.log("== deactivateTitleEdit ==");
+		$('#outputTitle').off('mouseover');
+		$('#outputTitle').off('mouseout');
+		$('#outputTitle').off('click');
 	}
 
 	// ======= updateTitleText =======
