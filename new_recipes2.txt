@@ -1,5 +1,5 @@
 
-== Overnight Oats ==
+Overnight Oats
 
 ingredients
 3/4 cup old-fashioned oats
@@ -19,7 +19,7 @@ instructions
 
 
 
-== Pecan Tassies ==
+Pecan Tassies
 
 ingredients
 FOR THE CRUST
@@ -52,7 +52,7 @@ FOR THE FILLING
 
 
 
-== Breaded Haddock with Bay Scallops ==
+Breaded Haddock with Bay Scallops
 
 ingredients
 salt
@@ -80,7 +80,7 @@ instructions
 
 
 
-== Tarte Tatin ==
+Tarte Tatin
 
 ingredients
 8 large Golden Delicious apples (10 if smaller)
@@ -120,7 +120,7 @@ PLATING
 
 
 
-== Smoked Salmon with Farro ==
+Smoked Salmon with Farro
 
 ingredients
 1 cup farro
@@ -147,7 +147,7 @@ instructions
 
 
 
-== Sheet-Pan Chicken With Jammy Tomatoes and Pancetta ==
+Sheet-Pan Chicken With Jammy Tomatoes and Pancetta
 
 ingredients
 1 1/2 lb boneless, skinless chicken thighs
@@ -185,7 +185,7 @@ instructions
 
 
 
-== Mexican-Style Garlic Shrimp ==
+Mexican-Style Garlic Shrimp
 
 ingredients
 1 lb shrimp without shells and cleaned
@@ -210,7 +210,7 @@ instructions
 
 
 
-== Rum Pecan Pie ==
+Rum Pecan Pie
 
 ingredients
 CRUST
@@ -271,7 +271,7 @@ NOTE: start making pecan filling
 
 
 
-== Orange Flan ==
+Orange Flan
 
 ingredients
 1 cup sugar
@@ -311,7 +311,7 @@ CUSTARD:
 
 
 
-== Fruit Tart ==
+Fruit Tart
 
 ingredients
 CRUST
@@ -373,7 +373,7 @@ CRUST II
 
 
 
-== Coronado Cookies ==
+Coronado Cookies
 
 ingredients
 8 Tbsp (1 stick) unsalted butter, at room temperature, cut into small chunks
@@ -406,7 +406,7 @@ instructions
 
 
 
-== Ikea’s Swedish meatballs ==
+Ikea’s Swedish meatballs
 
 ingredients
 MEATBALLS
@@ -448,7 +448,7 @@ MEATBALLS
 
 
 
-== Skillet-Braised Spiced Potatoes and Chickpeas ==
+Skillet-Braised Spiced Potatoes and Chickpeas
 
 ingredients
 2 Tbsp olive oil
@@ -479,7 +479,7 @@ instructions
 
 
 
-== Crab cakes ==
+Crab cakes
 
 ingredients
 2/3 cup panko (Japanese breadcrumbs), divided
@@ -513,7 +513,7 @@ instructions
 
 
 
-== Orange Custard French Toast ==
+Orange Custard French Toast
 
 ingredients
 PANCAKES
@@ -548,7 +548,7 @@ BLUEBERRY SAUCE
 
 
 
-== Onion Tart ==
+Onion Tart
 
 ingredients
 2 cup ll-purpose flour
@@ -588,7 +588,7 @@ instructions
 
 
 
-== Pecan Sandies ==
+Pecan Sandies
 
 ingredients
 1/2 cup granulated sugar  |  1/4 cup
@@ -614,7 +614,7 @@ instructions
 
 
 
-== Bread Pudding ==
+Bread Pudding
 
 ingredients
 BREAD PUDDING
@@ -665,7 +665,7 @@ CARAMEL SAUCE
 
 
 
-== Dijon Crusted Fish ==
+Dijon Crusted Fish
 
 ingredients
 3 Tbsp reduced-fat mayonnaise
@@ -689,7 +689,7 @@ NOTE: for salmon: oven 350, bake 20-25 min
 
 
 
-== Tres Leches Cake ==
+Tres Leches Cake
 
 ingredients
 CAKE
@@ -734,7 +734,7 @@ CAKE
 • Spoon batter into a lightly greased 13- x 9-inch baking pan.
 • Bake in preheated oven until a wooden pick inserted in center comes out clean, about 25 minutes.
 • Cool in pan on a wire rack about 10 minutes.
-== Folding ==
+Folding
 Carefully combine two mixtures of different thickness and weight into one
 The lighter mixture is placed on top of the heavier mixture
 Pass a spatula down through the mixture, across the bottom, and up over the top.
@@ -755,7 +755,7 @@ FROSTING
 
 
 
-== Sicilian Whole Orange Cake ==
+Sicilian Whole Orange Cake
 
 ingredients
 CAKE:
@@ -825,7 +825,7 @@ ICING:
 
 
 
-== Corn Chowder ==
+Corn Chowder
 
 ingredients
 2 slices of bacon, cut into strips
@@ -852,7 +852,7 @@ instructions
 
 
 
-== Blueberry Peach Cobbler ==
+Blueberry Peach Cobbler
 
 ingredients
 PEACHES
@@ -898,7 +898,7 @@ COBBLER
 
 
 
-== Retro Apple Cake ==
+Retro Apple Cake
 
 ingredients
 CAKE
@@ -945,7 +945,7 @@ CINNAMON SAUCE
 
 
 
-== Spiced Chickpea Stew With Coconut and Turmeric ==
+Spiced Chickpea Stew With Coconut and Turmeric
 
 ingredients
 1 cup farro (optional)
@@ -986,7 +986,7 @@ instructions
 
 
 
-== Smothered Pork Chops ==
+Smothered Pork Chops
 
 ingredients
 2 bone-in pork chops (medium thickness)
@@ -1013,7 +1013,7 @@ Remove to separate plate when browned on outside (~2 min per side)
 
 
 
-== Chickpea Salad With Fresh Herbs and Scallions ==
+Chickpea Salad With Fresh Herbs and Scallions
 
 ingredients
 1/3 cup plain Greek yogurt
@@ -1042,7 +1042,7 @@ instructions
 
 
 
-== Pan-Roasted Brined Pork Chop ==
+Pan-Roasted Brined Pork Chop
 
 ingredients
 1 cup kosher salt
@@ -1079,7 +1079,7 @@ CHOPS
 
 
 
-== Jerk Chicken ==
+Jerk Chicken
 
 ingredients
 2 lbs chicken (bone-in, skin-on thighs)
@@ -1116,7 +1116,7 @@ GRILL
 
 
 
-== Catfish Lafitte ==
+Catfish Lafitte
 
 ingredients
 SHRIMP
@@ -1167,7 +1167,7 @@ FISH
 
 
 
-== Corn Pudding ==
+Corn Pudding
 
 ingredients
 1 1/2 Tbsp all-purpose flour
@@ -1198,7 +1198,7 @@ instructions
 
 
 
-== Pan-Roasted Brined Pork Chops ==
+Pan-Roasted Brined Pork Chops
 
 ingredients
 1/4 cup kosher salt (half of original recipe amount)
@@ -1235,7 +1235,7 @@ ROASTING
 
 
 
-== Chicken Francais ==
+Chicken Francais
 
 ingredients
 chicken
@@ -1267,7 +1267,7 @@ instructions
 
 
 
-== Tomato Basil Bisque ==
+Tomato Basil Bisque
 
 ingredients
 SOUP
@@ -1308,7 +1308,7 @@ CROUTONS
 
 
 
-== Gazpacho ==
+Gazpacho
 
 ingredients
 2 lg fresh tomatoes, roughly chopped
@@ -1337,7 +1337,7 @@ instructions
 
 
 
-== Crispy Spiced Cauliflower Steaks ==
+Crispy Spiced Cauliflower Steaks
 
 ingredients
 1/2 cinnamon stick, broken up

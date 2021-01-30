@@ -1754,7 +1754,7 @@ $(document).on('turbolinks:load', function() {
 			// == recipe title
 			recipeHtml = recipeHtml + "<div class='recipeBox1'>";
 			recipeHtml = recipeHtml + "<p class='recipeTitle'>" + nextTitle + "</p>";
-			recipeText = recipeText + "== " + nextTitle + " ==" + "\n\n";
+			recipeText = recipeText + nextTitle + "\n\n";
 
 			if (i === 0) {
 				recipeHtml = recipeHtml + "<div class='saveBtn' id='fileSaveBtn'> Save </div>";
