@@ -5,6 +5,11 @@ class NationalitiesController < ApplicationController
 	def index
 		puts "\n******* index *******"
 		@nationalities = Nationality.all
+
+		if current_user[:usertype] != "admin"
+			flash[:notice] = "Note: For now, these categories can only be modified by the site administrator."
+		end
+
 	end
 
 	# ======= new_nationality =======
@@ -67,7 +72,7 @@ class NationalitiesController < ApplicationController
 		end
 
 		respond_to do |format|
-			format.html { redirect_to nationalities_url, notice: message }
+			format.html { redirect_to nationalities_url, notice: notice }
 		end
 	end
 

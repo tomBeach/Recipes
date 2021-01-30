@@ -10,18 +10,26 @@ before_action :set_rating, only: [:show, :edit, :update, :destroy]
 			rating_text = rating.rating.to_s + ": " + rating.comment
 			@rating_texts << [rating_text, rating[:id]]
 		end
+
+		if current_user[:usertype] != "admin"
+			flash[:notice] = "Note: For now, these categories can only be modified by the site administrator."
+		end
+
 	end
 
 	# ======= new_rating =======
 	def new_rating
 		puts "\n******* new_rating *******"
 		puts "params: #{params}"
+
+		ratings_count = Rating.all.length
+		new_rating = ratings_count + 1
 		@rating = Rating.new
 
-		@rating = Rating.create(:rating => params[:new_classify])
+		@rating = Rating.create(:rating => new_rating, :comment => params[:new_classify])
 
 		if @rating.save
-			message = params[:new_classify] + " was added to the Nationalities collection."
+			message = new_rating.to_s + ":" + params[:new_classify] + " was added to the Nationalities collection."
 		end
 
 		respond_to do |format|

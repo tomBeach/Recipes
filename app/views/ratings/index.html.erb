@@ -18,8 +18,13 @@
 		<thead>
 			<tr class="headerRow">
 				<th class="dataColumn">rating</th>
-				<th class="btnColumn">edit</th>
-				<th class="btnColumn">delete</th>
+				<% if current_user[:usertype] === "admin" %>
+					<th class="btnColumn">edit</th>
+					<th class="btnColumn">delete</th>
+				<% else %>
+					<th class="btnColumn">&nbsp;</th>
+					<th class="btnColumn">&nbsp;</th>
+				<% end %>
 			</tr>
 		</thead>
 
@@ -30,12 +35,21 @@
 				<% id_btn_html = "editClassifyBtn_" + rating[1].to_s %>
 				<tr class="dataRow">
 					<td id="<%= id_item_html %>" class="dataColumn"><%= rating[0] %></td>
-					<td class="btnColumn"><%= link_to 'edit', "", id: id_btn_html, class: "editClassifyBtn", remote: true  %></td>
-					<td class="btnColumn"><%= link_to 'delete', "delete_rating_" + rating[1].to_s, method: :delete, data: { confirm: 'Are you sure?' }, remote: true %></td>
+					<% if current_user[:usertype] === "admin" %>
+						<td class="btnColumn"><%= link_to 'edit', "", id: id_btn_html, class: "editClassifyBtn", remote: true  %></td>
+						<td class="btnColumn"><%= link_to 'delete', rating_path(rating[1].to_s), method: :delete, data: { confirm: 'Are you sure?' }, remote: false %></td>
+					<% else %>
+						<th class="btnColumn">&nbsp;</th>
+						<th class="btnColumn">&nbsp;</th>
+					<% end %>
 				</tr>
 			<% end %>
 			<tr class="btnRow">
-				<td class="dataColumn"><%= link_to 'New Rating', "", id: "newClassifyBtn", remote: false  %></td>
+				<% if current_user[:usertype] === "admin" %>
+					<td class="dataColumn"><%= link_to 'New Rating', "", id: "newClassifyBtn", remote: false  %></td>
+				<% else %>
+					<td class="dataColumn">&nbsp;</td>
+				<% end %>
 				<td class="btnColumn"><%= link_to "Back", request.referer.present? ? request.referer : "/home" %></td>
 				<td class="btnColumn">&nbsp;</td>
 			</tr>

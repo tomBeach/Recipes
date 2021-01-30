@@ -510,9 +510,10 @@ $(document).on('turbolinks:load', function() {
 		$('.ingredient, .instruction').on('mouseout', restoreLink);
 		$('.ingredient, .instruction').on('click', editRecipeLine);
 		$('.addBtn').on('click', inputNewLine);
+
+		// == allow return key entry for new ingredients or instructions
 		$('body').on('keyup', function(e) {
 			console.log("== keyup: saveNewLine ==");
-			console.log("$(':focus').attr('id'): ", $(':focus').attr('id'));
 			if ((e.keyCode === 13) && ($(':focus').attr('id') === 'newIngr')) {
 				saveNewLine("ingrSave");
 			} else if ((e.keyCode === 13) && ($(':focus').attr('id') === 'newInst')) {
@@ -2187,6 +2188,9 @@ $(document).on('turbolinks:load', function() {
 		}
 
 		var newText = $('#newClassify').val();
+		console.log("url: ", url);
+		console.log("newText: ", newText);
+
 		if (newText != "") {
 			var jsonData = JSON.stringify({new_classify:newText});
 			$.ajax({

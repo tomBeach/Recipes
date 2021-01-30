@@ -5,6 +5,11 @@ class CategoriesController < ApplicationController
 	def index
 		puts "\n******* index *******"
 		@categories = Category.all
+
+		if current_user[:usertype] != "admin"
+			flash[:notice] = "Note: For now, these categories can only be modified by the site administrator."
+		end
+
 	end
 
 	# ======= new_category =======
