@@ -94,6 +94,12 @@ class HomeController < ApplicationController
 		get_recipe_data("nationality", params[:_json].to_i)
 	end
 
+	# ======= search_selected =======
+    def search_selected
+        puts "\n******* search_selected *******"
+		get_recipe_data("selected", params[:_json])
+	end
+
 	# ======= get_recipe_data =======
     def get_recipe_data(search_type, search_term)
         puts "\n******* get_recipe_data *******"
@@ -168,6 +174,14 @@ class HomeController < ApplicationController
 		elsif search_type == "nationality"
 			recipes = Recipe.where(:nationality_id => search_term, :shared => true).order(:updated_at).reverse_order
 			search_term = Nationality.where(:id => search_term).first[:nationality]	# convert nationality_id to nationality text
+			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			recipe_array = recipe_data[0]
+			message = recipe_data[1]
+
+		elsif search_type == "selected"
+			puts "\n *** search_term.inspect: #{search_term.inspect}"
+			recipes = Recipe.where(id: search_term).order(:updated_at).reverse_order
+			puts "recipes.inspect: #{recipes.inspect}"
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
@@ -313,6 +327,14 @@ class HomeController < ApplicationController
 				message = recipe_count.to_s + " " + search_term + " shared recipe was found."
 			elsif recipe_count > 1
 				message = recipe_count.to_s + " " + search_term + " shared recipes were found."
+			end
+		elsif search_type == "selected"
+			if recipe_count == 0
+				message = "Database error.  None of your selected recipes were found."
+			elsif recipe_count == 1
+				message = "One selected recipe is ready to save as a text file."
+			elsif recipe_count > 1
+				message = recipe_count.to_s + " selected recipes are ready to save as a text file."
 			end
 		end
 		puts "message: #{message}"

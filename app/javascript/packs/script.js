@@ -160,7 +160,9 @@ $(document).on('turbolinks:load', function() {
 	var editFlag = false;		// stays false until recipe data is changed
 	var noShowFlag = false;		// false: allows for popup display (noShow unchecked)
 
-	activateMainMenu();
+	activateUserMenu();
+	activateSearchMenu();
+
 
 	// ======= import recipes =======
     if (pathname == "/import_recipes") {
@@ -224,9 +226,9 @@ $(document).on('turbolinks:load', function() {
 	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
 	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
 
-	// ======= activateMainMenu =======
-    function activateMainMenu() {
-		console.log("== activateMainMenu ==");
+	// ======= activateSearchMenu =======
+    function activateSearchMenu() {
+		console.log("== activateSearchMenu ==");
 
 		// == show my recipes
 		$('#getMyRecipes').click(function(e) {
@@ -939,9 +941,9 @@ $(document).on('turbolinks:load', function() {
 	}
 
 
-	// ======= ======= ======= RECIPE EDIT REQUEST ======= ======= =======
-	// ======= ======= ======= RECIPE EDIT REQUEST ======= ======= =======
-	// ======= ======= ======= RECIPE EDIT REQUEST ======= ======= =======
+	// ======= ======= ======= EDIT REQUEST ======= ======= =======
+	// ======= ======= ======= EDIT REQUEST ======= ======= =======
+	// ======= ======= ======= EDIT REQUEST ======= ======= =======
 
 	// ======= activateSaveCancel =======
 	function activateSaveCancel() {
@@ -1039,7 +1041,7 @@ $(document).on('turbolinks:load', function() {
 		if (importEdit == "import") {
 			var url = "/save_recipe_file";
 			var dataType = "json";
-		} else {
+		} else if (importEdit == "edit"){
 			var url = "/save_recipe_edits";
 			var dataType = "script";
 		}
@@ -1132,15 +1134,18 @@ $(document).on('turbolinks:load', function() {
 		// == column headers html
 		recipeHtml = recipeHtml + "<table class='menuList'><thead>";
 		recipeHtml = recipeHtml + "<tr class='menuHeaders'>";
-		recipeHtml = recipeHtml + "<th id='shareHeader' class='menuListHeader'>&nbsp;</th>";
+		recipeHtml = recipeHtml + "<th id='shareHeader' class='menuListHeader'>shared</th>";
 		recipeHtml = recipeHtml + "<th id='ratingHeader' class='menuListHeader'>avg rating</th>";
 		recipeHtml = recipeHtml + "<th id='userRatingHeader' class='menuListHeader'>your rating</th>";
 		recipeHtml = recipeHtml + "<th id='categoryHeader' class='menuListHeader'>category</th>";
 		recipeHtml = recipeHtml + "<th id='nationalityHeader' class='menuListHeader'>nationality</th>";
 		recipeHtml = recipeHtml + "<th id='titleHeader' class='menuListHeader'>title</th>";
+		recipeHtml = recipeHtml + "<th id='selectHeader' class='menuListHeader'>select</th>";
 		recipeHtml = recipeHtml + "</tr></thead><tbody>";
 
 		if (jsonData.recipeArray.length > 0) {
+
+			// ======= loop through recipeArray =======
 			for (var k = 0; k < jsonData.recipeArray.length; k++) {
 				nextId = jsonData.recipeArray[k].id;
 				nextShared = jsonData.recipeArray[k].shared;
@@ -1150,7 +1155,7 @@ $(document).on('turbolinks:load', function() {
 				nextNationalityId = jsonData.recipeArray[k].nationality_id;
 				nextTitle = jsonData.recipeArray[k].title;
 
-				// == rating
+				// == average rating
 				if (nextRatingId) {
 					ratingText = ratingObj[nextRatingId].rating[1];
 					ratingStyle = "color:" + ratingObj[nextRatingId].color;
@@ -1160,7 +1165,7 @@ $(document).on('turbolinks:load', function() {
 					ratingStyle = "";
 				}
 
-				// == rating
+				// == user rating
 				if (nextUserRatingId) {
 					userRatingText = ratingObj[nextUserRatingId].rating[1];
 					userRatingStyle = "color:" + ratingObj[nextUserRatingId].color;
@@ -1188,6 +1193,7 @@ $(document).on('turbolinks:load', function() {
 					nationalityStyle = "";
 				}
 
+				// == stylized table row/columns for each returned recipe
 				recipeHtml = recipeHtml + "<tr>";
 				recipeHtml = recipeHtml + "<td class='menuListItem'>";
 				if (!nextShared) {
@@ -1201,14 +1207,25 @@ $(document).on('turbolinks:load', function() {
 				recipeHtml = recipeHtml + "<td class='menuListItem recipeLink'>";
 				recipeHtml = recipeHtml + "<a href='/show_recipe/" + nextId + "'>" + nextTitle;
 				recipeHtml = recipeHtml + "</td>";
+				recipeHtml = recipeHtml + "<td class='menuListItem selectItem'>";
+				recipeHtml = recipeHtml + "<input type='checkbox' name='selectRecipe' id='selectRecipe_" + nextId + "' />";
+				recipeHtml = recipeHtml + "</td>";
 				recipeHtml = recipeHtml + "</tr>";
 			}
+
 			recipeHtml = recipeHtml + "</tbody></table>";
+
+		// == no records found
 		} else {
 			recipeHtml = "<p class='info'> Sorry... no results were returned from the database.</p>";
 		}
+
+		// == complete new html and add to output element
 		recipeHtml = recipeHtml + "</div>";
 		$('#output').html(recipeHtml);
+
+		// == enable selected recipe item functionality
+		activateUserMenu();
 	}
 
 	// ======= makeTitleText =======
@@ -1318,6 +1335,67 @@ $(document).on('turbolinks:load', function() {
 		}).appendTo('.menuList tbody');
 	}
 
+	// ======= activateUserMenu =======
+    function activateUserMenu() {
+		console.log("== activateUserMenu ==");
+
+		$('.selectItem > input').change(function(e) {
+			console.log("== selectItem: change ==");
+
+			// == show export option in user menu
+			if ($('.selectItem input:checkbox:checked').length > 0) {
+				$('#exportLink').css('display', 'block');
+				$('#exportLink').addClass('active');
+				$('#exportLink').off('click', collectSelectedRecipes);
+				$('#exportLink').on('click', collectSelectedRecipes);
+			}
+		});
+	};
+
+	// ======= collectSelectedRecipes =======
+	function collectSelectedRecipes(e) {
+		console.log("== collectSelectedRecipes ==");
+		e.preventDefault();
+
+		var nextRecipe, nextRecipeId;
+		var selectedRecipeArray = [];
+
+		for (var i = 0; i < $('.selectItem input:checkbox:checked').length; i++) {
+			nextRecipe = $('.selectItem input:checkbox:checked')[i];
+			nextRecipeId = $(nextRecipe).attr('id').split('_')[1];
+			console.log("nextRecipeId: ", nextRecipeId);
+			selectedRecipeArray.push(nextRecipeId);
+		}
+		exportSelectedRecipes(selectedRecipeArray);
+		e.stopPropagation();
+	};
+
+	// ======= exportSelectedRecipes =======
+    function exportSelectedRecipes(selectedRecipeArray) {
+		console.log("== exportSelectedRecipes ==");
+
+		var url = "search_selected";
+		var jsonData = JSON.stringify(selectedRecipeArray);
+
+		$.ajax({
+			url: url,
+			data: jsonData,
+			method: "POST",
+			dataType: "json",
+			contentType: "application/json; charset=utf-8"
+		}).done(function(jsonData) {
+			console.log("*** ajax success ***");
+			console.dir(jsonData)
+			updateNoticeMessage(jsonData);
+			displayImportedRecipes(jsonData.recipeArray, "export");
+			activateFileSave(jsonData.recipeArray, "export");
+		}).fail(function(unknown){
+			console.log("*** ajax fail ***");
+			console.log("unknown:", unknown);
+		});
+
+	}
+
 
 	// ======= ======= ======= IMPORT RECIPE FILES ======= ======= =======
 	// ======= ======= ======= IMPORT RECIPE FILES ======= ======= =======
@@ -1350,7 +1428,7 @@ $(document).on('turbolinks:load', function() {
 			var instructionsFlag = false;
 			var durations = ["minutes", "minute", "seconds", "second"];
 
-			var recipeObj = {recipe:titleString, ingredients:[], instructions:[]};
+			var recipeObj = {title:titleString, ingredients:[], instructions:[]};
 			var findTitleArray = [];
 			var ingredientsArray = [];
 			var instructionsArray = [];
@@ -1387,7 +1465,11 @@ $(document).on('turbolinks:load', function() {
 				return titleString;
 			}
 
-			// == read text file; extract components
+
+			// ======= read text file =======
+			// ======= read text file =======
+			// ======= read text file =======
+
 			function importRecipeData(fileText) {
 				console.log("== importRecipeData ==");
 
@@ -1445,7 +1527,7 @@ $(document).on('turbolinks:load', function() {
 							titleString = getRecipeTitle(findTitleArray);
 
 							// == init recipeObj and findTitleArray for next recipe
-							recipeObj = {recipe:titleString, ingredients:[], instructions:[]};
+							recipeObj = {title:titleString, ingredients:[], instructions:[]};
 							findTitleArray = [];
 
 						// == end of file special case: collect data
@@ -1476,7 +1558,7 @@ $(document).on('turbolinks:load', function() {
 							instructionsArray = [];
 
 							// == init recipeObj and findTitleArray for next recipe
-							recipeObj = {recipe:titleString, ingredients:[], instructions:[]};
+							recipeObj = {title:titleString, ingredients:[], instructions:[]};
 							findTitleArray = [];
 						}
 						continue;
@@ -1641,42 +1723,47 @@ $(document).on('turbolinks:load', function() {
 			// == load data file
 			fr.onload = function() {
 				var fileText = fr.result;
-				var recipeData = importRecipeData(fileText);
-				displayImportedRecipes(recipeData);
-				activateFileSave(recipeData);
+				var recipeArray = importRecipeData(fileText);
+				displayImportedRecipes(recipeArray, "import");
+				activateFileSave(recipeArray, "import");
 			}
 			fr.readAsText(this.files[0]);
 		})
 	}
 
 	// ======= displayImportedRecipes =======
-    function displayImportedRecipes(recipeData) {
+    function displayImportedRecipes(recipeArray, importOrExport) {
         console.log("== displayImportedRecipes ==");
-		console.log("recipeData: ", recipeData);
+		console.log("recipeArray: ", recipeArray);
+		console.log("importOrExport: ", importOrExport);
 
 		var nextRecipe, nextTitle, nextIngredients, nextInstructions;
 		var nextQuantity, nextUnits, nextIngredient, nextText, nextHtml;
 		var nextInstruction, nextDuration, nextDurUnits;
 
 		var recipeHtml = "";
+		var recipeText = "";
 
-		for (var i = 0; i < recipeData.length; i++) {
-			nextRecipe = recipeData[i];
-			nextTitle = recipeData[i].recipe;
-			nextIngredients = recipeData[i].ingredients;
-			nextInstructions = recipeData[i].instructions;
-			console.log("nextIngredients.length: ", nextIngredients.length);
-			console.log("nextInstructions.length: ", nextInstructions.length);
+		for (var i = 0; i < recipeArray.length; i++) {
+			nextRecipe = recipeArray[i];
+			nextTitle = recipeArray[i].title;
+			nextIngredients = recipeArray[i].ingredients;
+			nextInstructions = recipeArray[i].instructions;
 
 			// == recipe title
 			recipeHtml = recipeHtml + "<div class='recipeBox1'>";
 			recipeHtml = recipeHtml + "<p class='recipeTitle'>" + nextTitle + "</p>";
-			recipeHtml = recipeHtml + "<div class='saveBtn' id='fileSaveBtn'> Save </div>";
+			recipeText = recipeText + "== " + nextTitle + " ==" + "\n\n";
+
+			if (i === 0) {
+				recipeHtml = recipeHtml + "<div class='saveBtn' id='fileSaveBtn'> Save </div>";
+			}
 			recipeHtml = recipeHtml + "</div>";
 
 			// == ingredients label
 			recipeHtml = recipeHtml + "<div class='newRecipeBox'>";
 			recipeHtml = recipeHtml + "<p class='newRecipeLabel'>ingredients</p>";
+			recipeText = recipeText + "ingredients\n";
 
 			// == ingredients lines: ingredientObj = {quantity:___, units:___, ingredient:___};
 			for (var j = 0; j < nextIngredients.length; j++) {
@@ -1695,9 +1782,12 @@ $(document).on('turbolinks:load', function() {
 				nextText = (nextQuantity + " " + nextUnits + " " + nextIngredient).trim()
 				nextHtml = "<p class='newIngredient'>" + nextText + "</p>";
 				recipeHtml = recipeHtml + nextHtml;
+				recipeText = recipeText + nextText + "\n";
 			}
 
 			recipeHtml = recipeHtml + "<p class='newRecipeLabel'>instructions</p>";
+			recipeText = recipeText + "\n\n";
+			recipeText = recipeText + "instructions\n";
 
 			// instructionObj = {instruction:___, duration:___, durUnits:___};
 			for (var k = 0; k < nextInstructions.length; k++) {
@@ -1706,35 +1796,85 @@ $(document).on('turbolinks:load', function() {
 				nextDurUnits = nextInstructions[k].durUnits;
 				nextHtml = "<p class='newInstruction'>" + nextInstruction + "</p>";
 				recipeHtml = recipeHtml + nextHtml;
+				recipeText = recipeText + nextInstruction + "\n";
 			}
 			recipeHtml = recipeHtml + "</div>"
+			recipeText = recipeText + "\n\n\n";
 		}
+
 		$('#output').html(recipeHtml);
-		$('#inputfile').remove();
-		updateTitleText("Imported Recipes");
-		var messageString = "Click Save to import your recipe(s). You can edit them later via 'My Recipes'."
-		$('#notice').html(messageString);
 
+		// == create textarea as source for select/copy function when exporting recipe to text file
+		var copyTextHtml = "<textarea id='textForCopy' rows='10' cols='500'>" + recipeText + "</textArea>";
+		$('#output').append(copyTextHtml);
+
+		// == recipes were imported from text file
+		if (importOrExport === "import") {
+			$('#inputfile').remove();
+			updateTitleText("Imported Recipes");
+			var messageString = "Click Save to import your recipe(s). You can edit them later via 'My Recipes'."
+
+		// == selected recipes were returned from the database
+		} else if (importOrExport === "export") {
+			var messageString = "Click Save to save a text copy to your computer's clipboard."
+		}
+
+		// == tell the user what happened
+		$('#notice').html(messageString);
 	}
 
-	// ======= ======= ======= UTILITIES ======= ======= =======
-	// ======= ======= ======= UTILITIES ======= ======= =======
-	// ======= ======= ======= UTILITIES ======= ======= =======
+	// ======= activateFileSave =======
+    function activateFileSave(recipeArray, importOrExport) {
+        console.log("== activateFileSave ==");
 
-	function modifyMenuText() {
-		// console.log("== resize: modifyMenuText ==");
-		if ($(this).width() !== windowW) {
-			windowW = $(this).width();
-			if (windowW < windowFlag) {
-				$('#getMyRecipes').text('My');
-				$('#getAllRecipes').text('All');
-				// console.log(windowW);
-			} else {
-				$('#getMyRecipes').text('My Recipes');
-				$('#getAllRecipes').text('All Recipes');
-			}
+		if (importOrExport === "import") {
+			$('#fileSaveBtn').click(function(e) {
+				console.log("== click: fileSaveBtn ==");
+				e.preventDefault();
+				saveRecipeData(recipeArray, "import");
+				e.stopPropagation();
+			});
+
+		} else if (importOrExport === "export") {
+			$('#fileSaveBtn').click(function(e) {
+				console.log("== click: fileSaveBtn ==");
+				e.preventDefault();
+
+				var textForCopy = document.getElementById("textForCopy");
+				var selection = document.getSelection();
+			    var range = document.createRange();
+			    range.selectNode(textForCopy);
+			    selection.removeAllRanges();
+			    selection.addRange(range);
+				var copyStatus = document.execCommand("copy");
+				console.log("copyStatus: ", copyStatus);
+			    selection.removeAllRanges();
+
+				var htmlString = "Your selected recipes have been copied. You can now paste them into a new text file."
+				$('#notice').html(htmlString);
+
+				e.stopPropagation();
+			});
 		}
 	}
+
+	// ======= copyRecipeData =======
+	function copyRecipeData() {
+		console.log("== copyRecipeData ==");
+
+	    var copyText = document.getElementById("textForCopy");
+	    copyText.select();
+		console.log("copyText.value: ", copyText.value);
+	    var copyStatus = document.execCommand("copy");
+		console.log("copyStatus: ", copyStatus);
+		var htmlString = "Your selected recipes have been copied. You can now paste them into a new text file."
+		$('#notice').html(htmlString);
+	}
+
+
+	// ======= ======= ======= UTILITIES ======= ======= =======
+	// ======= ======= ======= UTILITIES ======= ======= =======
+	// ======= ======= ======= UTILITIES ======= ======= =======
 
 	// ======= activateFileCancel =======
     function activateFileCancel() {
@@ -1782,15 +1922,15 @@ $(document).on('turbolinks:load', function() {
 
 		if (!noShowFlag) {
 			$('#popup-message').html(popupHtml);
-			$(".popup-overlay, .popup-content").addClass("active");
+			$('.popup-overlay, .popup-content').addClass('active');
 
-			$(".popupDelete").off("click");
-			$(".popupDelete").on("click", function(){
+			$('.popupDelete').off('click');
+			$('.popupDelete').on('click', function(){
 				console.log("== popup: delete ==");
 				console.log("data: ", data);
 				console.log("pathname: ", pathname);
-				$('#popup-message').html("");
-				$(".popup-overlay, .popup-content").removeClass("active");
+				$('#popup-message').html('');
+				$('.popup-overlay, .popup-content').removeClass('active');
 			});
 
 		}
@@ -1806,20 +1946,12 @@ $(document).on('turbolinks:load', function() {
 		console.log("noShowFlag: ", noShowFlag);
 	});
 
-	$(".close").off("click");
-	$(".close").on("click", function(){
-		console.log("== popup: close ==");
-		$('#popup-message').html("");
-		$(".popup-overlay, .popup-content").removeClass("active");
+	$('.close').off('click');
+	$('.close').on('click', function(){
+		console.log('== popup: close ==');
+		$('#popup-message').html('');
+		$('.popup-overlay, .popup-content').removeClass('active');
 	});
-
-	// ======= deleteClassifyItem =======
-	function deleteClassifyItem(whichClassify, itemId) {
-		console.log("== deleteClassifyItem ==");
-		console.log("whichClassify: ", whichClassify);
-		console.log("itemId: ", itemId);
-		window.location = link.href;
-	}
 
 	// ======= updateSequenceDisplay =======
 	function updateSequenceDisplay() {
@@ -1888,16 +2020,20 @@ $(document).on('turbolinks:load', function() {
 		$('#notice').html(htmlString);
 	}
 
-	// ======= activateFileSave =======
-    function activateFileSave(recipeData) {
-        console.log("== activateFileSave ==");
-
-		$('#fileSaveBtn').click(function(e) {
-			console.log("== click: fileSaveBtn ==");
-			e.preventDefault();
-			saveRecipeData(recipeData, "import");
-			e.stopPropagation();
-		});
+	// ======= modifyMenuText =======
+	function modifyMenuText() {
+		console.log("== resize: modifyMenuText ==");
+		if ($(this).width() !== windowW) {
+			windowW = $(this).width();
+			if (windowW < windowFlag) {
+				$('#getMyRecipes').text('My');
+				$('#getAllRecipes').text('All');
+				// console.log(windowW);
+			} else {
+				$('#getMyRecipes').text('My Recipes');
+				$('#getAllRecipes').text('All Recipes');
+			}
+		}
 	}
 
 	// ======= standardUnits =======
@@ -1979,10 +2115,21 @@ $(document).on('turbolinks:load', function() {
 		return unitString;
 	}
 
+	// == recipe line behaviors
+	function hiliteLink() {
+		// console.log("== hiliteLink ==");
+		textColor = $(this).css('color');
+		$(this).css('color', 'red');
+	}
+	function restoreLink() {
+		// console.log("== restoreLink ==");
+		$(this).css('color', textColor);
+	}
 
-	// ======= ======= ======= MGMT ======= ======= =======
-	// ======= ======= ======= MGMT ======= ======= =======
-	// ======= ======= ======= MGMT ======= ======= =======
+
+	// ======= ======= ======= CLASSIFY (ratings, categories, nationalities) ======= ======= =======
+	// ======= ======= ======= CLASSIFY (ratings, categories, nationalities) ======= ======= =======
+	// ======= ======= ======= CLASSIFY (ratings, categories, nationalities) ======= ======= =======
 
 	// ======= activateClassifyActions =======
     function activateClassifyActions() {
@@ -2160,17 +2307,6 @@ $(document).on('turbolinks:load', function() {
 		$('#editClassify_' + itemId + ', .saveBtn, .cancelBtn').remove();
 		$("td[id='classify_" + itemId + "']").html(currentText);
 
-	}
-
-	// == recipe line behaviors
-	function hiliteLink() {
-		// console.log("== hiliteLink ==");
-		textColor = $(this).css('color');
-		$(this).css('color', 'red');
-	}
-	function restoreLink() {
-		// console.log("== restoreLink ==");
-		$(this).css('color', textColor);
 	}
 
 });

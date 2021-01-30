@@ -36,6 +36,7 @@ Rails.application.routes.draw do
 	post "/search_rating" => "home#search_rating"
 	post "/search_category" => "home#search_category"
 	post "/search_nationality" => "home#search_nationality"
+	post "/search_selected" => "home#search_selected"
 
 	# == manage recipes
 	post "/my_recipes" => "home#my_recipes"
