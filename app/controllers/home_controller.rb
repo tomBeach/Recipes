@@ -110,7 +110,6 @@ class HomeController < ApplicationController
 
 		# == get recently imported (or existing) recipes
 		if search_type == "import"
-			puts "\n** import **"
 
 			# search_term structure for "import": [recipe_id1, recipe_id2, recipe_id3 ... message]
 			message = search_term[search_term.length-1]
@@ -123,7 +122,6 @@ class HomeController < ApplicationController
 		# == all recipes designated for sharing (function to be added)
 		elsif search_type == "all"
 			recipes = Recipe.where(:shared => true).order(:updated_at).reverse_order
-
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
@@ -216,7 +214,6 @@ class HomeController < ApplicationController
 
 						user_rating_check = UserRating.where(:recipe_id => next_recipe[:id], :user_id => current_user[:id])
 						if user_rating_check.length > 0
-							puts "\n user_rating_check.inspect: #{user_rating_check.inspect}"
 							user_rating = user_rating_check[0].rating_id
 						end
 
@@ -239,7 +236,6 @@ class HomeController < ApplicationController
 
 					user_rating_check = UserRating.where(:recipe_id => next_recipe[:id], :user_id => current_user[:id])
 					if user_rating_check.length > 0
-						puts "\n user_rating_check.inspect: #{user_rating_check.inspect}"
 						user_rating = user_rating_check[0].rating_id
 					end
 
@@ -337,7 +333,6 @@ class HomeController < ApplicationController
 				message = recipe_count.to_s + " selected recipes are ready to save as a text file."
 			end
 		end
-		puts "message: #{message}"
 		return message
 	end
 
@@ -348,7 +343,6 @@ class HomeController < ApplicationController
 	# ======= show_recipe =======
     def show_recipe
         puts "\n******* show_recipe *******"
-		puts "params: #{params}"
 
 		# == Note: @rating @category @nationality from application controller callback
 
@@ -373,8 +367,6 @@ class HomeController < ApplicationController
 
 		# ======= selected user rating =======
 		user_rating = UserRating.where(:user_id => current_user[:id], :recipe_id => @recipe[:id]).first
-		puts "@recipe: #{@recipe.inspect}"
-		puts "user_rating: #{user_rating.inspect}"
 
 		if user_rating == nil
 			puts "no rating"
@@ -429,10 +421,8 @@ class HomeController < ApplicationController
 	# ======= delete_recipe =======
     def delete_recipe
         puts "\n******* delete_recipe *******"
-		puts "params: #{params}"
 
 		recipe = Recipe.find(params[:id])
-		puts "recipe.inspect: #{recipe.inspect}"
 		if recipe
 			if Recipe.destroy(params[:id])
 				message = "The " + recipe[:title] + " recipe was removed successfully."
@@ -495,7 +485,6 @@ class HomeController < ApplicationController
 		        if @recipe.save
 					params[:recipe_id] = @recipe[:id]
 					puts "RECIPE SAVED"
-					puts "params[:recipe_id]: #{params[:recipe_id]}"
 				else
 					recipe_flag = false
 					message = "There was a problem saving the new recipe."
@@ -529,7 +518,6 @@ class HomeController < ApplicationController
 			# == update user rating
 			if params[:user_rating_id].to_i != 0									# id for join table record
 				user_rating = UserRating.find(params[:user_rating_id])		# find join table record
-				puts "user_rating.inspect: #{user_rating.inspect}"
 				if !user_rating.update(:rating_id => params[:rating_id])	# update rating_id value in user_rating join table record
 					puts "*** USER_RATING UPDATE ERROR"
 					message = "There was a problem updating your rating."
@@ -545,11 +533,8 @@ class HomeController < ApplicationController
 			# == update ingredients
 			addIngredientCount = 0
 			deleteIngredientCount = 0
-			puts "\n *** params[:ingredients]: #{params[:ingredients]}"
 	        params[:ingredients].each_with_index do |next_ingredient, index|
 	            ingredient_id = next_ingredient[:id]
-				puts "\n next_ingredient[:id]: #{next_ingredient[:id]}"
-				puts "next_ingredient[:sequence]: #{next_ingredient[:sequence]}"
 
 				# == identify if ingredient is new
 				if next_ingredient[:new_delete] == "NEW"
@@ -661,7 +646,6 @@ class HomeController < ApplicationController
 	# ======= save_recipe_file =======
     def save_recipe_file
         puts "\n******* save_recipe_file *******"
-		puts "params[:_json]: #{params[:_json]}"
 
 		# == initialize message variables
 		existing_recipes_flag = false
@@ -676,7 +660,7 @@ class HomeController < ApplicationController
 		params[:_json].each_with_index do |next_recipe, index|
 
 			# == extract recipe component arrays (ingredients/instructions)
-			title = next_recipe.require(:recipe).strip
+			title = next_recipe.require(:title).strip
 			ingredients = next_recipe.require(:ingredients)
 			instructions = next_recipe.require(:instructions)
 
@@ -772,7 +756,6 @@ class HomeController < ApplicationController
 			end
 		end
 		import_data_array.push(message)
-		puts "message: " + message
 		get_recipe_data("import", import_data_array)
 
 		# respond_to do |format|
