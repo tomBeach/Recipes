@@ -386,7 +386,7 @@ h1, h2 {
 	margin: 1px 20px;
 	font-family: "Monaco";
 }
-#ingrAdd, #instAdd {
+#ingrAdd, #instAdd, #ingrAddType, #instAddType {
 	float: left;
     height: 20px;
 	width: 20%;
@@ -400,13 +400,24 @@ h1, h2 {
     line-height: 20px;
 	text-decoration: none;
 	border-radius: 5px;
+}
+#ingrAdd, #instAdd {
 	background-color: Plum;
 	color: navy;
+}
+#ingrAdd.disabled, #instAdd.disabled {
+	background-color: #ddd;
+	color: #aaa;
 }
 #ingrAdd:hover, #instAdd:hover {
 	background-color: navy;
 	color: red;
 }
+#ingrAdd.disabled:hover, #instAdd.disabled:hover {
+	background-color: #ddd;
+	color: #aaa;
+}
+
 
 /* ======= recipeContent ======= */
 #recipeContent {
@@ -714,7 +725,7 @@ h1, h2 {
 	padding: 10px;
 	margin-top: 16px;
 }
-.label {
+.label, .popup-label {
 	float: left;
 	margin: 10px;
 	font-size: 16px;

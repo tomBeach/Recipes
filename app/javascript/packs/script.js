@@ -70,10 +70,6 @@ $(document).on('turbolinks:load', function() {
 		// ======= init unedited sort order =======
 		var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
 		var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
-		console.log("ingredientsData: ", ingredientsData);
-		console.log("instructionsData: ", instructionsData);
-		console.log("ingredientsInOrder: ", ingredientsInOrder);
-		console.log("instructionsInOrder: ", instructionsInOrder);
 
 		// ======= update sort order =======
 		updateItemPositions = function($item) {
@@ -175,10 +171,12 @@ $(document).on('turbolinks:load', function() {
 	} else if (pathname == "/type_recipe") {
 
 		activateSortableLists();
+		activateTitleBtns();
 		activateEditMenu();
 		var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
 		var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
 
+		// == hide classify/share functions to enable title edit text box
 		$('#rating_edit_select').hide();
 		$('#category_edit_select').hide();
 		$('#nationality_edit_select').hide();
@@ -221,6 +219,12 @@ $(document).on('turbolinks:load', function() {
 		}
 	}
 
+	// ======= disableAddInBtns =======
+	function disableAddInBtns() {
+		console.log("== disableAddInBtns ==");
+
+		$('#ingrAdd #instAdd').css('color', 'red');
+	}
 
 	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
 	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
@@ -416,10 +420,6 @@ $(document).on('turbolinks:load', function() {
 		var textColor;
 		var currentText, currentId;
 
-		if (pathname == "/type_recipe") {
-			activateTitleBtns();
-		}
-
 		// == set recipe rating
 		$('#rating_edit_select').change(function(e) {
 			console.log("== change: rating_edit_select ==");
@@ -550,6 +550,25 @@ $(document).on('turbolinks:load', function() {
 
 	}
 
+	// ======= revealAddBtns =======
+	function revealAddBtns() {
+		console.log("== revealAddBtns ==");
+		$('#ingrAdd').css('color', 'navy');
+		$('#ingrAdd').css('background-color', 'Plum');
+		$('#instAdd').css('color', 'navy');
+		$('#instAdd').css('background-color', 'Plum');
+
+		$('#instAdd, #ingrAdd').hover(function() {
+			console.log("== hover ==");
+			$(this).css("color", "red");
+			$(this).css("background-color", "navy");
+			},
+			function() {
+			$(this).css("color", "navy");
+			$(this).css("background-color", "Plum");
+		});
+	}
+
 	// ======= activateTitleBtns =======
 	function activateTitleBtns() {
 		console.log("== activateTitleBtns ==");
@@ -558,10 +577,16 @@ $(document).on('turbolinks:load', function() {
 			e.preventDefault();
 			editFlag = true;
 			updateRecipeTitle();
+			if (pathname == "/type_recipe") {
+				var newText = $('#editTitleText').val();
+				if (newText != "") {
+					revealAddBtns();
+				}
+			}
 			e.stopPropagation();
 		});
-		console.log("$('.cancelBtn').length: ", $('.cancelBtn').length);
 
+		// == type_recipe view does not have cancel btn
 		if ($('.cancelBtn').length > 0) {
 			$('.cancelBtn').click(function(e) {
 				e.preventDefault();
@@ -577,7 +602,6 @@ $(document).on('turbolinks:load', function() {
 
 		var newText = $('#editTitleText').val();
 		var currentId = $(this).attr('id');
-		console.log("currentId: ", currentId);
 		if (!currentId) {
 			currentId = "outputTitle";
 		}
@@ -601,6 +625,9 @@ $(document).on('turbolinks:load', function() {
 
 			activateSaveCancel();
 			toggleEditButtons("show");
+			if (pathParts[1] == "type_recipe") {
+				activateLineEdits();
+			}
 		}
 	}
 
@@ -773,8 +800,6 @@ $(document).on('turbolinks:load', function() {
 			}
 			updateItemSequences("inst");
 		}
-		console.log("ingredientsData: ", ingredientsData);
-		console.log("instructionsData: ", instructionsData);
 
 		// == update html string with changes
 		sequenceElement.remove();
@@ -1112,8 +1137,6 @@ $(document).on('turbolinks:load', function() {
 	// ======= displayRecipeTitles =======
 	function displayRecipeTitles(jsonData) {
 		console.log("== displayRecipeTitles ==");
-		console.log("jsonData.user_rating_id: ", jsonData.user_rating_id);
-
 
 		var nextId, nextTitle, recipeHtml, categoryStyle, nationalityStyle;
 		var ratingText, categoryText, nationalityText;
@@ -1232,13 +1255,11 @@ $(document).on('turbolinks:load', function() {
 	// ======= makeTitleText =======
 	function makeTitleText(jsonData, type) {
 		console.log("== makeTitleText ==");
-		console.log("jsonData.search: ", jsonData.search);
-		console.log("type: ", type);
 
 		var titleText;
 		var ratingText = "";
 		var ratingObj = jsonData.ratingObj;
-		console.log("ratingObj: ", ratingObj);
+
 		// ratingObj: 1=>{:id=>1, :rating=>[1, "favorite"], :color=>"#03045e"}, 2=>{}, etc.
 		// jsonData.search for "text" type: [title OR ingredients, string to search for] e.g. ["title", "garlic"]
 
