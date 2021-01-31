@@ -18,8 +18,6 @@ $(document).on('turbolinks:load', function() {
 		$('#getAllRecipes').text('All Recipes');
 	}
 
-	$(window).on('resize', modifyMenuText);
-
 
 	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
 	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
@@ -587,10 +585,24 @@ $(document).on('turbolinks:load', function() {
 		});
 
 		// == type_recipe view does not have cancel btn
-		if ($('.cancelBtn').length > 0) {
+		var titleText = $('#outputTitle').text();
+		var editTitleText = $('#editTitleText').val();
+		console.log("titleText: ", titleText);
+		console.log("editTitleText: ", editTitleText);
+		if ((pathname == "/type_recipe") && (editTitleText === "")) {
+			$('.cancelBtn').click(function(e) {
+				window.location = "/";
+			});
+		// } else if ((pathname == "/type_recipe") && (currentText != "")) {
+		// 	$('.cancelBtn').click(function(e) {
+		// 		e.preventDefault();
+		// 		cancelTitleEdits(currentText);
+		// 		e.stopPropagation();
+		// 	});
+		} else {
 			$('.cancelBtn').click(function(e) {
 				e.preventDefault();
-				cancelTitleEdits(currentText);
+				cancelTitleEdits(editTitleText);
 				e.stopPropagation();
 			});
 		}
@@ -1249,7 +1261,7 @@ $(document).on('turbolinks:load', function() {
 		$('#output').html(recipeHtml);
 
 		// == enable selected recipe item functionality
-		activateUserMenu();
+		// activateUserMenu();
 	}
 
 	// ======= makeTitleText =======
@@ -1322,11 +1334,9 @@ $(document).on('turbolinks:load', function() {
 		var order = $('.menuList thead tr>th:eq(' + columnIndex + ')').data('order');
 		order = order === 'ASC' ? 'DESC' : 'ASC';
 		$('.menuList thead tr>th:eq(' + columnIndex + ')').data('order', order);
-		console.log("order2: ", order);
 
 		// == table sort
 		$('.menuList tbody tr').sort(function(a, b) {
-			console.log("== <tr> sort ==");
 
 			// == get text value in <td> via columnIndex number
 			a = $(a).find('td:eq(' + columnIndex + ')').text();
@@ -1334,15 +1344,12 @@ $(document).on('turbolinks:load', function() {
 
 			switch (columnType) {
 				case 'text':
-					// == compare text via localeCompare
 					return order === 'ASC' ? a.localeCompare(b) : b.localeCompare(a);
 					break;
 				case 'number':
-					// == compare number values
 					return order === 'ASC' ? a - b : b - a;
 					break;
 				case 'date':
-					// == compare date values
 					var dateFormat = function(dt) {
 						[m, d, y] = dt.split('/');
 						return [y, m - 1, d];
@@ -2040,22 +2047,6 @@ $(document).on('turbolinks:load', function() {
 		console.log("== updateNoticeMessage ==");
 		var htmlString = jsonData.message;
 		$('#notice').html(htmlString);
-	}
-
-	// ======= modifyMenuText =======
-	function modifyMenuText() {
-		console.log("== resize: modifyMenuText ==");
-		if ($(this).width() !== windowW) {
-			windowW = $(this).width();
-			if (windowW < windowFlag) {
-				$('#getMyRecipes').text('My');
-				$('#getAllRecipes').text('All');
-				// console.log(windowW);
-			} else {
-				$('#getMyRecipes').text('My Recipes');
-				$('#getAllRecipes').text('All Recipes');
-			}
-		}
 	}
 
 	// ======= standardUnits =======

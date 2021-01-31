@@ -35,7 +35,8 @@
 	<!-- ======= recipe title ======= -->
 	<div class="recipeBox1">
 		<input type='text' id='editTitleText' name='editTitleText' value=''>
-		<div id='titleSaveBtn' class='saveBtn'> save </div>
+		<div id='titleSaveBtn' class='saveBtn'> Save </div>
+		<%= link_to "Cancel", request.referer.present? ? request.referer : "/home", class: "cancelBtn", id: "titleCancelBtn" %>
 
 		<% puts "@rating_ids: #{@rating_ids}" %>
 		<% puts "@rating_id: #{@rating_id}" %>
