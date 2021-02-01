@@ -8,7 +8,7 @@ $(document).on('turbolinks:load', function() {
 	console.log("pathParts: ", pathParts);
 
 	// ======= window size displays =======
-	var windowFlag = 1250;
+	var windowFlag = 1150;
 	var windowW = $(window).width();
 	if (windowW < windowFlag) {
 		$('#getMyRecipes').text('My');
@@ -17,6 +17,19 @@ $(document).on('turbolinks:load', function() {
 		$('#getMyRecipes').text('My Recipes');
 		$('#getAllRecipes').text('All Recipes');
 	}
+
+	$(window).on('resize', function() {
+	  if ($(this).width() !== windowW) {
+	    windowW = $(this).width();
+		if (windowW < windowFlag) {
+			$('#getMyRecipes').text('My');
+			$('#getAllRecipes').text('All');
+		} else {
+			$('#getMyRecipes').text('My Recipes');
+			$('#getAllRecipes').text('All Recipes');
+		}
+	  }
+	});
 
 
 	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
@@ -77,6 +90,7 @@ $(document).on('turbolinks:load', function() {
 			var startIndex = $item.data("startindex") + 1;
 			var newIndex = $item.index() + 1;
 
+			// ======= update sort arrays =======
 			if (newIndex != startIndex) {
 				ingredientsInOrder = $("#ingredients").sortable("toArray");
 				instructionsInOrder = $("#instructions").sortable("toArray");
@@ -116,19 +130,16 @@ $(document).on('turbolinks:load', function() {
 
 					// == existing item (id is the id integer from database)
 					if (!isNaN(checkItemId)) {
-						console.log("checkItemId_id: ", checkItemId);
 						if (checkItemId == nextItemNum) {
 							if (ingrOrInst == "ingr") {
 								$('#ingredientsData').data().ingredients[j].sequence = i + 1;
 							} else {
 								$('#instructionsData').data().instructions[j].sequence = i + 1;
 							}
-							console.log("$('#ingredientsData').data().ingredients[j]: ", $('#ingredientsData').data().ingredients[j]);
 						}
 
 					// == new item (id integer "XX" determined from count of items; format: NEW_XX)
 					} else {
-						console.log("checkItemId_NEW: ", checkItemId);
 						checkItemNum = checkItemId.split("_")[1];	// get new item "id"
 						if (checkItemNum == nextItemNum) {
 							if (ingrOrInst == "ingr") {
@@ -140,7 +151,6 @@ $(document).on('turbolinks:load', function() {
 					}
 				}
 			}
-			console.log("$('#ingredientsData').data().ingredients: ", $('#ingredientsData').data().ingredients);
 		}
 	}
 
@@ -155,7 +165,7 @@ $(document).on('turbolinks:load', function() {
 	var editFlag = false;		// stays false until recipe data is changed
 	var noShowFlag = false;		// false: allows for popup display (noShow unchecked)
 
-	activateUserMenu();
+	activateSelectItem();
 	activateSearchMenu();
 
 
@@ -166,12 +176,14 @@ $(document).on('turbolinks:load', function() {
 		loadFileReader();
 
 
-	// ======= show recipe =======
+	// ======= type/enter new recipe line-by-line =======
 	} else if (pathname == "/type_recipe") {
 
 		activateSortableLists();
 		activateTitleBtns();
 		activateEditMenu();
+
+		// ======= init unedited sort order =======
 		var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
 		var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
 
@@ -210,6 +222,7 @@ $(document).on('turbolinks:load', function() {
 			activateEditMenu();
 			activateLineEdits();
 
+			// ======= init unedited sort order =======
 			var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
 			var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
 
@@ -218,12 +231,6 @@ $(document).on('turbolinks:load', function() {
 		}
 	}
 
-	// ======= disableAddInBtns =======
-	function disableAddInBtns() {
-		console.log("== disableAddInBtns ==");
-
-		$('#ingrAdd #instAdd').css('color', 'red');
-	}
 
 	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
 	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
@@ -825,7 +832,6 @@ $(document).on('turbolinks:load', function() {
 	// ======= cancelLineEdits =======
 	function cancelLineEdits() {
 		console.log("== cancelLineEdits ==");
-		console.log("currentId: ", currentId);
 		editFlag = false;
 
 		// == currentId format: ingredient_XXXX or instruction_XXXX (XXXX = database id)
@@ -1022,7 +1028,7 @@ $(document).on('turbolinks:load', function() {
 		editFlag = false;
 
 		// == get local data for Ajax send
-		var currentId = $('#recipeId').data().recipeid;
+		var recipeId = $('#recipeId').data().recipeid;
 		var sharedData = $('#sharedData').data().shared;
 		var titleData = $('#titleData').data().title;
 		var ratingData = $('#ratingData').data().ratingid;
@@ -1052,7 +1058,7 @@ $(document).on('turbolinks:load', function() {
 
 		// == package data for send
 		var recipeData = {
-			recipe_id: currentId,
+			recipe_id: recipeId,
 			shared: sharedData,
 			title: titleData,
 			rating_id: ratingData,
@@ -1262,7 +1268,7 @@ $(document).on('turbolinks:load', function() {
 		$('#output').html(recipeHtml);
 
 		// == enable selected recipe item functionality
-		// activateUserMenu();
+		activateSelectItem();
 	}
 
 	// ======= makeTitleText =======
@@ -1365,9 +1371,9 @@ $(document).on('turbolinks:load', function() {
 		}).appendTo('.menuList tbody');
 	}
 
-	// ======= activateUserMenu =======
-    function activateUserMenu() {
-		console.log("== activateUserMenu ==");
+	// ======= activateSelectItem =======
+    function activateSelectItem() {
+		console.log("== activateSelectItem ==");
 
 		$('.selectItem > input').change(function(e) {
 			console.log("== selectItem: change ==");
@@ -1404,7 +1410,7 @@ $(document).on('turbolinks:load', function() {
     function exportSelectedRecipes(selectedRecipeArray) {
 		console.log("== exportSelectedRecipes ==");
 
-		var url = "search_selected";
+		var url = "/search_selected";
 		var jsonData = JSON.stringify(selectedRecipeArray);
 
 		$.ajax({
