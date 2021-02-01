@@ -113,10 +113,10 @@ $(document).on('turbolinks:load', function() {
 				// == cycle through local database data to update sequence numbers
 				for (var j = 0; j < localDataItems.length; j++) {
 					checkItemId = localDataItems[j].id;
-					console.log("checkItemId: ", checkItemId);
 
 					// == existing item (id is the id integer from database)
 					if (!isNaN(checkItemId)) {
+						console.log("checkItemId_id: ", checkItemId);
 						if (checkItemId == nextItemNum) {
 							if (ingrOrInst == "ingr") {
 								$('#ingredientsData').data().ingredients[j].sequence = i + 1;
@@ -128,6 +128,7 @@ $(document).on('turbolinks:load', function() {
 
 					// == new item (id integer "XX" determined from count of items; format: NEW_XX)
 					} else {
+						console.log("checkItemId_NEW: ", checkItemId);
 						checkItemNum = checkItemId.split("_")[1];	// get new item "id"
 						if (checkItemNum == nextItemNum) {
 							if (ingrOrInst == "ingr") {
@@ -734,7 +735,7 @@ $(document).on('turbolinks:load', function() {
 		if (ingrOrInst == "ingredient") {
 			for (var i = 0; i < ingredientsData.ingredients.length; i++) {
 				nextId = ingredientsData.ingredients[i].id;
-				nextSequence = parseInt($('#ingrSeq_' + nextId).val());
+				nextSequence = parseInt($('#ingrSeq_' + nextId).text());
 				ingredientsData.ingredients[i].sequence = nextSequence;
 				if (nextId == itemId) {
 					ingredientsData.ingredients[i].ingredient = newText;
@@ -746,7 +747,7 @@ $(document).on('turbolinks:load', function() {
 		} else if (ingrOrInst == "instruction") {
 			for (var i = 0; i < instructionsData.instructions.length; i++) {
 				nextId = instructionsData.instructions[i].id;
-				nextSequence = parseInt($('#instSeq_' + nextId).val());
+				nextSequence = parseInt($('#instSeq_' + nextId).text());
 				instructionsData.instructions[i].sequence = nextSequence;
 				if (nextId == itemId) {
 					instructionsData.instructions[i].instruction = newText;

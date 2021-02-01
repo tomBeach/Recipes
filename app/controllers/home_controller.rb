@@ -535,6 +535,10 @@ class HomeController < ApplicationController
 			deleteIngredientCount = 0
 	        params[:ingredients].each_with_index do |next_ingredient, index|
 	            ingredient_id = next_ingredient[:id]
+				if next_ingredient[:sequence] == nil
+					puts "*** MISSING SEQUENCE: " + ingredient_id.to_s
+					next_ingredient[:sequence] = index
+				end
 
 				# == identify if ingredient is new
 				if next_ingredient[:new_delete] == "NEW"
