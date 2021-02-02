@@ -11,10 +11,10 @@ $(document).on('turbolinks:load', function() {
 	var windowFlag = 1150;
 	var windowW = $(window).width();
 	if (windowW < windowFlag) {
-		$('#getMyRecipes').text('My');
+		$('#myRecipes').text('My');
 		$('#getAllRecipes').text('All');
 	} else {
-		$('#getMyRecipes').text('My Recipes');
+		$('#myRecipes').text('My Recipes');
 		$('#getAllRecipes').text('All Recipes');
 	}
 
@@ -22,47 +22,14 @@ $(document).on('turbolinks:load', function() {
 	  if ($(this).width() !== windowW) {
 	    windowW = $(this).width();
 		if (windowW < windowFlag) {
-			$('#getMyRecipes').text('My');
+			$('#myRecipes').text('My');
 			$('#getAllRecipes').text('All');
 		} else {
-			$('#getMyRecipes').text('My Recipes');
+			$('#myRecipes').text('My Recipes');
 			$('#getAllRecipes').text('All Recipes');
 		}
 	  }
 	});
-
-	if (!stateObj) {
-		var stateObj = {
-			userAction: "",				// handler seletion
-
-			url: "",					// search
-			searchType: "",
-			searchTerm: "",
-
-			recipeArray: [],			// list
-			selectedItemsArray: [],
-			sortTerm: "",
-
-			whichRecipe: 1,
-			recipeTitle: 1,
-			userRating: 1,
-			category: 1,
-			nationality: 1,
-			shared: true,
-
-			titleText: "",				// display
-			noticeText: "",
-
-			headersActive: true,
-			titleEditable: true,
-			linesEditable: true,
-			showEditButtons: true,
-			saveCancelVisible: true
-		}
-		console.log("stateObj: ", stateObj);
-	}
-
-
 
 
 	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
@@ -194,6 +161,7 @@ $(document).on('turbolinks:load', function() {
 
 
 	// ======= initialize variables =======
+	var navigationArray = [];	// will contain user click trails (for BackBtn)
 	var recipesArray = [];		// will contain any imported recipe file data
 	var editFlag = false;		// stays false until recipe data is changed
 	var noShowFlag = false;		// false: allows for popup display (noShow unchecked)
@@ -279,7 +247,7 @@ $(document).on('turbolinks:load', function() {
 
 		function loadPrevPage(e) {
 			console.log("== click: backBtn ==");
-			console.log("stateObj: ", stateObj);
+
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -289,161 +257,94 @@ $(document).on('turbolinks:load', function() {
     function activateSearchMenu() {
 		console.log("== activateSearchMenu ==");
 
-		// == show my recipes
-		$('#getMyRecipes').click(function(e) {
-			console.log("== click: getMyRecipes ==");
+		// == get all main menu buttons and links
+		var searchLinks = $('.searchSelect > div > a').add('.searchBtn');
+
+		// == assign event listeners
+		$(searchLinks).click(function(e) {
+			console.log("== click: searchSelect ==");
 			e.preventDefault();
+
+			// == prevent actions if edit steps are incomplete
 			if (editFlag == false) {
+				var url, idParts, searchType, searchTarget;
+				var multiPartId = $(this).attr('id').indexOf('_');		// element ids with database ids attached (e.g. "ingredient_25")
+				var searchText = $('#searchInput').val();				// find text in title or ingredients
+				var textSearchFlag = false;
+
 				toggleEditButtons("hide");
-				makeSearchRequest("", "my");
+
+				// == extract database ids from element ids (when appropriate)
+				if (multiPartId > -1) {
+					idParts = $(this).attr('id').split('_');
+					searchType = idParts[0];						// type identifies desired classification (unless text search)
+					searchTarget = idParts[1];						// target is database id (extracted from element id)
+				} else {
+					searchType = $(this).attr('id');
+					searchTarget = "";
+				}
+
+				// == identify url and search text for selected search type
+				switch (searchType) {
+					case "myRecipes":
+						url = "/my_recipes";
+						searchType = "myRecipes";
+						break;
+					case "allRecipes":
+						url = "/all_recipes";
+						searchType = "allRecipes";
+						break;
+					case "searchTitle":
+						var url = "/search_text";
+						var searchType = "text";
+						textSearchFlag = true;
+						searchTarget = ["title", searchText];		// pass type and title/ingredient selection
+						break;
+					case "searchIngr":
+						var url = "/search_text";
+						var searchType = "text";
+						textSearchFlag = true;
+						searchTarget = ["ingredient", searchText];	// pass type and title/ingredient selection
+						break;
+					case "rating":
+						url = "/search_rating";
+						searchType = "rating";
+						break;
+					case "category":
+						url = "/search_category";
+						searchType = "category";
+						break;
+					case "nationality":
+						url = "/search_nationality";
+						searchType = "nationality";
+						break;
+				}
+
+				// == prevent text search if no search value
+				if ((textSearchFlag) && (searchText === "")) {
+					displayPopup("search", "");
+				} else {
+					makeSearchRequest(searchTarget, searchType, url);
+				}
+
+			// == prevent any search if edits are unsaved
 			} else {
-				displayPopup("edit", "");		// prevent new display if edits are unsaved
+				displayPopup("edit", "");
 			}
 			e.stopPropagation();
 		});
-
-		// == show all recipes
-		$('#getAllRecipes').click(function(e) {
-			console.log("== click: getAllRecipes ==");
-			e.preventDefault();
-			if (editFlag == false) {
-				toggleEditButtons("hide");
-				makeSearchRequest("", "all");
-			} else {
-				displayPopup("edit", "");		// prevent new display if edits are unsaved
-			}
-			e.stopPropagation();
-		});
-
-		// == search for text in title
-		$('#searchInBtn > div > a:nth-of-type(1)').click(function(e) {
-			console.log("== click: searchInBtn ==");
-			e.preventDefault();
-			var searchValue = $('#searchInput').val();
-			console.log("searchValue: ", searchValue);
-			if (searchValue != "") {
-				if (editFlag == false) {
-					toggleEditButtons("hide");
-					makeSearchRequest("title", "text");
-				} else {
-					displayPopup("edit", "");		// prevent new display if edits are unsaved
-				}
-			} else {
-				displayPopup("search", "");			// prevent new display if no search value
-			}
-			e.stopPropagation();
-		});
-
-		// == search for text in ingredients
-		$('#searchInBtn > div > a:nth-of-type(2)').click(function(e) {
-			console.log("== click: searchInBtn ==");
-			e.preventDefault();
-			var searchValue = $('#searchInput').val();
-			if (searchValue != "") {
-				if (editFlag == false) {
-					toggleEditButtons("hide");
-					makeSearchRequest("ingredients", "text");
-				} else {
-					displayPopup("edit", "");		// prevent new display if edits are unsaved
-				}
-			} else {
-				displayPopup("search", "");			// prevent new display if no search value
-			}
-			e.stopPropagation();
-		});
-
-		// == search by rating
-		$('#searchRating > div > a').click(function(e) {
-			console.log("== click: searchRating ==");
-			e.preventDefault();
-			if (editFlag == false) {
-				toggleEditButtons("hide");
-				var searchString = $(this).attr('id').split('_')[1];
-				if (searchString.length == 0) {
-					makeTitleText("", "no search");
-				} else {
-					makeSearchRequest(searchString, "rating");
-				}
-			} else {
-				displayPopup("edit", "");			// prevent new display if edits are unsaved
-			}
-			e.stopPropagation();
-	    });
-
-		// == search by category
-		$('#searchCategory > div > a').click(function(e) {
-			console.log("== click: searchCategory ==");
-			e.preventDefault();
-			if (editFlag == false) {
-				toggleEditButtons("hide");
-				var searchString = $(this).attr('id').split('_')[1];
-				if (searchString.length == 0) {
-					makeTitleText("", "no search");
-				} else {
-					makeSearchRequest(searchString, "category");
-				}
-			} else {
-				displayPopup("edit", "");			// prevent new display if edits are unsaved
-			}
-			e.stopPropagation();
-	    });
-
-		// == search by nationality
-		$('#searchNationality > div > a').click(function(e) {
-			console.log("== click: searchNationality ==");
-			e.preventDefault();
-			if (editFlag == false) {
-				toggleEditButtons("hide");
-				var searchString = $(this).attr('id').split('_')[1];
-				if (searchString.length == 0) {
-					makeTitleText("", "no search");
-				} else {
-					makeSearchRequest(searchString, "nationality");
-				}
-			} else {
-				displayPopup("edit", "");			// prevent new display if edits are unsaved
-			}
-			e.stopPropagation();
-	    });
 	}
 
 	// ======= ======= ======= SEARCH REQUEST ======= ======= =======
 	// ======= ======= ======= SEARCH REQUEST ======= ======= =======
 	// ======= ======= ======= SEARCH REQUEST ======= ======= =======
 
-	function makeSearchRequest(searchString, searchType) {
+	// ======= makeSearchRequest =======
+	function makeSearchRequest(searchTarget, searchType, url) {
 		console.log("== makeSearchRequest ==");
-		console.log("searchString: ", searchString);
-		console.log("searchType: ", searchType);
+		console.log("searchTarget: ", searchTarget);
 
-		switch (searchType) {
-			case "my":
-				var url = "/my_recipes";
-				break;
-			case "all":
-				var url = "/all_recipes";
-				break;
-			case "text":
-				var searchText = $('#searchInput').val();	// search text for title or ingredients
-				searchString = [searchString, searchText];	// pass type and title/ingredient selection
-				var url = "/search_text";
-				break;
-			case "rating":
-				var url = "/search_rating";
-				break;
-			case "category":
-				var url = "/search_category";
-				break;
-			case "nationality":
-				var url = "/search_nationality";
-				break;
-		}
-
-		var jsonData = JSON.stringify(searchString);
-		stateObj.url = url;
-		stateObj.searchType = searchType;
-		stateObj.searchTerm = searchString;
-		console.log("stateObj: ", stateObj);
+		var jsonData = JSON.stringify(searchTarget);
 
 		$.ajax({
 			url: url,
@@ -478,47 +379,30 @@ $(document).on('turbolinks:load', function() {
 		var textColor;
 		var currentText, currentId;
 
-		// == set recipe rating
-		$('#rating_edit_select').change(function(e) {
-			console.log("== change: rating_edit_select ==");
+		// ***** refactoring *****
+		$('.editSelect').change(function(e) {
+			console.log("== change: editSelect ==");
+			console.log("$(this): ", $(this));
 			e.preventDefault();
 			editFlag = true;
 
-			// == temporarily store previous value for this item (rating)
-			$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
-			$('#ratingData').data().ratingid = $('#rating_edit_select option:selected').val();
-			console.log("$('#ratingData').data().prev_ratingid: ", $('#ratingData').data().prev_ratingid);
-			console.log("$('#ratingData').data().ratingid: ", $('#ratingData').data().ratingid);
+			var classifyType = $(this).attr('id').split('_')[0];
 
-			// == activate save and cancel buttons
-			activateSaveCancel();
-	    });
-
-		// == set recipe category
-		$('#category_edit_select').change(function(e) {
-			console.log("== change: category_edit_select ==");
-			e.preventDefault();
-			editFlag = true;
-
-			// == temporarily store previous value for this item (category)
-			$('#categoryData').data().prev_categoryid = $('#categoryData').data().categoryid;
-			$('#categoryData').data().categoryid = $('#category_edit_select option:selected').val();
-
-			// == activate save and cancel buttons
-			activateSaveCancel();
-	    });
-
-		// == set recipe nationality
-		$('#nationality_edit_select').change(function(e) {
-			console.log("== change: nationality_edit_select ==");
-			e.preventDefault();
-			editFlag = true;
-
-			// == temporarily store previous value for this item (nationality)
-			$('#nationalityData').data().prev_nationalityid = $('#nationalityData').data().nationalityid;
-			$('#nationalityData').data().nationalityid = $('#nationality_edit_select option:selected').val();
-
-			// == activate save and cancel buttons
+			// == identify url and search text for selected search type
+			switch (classifyType) {
+				case "rating":
+				$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
+				$('#ratingData').data().ratingid = $('#rating_edit_select option:selected').val();
+				break;
+				case "category":
+				$('#categoryData').data().prev_categoryid = $('#categoryData').data().categoryid;
+				$('#categoryData').data().categoryid = $('#category_edit_select option:selected').val();
+				break;
+				case "nationality":
+				$('#nationalityData').data().prev_nationalityid = $('#nationalityData').data().nationalityid;
+				$('#nationalityData').data().nationalityid = $('#nationality_edit_select option:selected').val();
+				break;
+			}
 			activateSaveCancel();
 	    });
 
@@ -1341,9 +1225,9 @@ $(document).on('turbolinks:load', function() {
 				// ratingText = ratingText + ": ";
 				ratingText = ratingText + ratingObj[jsonData.search].rating[1];
 				titleText = ratingText + " recipes";
-			} else if (type == "my") {
+			} else if (type == "myRecipes") {
 				titleText = "My Database Recipes";
-			} else if (type == "all") {
+			} else if (type == "allRecipes") {
 				titleText = "All Shared Database Recipes";
 			}
 		} else {
@@ -2008,8 +1892,6 @@ $(document).on('turbolinks:load', function() {
 			$('.popupDelete').off('click');
 			$('.popupDelete').on('click', function(){
 				console.log("== popup: delete ==");
-				console.log("data: ", data);
-				console.log("pathname: ", pathname);
 				$('#popup-message').html('');
 				$('.popup-overlay, .popup-content').removeClass('active');
 			});
@@ -2019,16 +1901,13 @@ $(document).on('turbolinks:load', function() {
 
 	$('#showAgain').change(function(e){
 		console.log("== #showAgain: change ==");
-		console.log("noShowFlag: ", noShowFlag);
-		console.log("$('#showAgain:checked').length: ", $('#showAgain:checked').length);
 		if ($('#showAgain:checked').length > 0) {
 			noShowFlag = true;
 		}
-		console.log("noShowFlag: ", noShowFlag);
 	});
 
 	$('.close').off('click');
-	$('.close').on('click', function(){
+	$('.close').on('click', function() {
 		console.log('== popup: close ==');
 		$('#popup-message').html('');
 		$('.popup-overlay, .popup-content').removeClass('active');

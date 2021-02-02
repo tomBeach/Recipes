@@ -48,13 +48,13 @@ class HomeController < ApplicationController
 	# ======= my_recipes =======
 	def my_recipes
 		puts "\n******* my_recipes *******"
-		get_recipe_data("my", "")
+		get_recipe_data("myRecipes", "")
 	end
 
 	# ======= all_recipes =======
 	def all_recipes
 		puts "\n******* all_recipes *******"
-		get_recipe_data("all", "")
+		get_recipe_data("allRecipes", "")
 	end
 
 	# ======= search_text =======
@@ -120,14 +120,14 @@ class HomeController < ApplicationController
 			recipe_array = recipe_data[0]
 
 		# == all recipes designated for sharing (function to be added)
-		elsif search_type == "all"
+		elsif search_type == "allRecipes"
 			recipes = Recipe.where(:shared => true).order(:updated_at).reverse_order
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 
 		# == recipes belonging to user
-		elsif search_type == "my"
+		elsif search_type == "myRecipes"
 			recipes = Recipe.where("user_id" => current_user[:id]).order(:updated_at).reverse_order
 			recipe_data = make_recipe_array(recipes, search_type, search_term)
 			recipe_array = recipe_data[0]
@@ -270,7 +270,7 @@ class HomeController < ApplicationController
 		puts "search_term: #{search_term}"
 		puts "recipe_count: #{recipe_count}"
 
-		if search_type == "my"
+		if search_type == "myRecipes"
 			if recipe_count == 0
 				message = "Sorry.  No recipes belonging to you were retrieved.  Try importing a new one!"
 			elsif recipe_count == 1
@@ -278,7 +278,7 @@ class HomeController < ApplicationController
 			elsif recipe_count > 0
 				message = "Here are the " + recipe_count.to_s + " recipes belonging to you."
 			end
-		elsif search_type == "all"
+		elsif search_type == "allRecipes"
 			if recipe_count == 0
 				message = "No recipes were retrieved from the database."
 			elsif recipe_count > 0

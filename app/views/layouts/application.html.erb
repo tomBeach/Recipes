@@ -63,8 +63,8 @@
 		<!-- ======= menu 2 ======= -->
 		<div class="menuBox2">
 			<div id="searchOwner" class="menuGroup">
-				<%= link_to "My Recipes", my_recipes_path, id: "getMyRecipes", class: "searchBtn userMenuItem", remote: true %>
-				<%= link_to "All Recipes", all_recipes_path, id: "getAllRecipes", class: "searchBtn userMenuItem", remote: true %>
+				<%= link_to "My Recipes", my_recipes_path, id: "myRecipes", class: "searchBtn userMenuItem", remote: true %>
+				<%= link_to "All Recipes", all_recipes_path, id: "allRecipes", class: "searchBtn userMenuItem", remote: true %>
 			</div>
 
 			<div id="searchText" class="menuGroup">
@@ -72,8 +72,8 @@
 				<div id="searchInBtn" class="dropdown searchSelect">
 					<button class="dropdown-menu">Search in</button>
 					<div class="dropdown-content">
-						<a href="#">title</a>
-						<a href="#">ingredients</a>
+						<a id="searchTitle" href="#">title</a>
+						<a id="searchIngr" href="#">ingredients</a>
 					</div>
 				</div>
 			</div>
