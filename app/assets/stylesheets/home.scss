@@ -102,7 +102,7 @@ h1, h2 {
 }
 
 /* ======= search bar ======= */
-#homeBtn, .userBtn, .searchBtn, .searchLabel, #searchInput {
+#homeBtn, #backBtn, .userBtn, .searchBtn, .searchLabel, #searchInput {
 	float: left;
 	position: relative;
 	display: inline-block;
@@ -120,8 +120,13 @@ h1, h2 {
 	background-color: #4CAF50;
 	color: white;
 }
-#homeBtn {
-	width: 20%;
+#backBtn {
+	margin: 0 1%;
+	background-color: Navy;
+	color: white;
+}
+#homeBtn, #backBtn {
+	width: 9%;
 }
 .userBtn {
 	width: 10%;

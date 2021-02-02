@@ -31,6 +31,39 @@ $(document).on('turbolinks:load', function() {
 	  }
 	});
 
+	if (!stateObj) {
+		var stateObj = {
+			userAction: "",				// handler seletion
+
+			url: "",					// search
+			searchType: "",
+			searchTerm: "",
+
+			recipeArray: [],			// list
+			selectedItemsArray: [],
+			sortTerm: "",
+
+			whichRecipe: 1,
+			recipeTitle: 1,
+			userRating: 1,
+			category: 1,
+			nationality: 1,
+			shared: true,
+
+			titleText: "",				// display
+			noticeText: "",
+
+			headersActive: true,
+			titleEditable: true,
+			linesEditable: true,
+			showEditButtons: true,
+			saveCancelVisible: true
+		}
+		console.log("stateObj: ", stateObj);
+	}
+
+
+
 
 	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
 	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
@@ -167,6 +200,7 @@ $(document).on('turbolinks:load', function() {
 
 	activateSelectItem();
 	activateSearchMenu();
+	activateBackBtn();
 
 
 	// ======= import recipes =======
@@ -235,6 +269,21 @@ $(document).on('turbolinks:load', function() {
 	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
 	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
 	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
+
+	// ======= activateBackBtn =======
+	function activateBackBtn() {
+		console.log("== activateBackBtn ==");
+
+		$('#backBtn').off("click", loadPrevPage);
+		$('#backBtn').on("click", loadPrevPage);
+
+		function loadPrevPage(e) {
+			console.log("== click: backBtn ==");
+			console.log("stateObj: ", stateObj);
+			e.preventDefault();
+			e.stopPropagation();
+		}
+	}
 
 	// ======= activateSearchMenu =======
     function activateSearchMenu() {
@@ -358,7 +407,6 @@ $(document).on('turbolinks:load', function() {
 	    });
 	}
 
-
 	// ======= ======= ======= SEARCH REQUEST ======= ======= =======
 	// ======= ======= ======= SEARCH REQUEST ======= ======= =======
 	// ======= ======= ======= SEARCH REQUEST ======= ======= =======
@@ -392,6 +440,10 @@ $(document).on('turbolinks:load', function() {
 		}
 
 		var jsonData = JSON.stringify(searchString);
+		stateObj.url = url;
+		stateObj.searchType = searchType;
+		stateObj.searchTerm = searchString;
+		console.log("stateObj: ", stateObj);
 
 		$.ajax({
 			url: url,
@@ -595,18 +647,11 @@ $(document).on('turbolinks:load', function() {
 		// == type_recipe view does not have cancel btn
 		var titleText = $('#outputTitle').text();
 		var editTitleText = $('#editTitleText').val();
-		console.log("titleText: ", titleText);
-		console.log("editTitleText: ", editTitleText);
+
 		if ((pathname == "/type_recipe") && (editTitleText === "")) {
 			$('.cancelBtn').click(function(e) {
 				window.location = "/";
 			});
-		// } else if ((pathname == "/type_recipe") && (currentText != "")) {
-		// 	$('.cancelBtn').click(function(e) {
-		// 		e.preventDefault();
-		// 		cancelTitleEdits(currentText);
-		// 		e.stopPropagation();
-		// 	});
 		} else {
 			$('.cancelBtn').click(function(e) {
 				e.preventDefault();
