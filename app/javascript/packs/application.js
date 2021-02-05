@@ -10,6 +10,10 @@ require("channels")
 require("jquery")
 require("jquery-ui")
 
+require("packs/js.cookie")
+
+window.Cookies = require("packs/js.cookie")
+
 require("packs/script")
 
 // Uncomment to copy all static images under ../images to the output folder and reference

@@ -1,21 +1,22 @@
 $(document).on('turbolinks:load', function() {
     console.log("== turbolinks:load ==");
 
+	console.log("window.Cookies: ", window.Cookies);
+
     // ======= check pathname =======
     var pathname = window.location.pathname;
 	var pathParts = pathname.split("/");
     var pathPartsCount = (pathname.split("/").length - 1);
-	console.log("pathParts: ", pathParts);
 
 	// ======= window size displays =======
 	var windowFlag = 1150;
 	var windowW = $(window).width();
 	if (windowW < windowFlag) {
 		$('#myRecipes').text('My');
-		$('#getAllRecipes').text('All');
+		$('#allRecipes').text('All');
 	} else {
 		$('#myRecipes').text('My Recipes');
-		$('#getAllRecipes').text('All Recipes');
+		$('#allRecipes').text('All Recipes');
 	}
 
 	$(window).on('resize', function() {
@@ -23,136 +24,13 @@ $(document).on('turbolinks:load', function() {
 	    windowW = $(this).width();
 		if (windowW < windowFlag) {
 			$('#myRecipes').text('My');
-			$('#getAllRecipes').text('All');
+			$('#allRecipes').text('All');
 		} else {
 			$('#myRecipes').text('My Recipes');
-			$('#getAllRecipes').text('All Recipes');
+			$('#allRecipes').text('All Recipes');
 		}
 	  }
 	});
-
-
-	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
-	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
-	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
-
-	// ======= activateSortableLists =======
-    function activateSortableLists() {
-		console.log("== activateSortableLists ==");
-
-		// ======= ingredients =======
-		$('#ingredients').sortable({
-			start: function (event, ui) {
-				console.log("== start ==");
-				var elementId = $(ui.item).attr('id');
-				var itemId = elementId.split("_")[1];
-				$(ui.item).data('startindex', ui.item.index());
-				$(ui.item).data('elementId', elementId);
-				$(ui.item).data('itemId', itemId);
-			},
-			stop: function (event, ui) {
-				console.log("== stop ==");
-				editFlag = true;
-				activateSaveCancel();						// ingredient moved: enable save/cancel buttons
-				self.updateItemPositions(ui.item);			// ui.item is container div for ingredient sequence/text
-				self.updateItemSequences("ingr");
-			}
-		}).disableSelection();
-
-		// ======= instructions =======
-		$('#instructions').sortable({
-			start: function (event, ui) {
-				console.log("== start ==");
-				var elementId = $(ui.item).attr('id');
-				var itemId = elementId.split("_")[1];
-				$(ui.item).data('startindex', ui.item.index());
-				$(ui.item).data('elementId', elementId);
-				$(ui.item).data('itemId', itemId);
-			},
-			stop: function (event, ui) {
-				console.log("== stop ==");
-				editFlag = true;
-				activateSaveCancel();						// instruction moved: enable save/cancel buttons
-				updateItemPositions(ui.item);				// ui.item is container div for instruction sequence/text
-				updateItemSequences("inst");
-			}
-		}).disableSelection();
-
-		// ======= init unedited sort order =======
-		var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
-		var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
-
-		// ======= update sort order =======
-		updateItemPositions = function($item) {
-			console.log("== updateItemPositions ==");
-
-			editFlag = true;
-			var startIndex = $item.data("startindex") + 1;
-			var newIndex = $item.index() + 1;
-
-			// ======= update sort arrays =======
-			if (newIndex != startIndex) {
-				ingredientsInOrder = $("#ingredients").sortable("toArray");
-				instructionsInOrder = $("#instructions").sortable("toArray");
-			}
-		}
-
-		// ======= update sort order =======
-		updateItemSequences = function(ingrOrInst) {
-			console.log("== updateItemSequences ==");
-			console.log("ingrOrInst: ", ingrOrInst);
-
-			var nextIngredientId, nextIngredientEl, nextInstructionId, nextInstructionEl;
-
-			// == update ingredient sequence display for new order
-			if (ingrOrInst == "ingr") {
-				var sortedListItems = ingredientsInOrder;
-				var localDataItems = $('#ingredientsData').data().ingredients;
-			} else {
-				var sortedListItems = instructionsInOrder;
-				var localDataItems = $('#instructionsData').data().instructions;
-			}
-			console.log("sortedListItems: ", sortedListItems);
-			console.log("localDataItems: ", localDataItems);
-
-			// == cycle through item list and renumber sequences
-			for (var i = 0; i < sortedListItems.length; i++) {
-				nextItemId = sortedListItems[i];
-				nextItemNum = nextItemId.split("_")[1];
-				nextItemName = nextItemId.split("_")[0];
-				nextItemEl = $('#' + nextItemId)[0];
-				nextItemSeq = $(nextItemEl).children()[0];			// sequence number element is first child
-				nextItemSeq.innerHTML = (i + 1).toString();			// set new element sequence number
-
-				// == cycle through local database data to update sequence numbers
-				for (var j = 0; j < localDataItems.length; j++) {
-					checkItemId = localDataItems[j].id;
-
-					// == existing item (id is the id integer from database)
-					if (!isNaN(checkItemId)) {
-						if (checkItemId == nextItemNum) {
-							if (ingrOrInst == "ingr") {
-								$('#ingredientsData').data().ingredients[j].sequence = i + 1;
-							} else {
-								$('#instructionsData').data().instructions[j].sequence = i + 1;
-							}
-						}
-
-					// == new item (id integer "XX" determined from count of items; format: NEW_XX)
-					} else {
-						checkItemNum = checkItemId.split("_")[1];	// get new item "id"
-						if (checkItemNum == nextItemNum) {
-							if (ingrOrInst == "ingr") {
-								$('#ingredientsData').data().ingredients[j].sequence = i + 1;
-							} else {
-								$('#instructionsData').data().instructions[j].sequence = i + 1;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
 
 
 	// ======= ======= ======= PAGE-SPECIFIC BEHAVIORS ======= ======= =======
@@ -161,10 +39,14 @@ $(document).on('turbolinks:load', function() {
 
 
 	// ======= initialize variables =======
-	var navigationArray = [];	// will contain user click trails (for BackBtn)
 	var recipesArray = [];		// will contain any imported recipe file data
-	var editFlag = false;		// stays false until recipe data is changed
+	var backBtnFlag = false;	// controls whether to add page to navigationArray
 	var noShowFlag = false;		// false: allows for popup display (noShow unchecked)
+	var editFlag = false;		// stays false until recipe data is changed
+
+	var navigationArray = [[$('#homeBtn'), ""]];	// will contain user click items (for BackBtn)
+	var click_trail = ["home"];						// continuous click sequence
+	var navLinksArray = ["homeBtn", "import", "exportLink", "type_recipe", "ratings", "categories", "nationalities", "profile"];
 
 	activateSelectItem();
 	activateSearchMenu();
@@ -189,7 +71,7 @@ $(document).on('turbolinks:load', function() {
 		var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
 		var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
 
-		// == hide classify/share functions to enable title edit text box
+		// == hide classify/share functions to enable title entry text box
 		$('#rating_edit_select').hide();
 		$('#category_edit_select').hide();
 		$('#nationality_edit_select').hide();
@@ -242,18 +124,45 @@ $(document).on('turbolinks:load', function() {
 	function activateBackBtn() {
 		console.log("== activateBackBtn ==");
 
-		$('#backBtn').off("click", loadPrevPage);
+		$('#backBtn').off("click");
 		$('#backBtn').on("click", loadPrevPage);
 
 		function loadPrevPage(e) {
 			console.log("== click: backBtn ==");
-
+			console.log("navigationArray: ", navigationArray);
+			console.log("click_trail: ", click_trail);
 			e.preventDefault();
+			backBtnFlag = true;
+
+			if (navigationArray.length > 1) {
+				navigationArray.pop();
+			}
+			var prevClick = navigationArray.slice(-1)[0][0][0];
+			var prevText = navigationArray.slice(-1)[0][1];
+			var prevClickId = $(prevClick).attr('id');
+			console.log("prevText: ", prevText);
+			console.log("prevClick: ", prevClick);
+			console.log("prevClickId: ", prevClickId);
+			console.log("$.inArray(prevClickId, navLinksArray): ", $.inArray(prevClickId, navLinksArray));
+			console.log("$(prevClick).attr('href'): ", $(prevClick).attr('href'));
+
+			if ($.inArray(prevClickId, navLinksArray) >= 0) {
+				window.location.href = $(prevClick).attr('href');
+			} else {
+				$(prevClick).click();
+			}
+
+			click_trail.push($(prevClick).attr('id'));
+			Cookies.set("click_trail", click_trail);
+			var testClickTrail = Cookies.get("click_trail");
+			console.log("click_trail: ", click_trail);
+			console.log("testClickTrail: ", testClickTrail);
+
 			e.stopPropagation();
 		}
 	}
 
-	// ======= activateSearchMenu =======
+	// ======= activateSearchMenu =======			[ROUTER]
     function activateSearchMenu() {
 		console.log("== activateSearchMenu ==");
 
@@ -268,10 +177,17 @@ $(document).on('turbolinks:load', function() {
 			// == prevent actions if edit steps are incomplete
 			if (editFlag == false) {
 				var url, idParts, searchType, searchTarget;
-				var multiPartId = $(this).attr('id').indexOf('_');		// element ids with database ids attached (e.g. "ingredient_25")
+				var multiPartId = $(this).attr('id').indexOf('_');		// dropdown element ids contain index (e.g. "rating_3")
 				var searchText = $('#searchInput').val();				// find text in title or ingredients
 				var textSearchFlag = false;
 
+				if (!backBtnFlag) {
+					navigationArray.push([$(this), searchText]);
+					click_trail.push($(this).attr('id'));
+					backBtnFlag = false;
+				}
+				console.log("navigationArray: ", navigationArray);
+				console.log("click_trail: ", click_trail);
 				toggleEditButtons("hide");
 
 				// == extract database ids from element ids (when appropriate)
@@ -300,11 +216,11 @@ $(document).on('turbolinks:load', function() {
 						textSearchFlag = true;
 						searchTarget = ["title", searchText];		// pass type and title/ingredient selection
 						break;
-					case "searchIngr":
+					case "searchIngredients":
 						var url = "/search_text";
 						var searchType = "text";
 						textSearchFlag = true;
-						searchTarget = ["ingredient", searchText];	// pass type and title/ingredient selection
+						searchTarget = ["ingredients", searchText];	// pass type and title/ingredient selection
 						break;
 					case "rating":
 						url = "/search_rating";
@@ -334,10 +250,6 @@ $(document).on('turbolinks:load', function() {
 			e.stopPropagation();
 		});
 	}
-
-	// ======= ======= ======= SEARCH REQUEST ======= ======= =======
-	// ======= ======= ======= SEARCH REQUEST ======= ======= =======
-	// ======= ======= ======= SEARCH REQUEST ======= ======= =======
 
 	// ======= makeSearchRequest =======
 	function makeSearchRequest(searchTarget, searchType, url) {
@@ -391,17 +303,17 @@ $(document).on('turbolinks:load', function() {
 			// == identify url and search text for selected search type
 			switch (classifyType) {
 				case "rating":
-				$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
-				$('#ratingData').data().ratingid = $('#rating_edit_select option:selected').val();
-				break;
+					$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
+					$('#ratingData').data().ratingid = $('#rating_edit_select option:selected').val();
+					break;
 				case "category":
-				$('#categoryData').data().prev_categoryid = $('#categoryData').data().categoryid;
-				$('#categoryData').data().categoryid = $('#category_edit_select option:selected').val();
-				break;
+					$('#categoryData').data().prev_categoryid = $('#categoryData').data().categoryid;
+					$('#categoryData').data().categoryid = $('#category_edit_select option:selected').val();
+					break;
 				case "nationality":
-				$('#nationalityData').data().prev_nationalityid = $('#nationalityData').data().nationalityid;
-				$('#nationalityData').data().nationalityid = $('#nationality_edit_select option:selected').val();
-				break;
+					$('#nationalityData').data().prev_nationalityid = $('#nationalityData').data().nationalityid;
+					$('#nationalityData').data().nationalityid = $('#nationality_edit_select option:selected').val();
+					break;
 			}
 			activateSaveCancel();
 	    });
@@ -504,7 +416,7 @@ $(document).on('turbolinks:load', function() {
 			console.log("== hover ==");
 			$(this).css("color", "red");
 			$(this).css("background-color", "navy");
-			},
+		},
 			function() {
 			$(this).css("color", "navy");
 			$(this).css("background-color", "Plum");
@@ -528,7 +440,7 @@ $(document).on('turbolinks:load', function() {
 			e.stopPropagation();
 		});
 
-		// == type_recipe view does not have cancel btn
+		// == cancel btn returns to blank screen for type_recipe view
 		var titleText = $('#outputTitle').text();
 		var editTitleText = $('#editTitleText').val();
 
@@ -555,9 +467,12 @@ $(document).on('turbolinks:load', function() {
 			currentId = "outputTitle";
 		}
 
+		// == verify text has been entered
 		if (newText == "") {
 			displayPopup("noText", "title");
+
 		} else {
+
 			// == save previous title; save new value for ajax submit
 			$('#titleData').data().prev_title = $('#titleData').data().title;
 			$('#titleData').data().title = newText;
@@ -600,6 +515,128 @@ $(document).on('turbolinks:load', function() {
 		$('#outputTitle').on('mouseover', hiliteLink);
 		$('#outputTitle').on('mouseout', restoreLink);
 		$('#outputTitle').on('click', editRecipeTitle);
+	}
+
+
+	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
+	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
+	// ======= ======= ======= DRAG-AND-DROP ======= ======= =======
+
+	// ======= activateSortableLists =======
+    function activateSortableLists() {
+		console.log("== activateSortableLists ==");
+
+		// ======= ingredients =======
+		$('#ingredients').sortable({
+			start: function (event, ui) {
+				console.log("== start ==");
+				var elementId = $(ui.item).attr('id');
+				var itemId = elementId.split("_")[1];
+				$(ui.item).data('startindex', ui.item.index());
+				$(ui.item).data('elementId', elementId);
+				$(ui.item).data('itemId', itemId);
+			},
+			stop: function (event, ui) {
+				console.log("== stop ==");
+				editFlag = true;
+				activateSaveCancel();						// ingredient moved: enable save/cancel buttons
+				self.updateItemPositions(ui.item);			// ui.item is container div for ingredient sequence/text
+				self.updateItemSequences("ingr");
+			}
+		}).disableSelection();
+
+		// ======= instructions =======
+		$('#instructions').sortable({
+			start: function (event, ui) {
+				console.log("== start ==");
+				var elementId = $(ui.item).attr('id');
+				var itemId = elementId.split("_")[1];
+				$(ui.item).data('startindex', ui.item.index());
+				$(ui.item).data('elementId', elementId);
+				$(ui.item).data('itemId', itemId);
+			},
+			stop: function (event, ui) {
+				console.log("== stop ==");
+				editFlag = true;
+				activateSaveCancel();						// instruction moved: enable save/cancel buttons
+				updateItemPositions(ui.item);				// ui.item is container div for instruction sequence/text
+				updateItemSequences("inst");
+			}
+		}).disableSelection();
+
+		// ======= init unedited sort order =======
+		var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
+		var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
+
+		// ======= update sort order =======
+		updateItemPositions = function($item) {
+			console.log("== updateItemPositions ==");
+
+			editFlag = true;
+			var startIndex = $item.data("startindex") + 1;
+			var newIndex = $item.index() + 1;
+
+			// ======= update sort arrays =======
+			if (newIndex != startIndex) {
+				ingredientsInOrder = $("#ingredients").sortable("toArray");
+				instructionsInOrder = $("#instructions").sortable("toArray");
+			}
+		}
+
+		// ======= update sequence numbers =======
+		updateItemSequences = function(ingrOrInst) {
+			console.log("== updateItemSequences ==");
+			console.log("ingrOrInst: ", ingrOrInst);
+
+			var nextIngredientId, nextIngredientEl, nextInstructionId, nextInstructionEl;
+
+			// == update ingredient sequence display for new order
+			if (ingrOrInst == "ingr") {
+				var sortedListItems = ingredientsInOrder;
+				var localDataItems = $('#ingredientsData').data().ingredients;
+			} else {
+				var sortedListItems = instructionsInOrder;
+				var localDataItems = $('#instructionsData').data().instructions;
+			}
+			console.log("sortedListItems: ", sortedListItems);
+			console.log("localDataItems: ", localDataItems);
+
+			// == cycle through item list and renumber sequences
+			for (var i = 0; i < sortedListItems.length; i++) {
+				nextItemId = sortedListItems[i];
+				nextItemNum = nextItemId.split("_")[1];				// extract db id from element id ("element_XX")
+				nextItemEl = $('#' + nextItemId)[0];
+				nextItemSeq = $(nextItemEl).children()[0];			// sequence number element is first child
+				nextItemSeq.innerHTML = (i + 1).toString();			// set new element sequence number
+
+				// == cycle through local database data to update sequence numbers
+				for (var j = 0; j < localDataItems.length; j++) {
+					checkItemId = localDataItems[j].id;
+
+					// == existing item (id is the id integer from database)
+					if (!isNaN(checkItemId)) {
+						if (checkItemId == nextItemNum) {
+							if (ingrOrInst == "ingr") {
+								$('#ingredientsData').data().ingredients[j].sequence = i + 1;
+							} else {
+								$('#instructionsData').data().instructions[j].sequence = i + 1;
+							}
+						}
+
+					// == new item (id integer "XX" determined from count of items; format: NEW_XX)
+					} else {
+						checkItemNum = checkItemId.split("_")[1];
+						if (checkItemNum == nextItemNum) {
+							if (ingrOrInst == "ingr") {
+								$('#ingredientsData').data().ingredients[j].sequence = i + 1;
+							} else {
+								$('#instructionsData').data().instructions[j].sequence = i + 1;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 
@@ -782,10 +819,9 @@ $(document).on('turbolinks:load', function() {
 	function inputNewLine() {
 		console.log("== inputNewLine ==");
 
-		var editHtml = "";
-
 		// == determine if ingredient or instruction add button was clicked
 		var ingrOrInst = $(this).attr('id');
+		var editHtml = "";
 
 		if (ingrOrInst == "ingrAdd") {
 			var ingrCount = $('#ingredients').children().length + 1;
@@ -964,8 +1000,8 @@ $(document).on('turbolinks:load', function() {
 		var userRatingData = $('#userRatingData').data().userratingid;
 		var categoryData = $('#categoryData').data().categoryid;
 		var nationalityData = $('#nationalityData').data().nationalityid;
-		var ingredientsData = $('#ingredientsData').data().ingredients;		// with NEW or DELETE flag (if any) and revised text
-		var instructionsData = $('#instructionsData').data().instructions;	// with NEW or DELETE flag (if any) and revised text
+		var ingredientsData = $('#ingredientsData').data().ingredients;		// with NEW or DELETE flags (if any) and revised text
+		var instructionsData = $('#instructionsData').data().instructions;	// with NEW or DELETE flags (if any) and revised text
 		console.log("userRatingData: ", userRatingData);
 
 		// == avoid null values (when classification items not set by user)
@@ -1094,7 +1130,7 @@ $(document).on('turbolinks:load', function() {
 		categoryObj = jsonData.categoryObj;
 		nationalityObj = jsonData.nationalityObj;
 
-		// == object structure
+		// == classification object structures
 		// ratingObj: 1=>{:id=>1, :rating=>[1, "favorite"], :color=>"#03045e"},
 		// categoryObj: 2=>{:id=>2, :category=>"meat", :color=>"#54478cff"},
 		// nationalityObj: 17=>{:id=>17, :nationality=>"Thai", :color=>"#54478c"},
