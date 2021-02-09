@@ -7,11 +7,6 @@ Rails.application.routes.draw do
 		sessions: 'users/sessions'
 	}
 
-	# devise_for :users
-	# devise_scope :user do
-	# 	get '/users/sign_out' => 'devise/sessions#destroy'
-	# end
-
 	# == mgmt
     get "/" => "home#index"
     get "/home" => "home#index"
@@ -19,9 +14,9 @@ Rails.application.routes.draw do
 	get "/type_recipe" => "home#type_recipe"
 
 	# == groups
-	resources :ratings
-	resources :categories
-	resources :nationalities
+	resources :ratings, only: [:index, :destroy]
+	resources :categories, only: [:index, :destroy]
+	resources :nationalities, only: [:index, :destroy]
 
 	# == groups
 	post "/new_rating" => "ratings#new_rating"
@@ -36,6 +31,9 @@ Rails.application.routes.draw do
 	post "/save_recipe_file" => "home#save_recipe_file"
 
 	# == search recipes
+	post "/search_recipes" => "home#search_recipes"
+	# post "/my_recipes" => "home#my_recipes"
+	# post "/all_recipes" => "home#all_recipes"
 	post "/search_text" => "home#search_text"
 	post "/search_rating" => "home#search_rating"
 	post "/search_category" => "home#search_category"
@@ -43,8 +41,6 @@ Rails.application.routes.draw do
 	post "/search_selected" => "home#search_selected"
 
 	# == manage recipes
-	post "/my_recipes" => "home#my_recipes"
-	post "/all_recipes" => "home#all_recipes"
 	post "/save_recipe_edits" => "home#save_recipe_edits"
 	get "/delete_recipe/:id" => "home#delete_recipe"
 	get "/show_recipe/:id" => "home#show_recipe"

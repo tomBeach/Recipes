@@ -47,13 +47,13 @@
 				<div id="userMenu" class="dropdown userSelect">
 					<button class="dropdown-menu">My Account</button>
 					<div class="dropdown-content">
-						<%= link_to "Import Recipes", import_recipes_path, id: "import", class: "userMenuItem" %>
-						<%= link_to "Export Selected", "", id: "exportLink", class: "userMenuItem" %>
-						<%= link_to "Type/Enter Recipe", type_recipe_path, id: "type_recipe", class: "userMenuItem" %>
-						<%= link_to "Edit Ratings", ratings_path, id: "ratings", class: "userMenuItem" %>
-						<%= link_to "Edit Categories", categories_path, id: "categories", class: "userMenuItem" %>
-						<%= link_to "Edit Nationalities", nationalities_path, id: "nationalities", class: "userMenuItem" %>
-						<%= link_to "Profile", profile_path, id: "profile", class: "userMenuItem" %>
+						<%= link_to "Import Recipes", import_recipes_path, id: "import", class: "navLink userMenuItem" %>
+						<%= link_to "Export Selected", "", id: "exportLink", class: "navLink userMenuItem" %>
+						<%= link_to "Type/Enter Recipe", type_recipe_path, id: "type_recipe", class: "navLink userMenuItem" %>
+						<%= link_to "Edit Ratings", ratings_path, id: "ratings", class: "navLink userMenuItem" %>
+						<%= link_to "Edit Categories", categories_path, id: "categories", class: "navLink userMenuItem" %>
+						<%= link_to "Edit Nationalities", nationalities_path, id: "nationalities", class: "navLink userMenuItem" %>
+						<%= link_to "Profile", profile_path, id: "profile", class: "navLink userMenuItem" %>
 						<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>
 					</div>
 				</div>
@@ -63,8 +63,8 @@
 		<!-- ======= menu 2 ======= -->
 		<div class="menuBox2">
 			<div id="searchOwner" class="menuGroup">
-				<%= link_to "My Recipes", my_recipes_path, id: "myRecipes", class: "searchBtn userMenuItem", remote: true %>
-				<%= link_to "All Recipes", all_recipes_path, id: "allRecipes", class: "searchBtn userMenuItem", remote: true %>
+				<%= link_to "My Recipes", "", id: "recipes_my", class: "searchBtn userMenuItem", remote: true %>
+				<%= link_to "All Recipes", "", id: "recipes_all", class: "searchBtn userMenuItem", remote: true %>
 			</div>
 
 			<div id="searchText" class="menuGroup">
@@ -72,8 +72,8 @@
 				<div id="searchInBtn" class="dropdown searchSelect">
 					<button class="dropdown-menu">Search in</button>
 					<div class="dropdown-content">
-						<a id="searchTitle" href="#">title</a>
-						<a id="searchIngredients" href="#">ingredients</a>
+						<a id="text_title" href="#">title</a>
+						<a id="text_ingredients" href="#">ingredients</a>
 					</div>
 				</div>
 			</div>

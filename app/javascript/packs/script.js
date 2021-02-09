@@ -12,22 +12,22 @@ $(document).on('turbolinks:load', function() {
 	var windowFlag = 1150;
 	var windowW = $(window).width();
 	if (windowW < windowFlag) {
-		$('#myRecipes').text('My');
-		$('#allRecipes').text('All');
+		$('#recipes_my').text('My');
+		$('#recipes_all').text('All');
 	} else {
-		$('#myRecipes').text('My Recipes');
-		$('#allRecipes').text('All Recipes');
+		$('#recipes_my').text('My Recipes');
+		$('#recipes_all').text('All Recipes');
 	}
 
 	$(window).on('resize', function() {
 	  if ($(this).width() !== windowW) {
 	    windowW = $(this).width();
 		if (windowW < windowFlag) {
-			$('#myRecipes').text('My');
-			$('#allRecipes').text('All');
+			$('#recipes_my').text('My');
+			$('#recipes_all').text('All');
 		} else {
-			$('#myRecipes').text('My Recipes');
-			$('#allRecipes').text('All Recipes');
+			$('#recipes_my').text('My Recipes');
+			$('#recipes_all').text('All Recipes');
 		}
 	  }
 	});
@@ -43,13 +43,14 @@ $(document).on('turbolinks:load', function() {
 	var backBtnFlag = false;	// controls whether to add page to navigationArray
 	var noShowFlag = false;		// false: allows for popup display (noShow unchecked)
 	var editFlag = false;		// stays false until recipe data is changed
-
-	var navigationArray = [[$('#homeBtn'), ""]];	// will contain user click items (for BackBtn)
-	var click_trail = ["home"];						// continuous click sequence
+	var click_trail, json_click_trail;
 	var navLinksArray = ["homeBtn", "import", "exportLink", "type_recipe", "ratings", "categories", "nationalities", "profile"];
 
+
+	// ======= all pages =======
 	activateSelectItem();
 	activateSearchMenu();
+	activateNavLinks();
 	activateBackBtn();
 
 
@@ -120,46 +121,84 @@ $(document).on('turbolinks:load', function() {
 	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
 	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
 
+	// ======= activateNavLinks =======
+	function activateNavLinks() {
+		console.log("== activateNavLinks ==");
+
+		$('.navLink').click(function(e) {
+			console.log("== click: navLink ==");
+			var whichLink = $(this).attr('id');
+			click_trail = updateClickTrail([whichLink, ""]);
+		});
+	}
+
 	// ======= activateBackBtn =======
 	function activateBackBtn() {
 		console.log("== activateBackBtn ==");
 
+		json_click_trail = Cookies.get("json_click_trail");
+		if (!json_click_trail) {
+			initClickTrail();
+		}
+
 		$('#backBtn').off("click");
 		$('#backBtn').on("click", loadPrevPage);
 
+		// ======= initClickTrail =======
+		function initClickTrail() {
+			console.log("== initClickTrail ==");
+			click_trail = [["homeBtn", ""]];
+			json_click_trail = JSON.stringify(click_trail);
+			Cookies.set("json_click_trail", json_click_trail);
+		}
+
+		// ======= loadPrevPage =======
 		function loadPrevPage(e) {
-			console.log("== click: backBtn ==");
-			console.log("navigationArray: ", navigationArray);
-			console.log("click_trail: ", click_trail);
+			console.log("== loadPrevPage (backBtn) ==");
 			e.preventDefault();
 			backBtnFlag = true;
 
-			if (navigationArray.length > 1) {
-				navigationArray.pop();
-			}
-			var prevClick = navigationArray.slice(-1)[0][0][0];
-			var prevText = navigationArray.slice(-1)[0][1];
-			var prevClickId = $(prevClick).attr('id');
-			console.log("prevText: ", prevText);
-			console.log("prevClick: ", prevClick);
-			console.log("prevClickId: ", prevClickId);
-			console.log("$.inArray(prevClickId, navLinksArray): ", $.inArray(prevClickId, navLinksArray));
-			console.log("$(prevClick).attr('href'): ", $(prevClick).attr('href'));
+			// == extract prev page request values (link, text)
+			click_trail = updateClickTrail("backBtn");
+			var prevText = click_trail[click_trail.length - 1][1];		// previous text search value, if any
+			var prevClick = click_trail[click_trail.length - 1][0];		// previous clicked element html id
+			var prevClickEl = $('#' + prevClick);
 
-			if ($.inArray(prevClickId, navLinksArray) >= 0) {
-				window.location.href = $(prevClick).attr('href');
+			// == load prev page
+			if ($.inArray(prevClick, navLinksArray) >= 0) {
+				window.location.href = $(prevClickEl).attr('href');
 			} else {
-				$(prevClick).click();
+				if (prevText != "") {
+					$('#searchInput').val(prevText);					// restores searched value to input field
+				}
+				$(prevClickEl).click();
 			}
-
-			click_trail.push($(prevClick).attr('id'));
-			Cookies.set("click_trail", click_trail);
-			var testClickTrail = Cookies.get("click_trail");
-			console.log("click_trail: ", click_trail);
-			console.log("testClickTrail: ", testClickTrail);
-
 			e.stopPropagation();
 		}
+	}
+
+	// ======= updateClickTrail =======
+	function updateClickTrail(searchLinkArray) {
+		console.log("== updateClickTrail ==");
+
+		// == get current json_click_trail from cookies
+		json_click_trail = Cookies.get("json_click_trail");
+		click_trail = JSON.parse(json_click_trail);
+
+		// == modify click_trail
+		if (searchLinkArray == "backBtn") {
+			if (click_trail.length > 1) {
+				click_trail.pop();
+			}
+		} else {
+			click_trail.push(searchLinkArray);
+		}
+		console.log("click_trail: ", click_trail);
+
+		// == save modified json_click_trail to cookies
+		json_click_trail = JSON.stringify(click_trail);
+		Cookies.set("json_click_trail", json_click_trail);
+		return click_trail
 	}
 
 	// ======= activateSearchMenu =======			[ROUTER]
@@ -176,71 +215,47 @@ $(document).on('turbolinks:load', function() {
 
 			// == prevent actions if edit steps are incomplete
 			if (editFlag == false) {
-				var url, idParts, searchType, searchTarget;
-				var multiPartId = $(this).attr('id').indexOf('_');		// dropdown element ids contain index (e.g. "rating_3")
-				var searchText = $('#searchInput').val();				// find text in title or ingredients
-				var textSearchFlag = false;
+				var url, searchBack;
+				var searchText = "";
+				var searchlink = $(this).attr('id').split('_');
+				var searchType = searchlink[0];					// type identifies desired classification (unless text search)
+				var searchParams = searchlink[1];				// database id (extracted from element id) or title/ingredient for text
 
-				if (!backBtnFlag) {
-					navigationArray.push([$(this), searchText]);
-					click_trail.push($(this).attr('id'));
-					backBtnFlag = false;
-				}
-				console.log("navigationArray: ", navigationArray);
-				console.log("click_trail: ", click_trail);
 				toggleEditButtons("hide");
-
-				// == extract database ids from element ids (when appropriate)
-				if (multiPartId > -1) {
-					idParts = $(this).attr('id').split('_');
-					searchType = idParts[0];						// type identifies desired classification (unless text search)
-					searchTarget = idParts[1];						// target is database id (extracted from element id)
-				} else {
-					searchType = $(this).attr('id');
-					searchTarget = "";
-				}
 
 				// == identify url and search text for selected search type
 				switch (searchType) {
-					case "myRecipes":
-						url = "/my_recipes";
-						searchType = "myRecipes";
+					case "recipes":
+						url = "/search_recipes";
 						break;
-					case "allRecipes":
-						url = "/all_recipes";
-						searchType = "allRecipes";
-						break;
-					case "searchTitle":
-						var url = "/search_text";
-						var searchType = "text";
-						textSearchFlag = true;
-						searchTarget = ["title", searchText];		// pass type and title/ingredient selection
-						break;
-					case "searchIngredients":
-						var url = "/search_text";
-						var searchType = "text";
-						textSearchFlag = true;
-						searchTarget = ["ingredients", searchText];	// pass type and title/ingredient selection
+					case "text":
+						url = "/search_text";
+						searchText = $('#searchInput').val();				// find text in title or ingredients
+						searchParams = [searchParams, searchText];		// pass type and title/ingredient selection
 						break;
 					case "rating":
 						url = "/search_rating";
-						searchType = "rating";
 						break;
 					case "category":
 						url = "/search_category";
-						searchType = "category";
 						break;
 					case "nationality":
 						url = "/search_nationality";
-						searchType = "nationality";
 						break;
 				}
 
 				// == prevent text search if no search value
-				if ((textSearchFlag) && (searchText === "")) {
+				if ((searchType === "text") && (searchText === "")) {
 					displayPopup("search", "");
 				} else {
-					makeSearchRequest(searchTarget, searchType, url);
+
+					// == adds new page (unless loaded via back button)
+					if (!backBtnFlag) {
+						searchBack = searchType + "_" + searchParams;
+						click_trail = updateClickTrail([searchBack, searchText]);
+					}
+					backBtnFlag = false;
+					makeSearchRequest(searchType, searchParams, url);
 				}
 
 			// == prevent any search if edits are unsaved
@@ -252,11 +267,10 @@ $(document).on('turbolinks:load', function() {
 	}
 
 	// ======= makeSearchRequest =======
-	function makeSearchRequest(searchTarget, searchType, url) {
+	function makeSearchRequest(searchType, searchParams, url) {
 		console.log("== makeSearchRequest ==");
-		console.log("searchTarget: ", searchTarget);
 
-		var jsonData = JSON.stringify(searchTarget);
+		var jsonData = JSON.stringify(searchParams);
 
 		$.ajax({
 			url: url,
@@ -269,10 +283,11 @@ $(document).on('turbolinks:load', function() {
 			console.dir(jsonData);
 			displayRecipeTitles(jsonData);
 			activateListHeaders();
-			makeTitleText(jsonData, searchType);
+			makeTitleText(jsonData.search_type, jsonData.search_params);
 			updateNoticeMessage(jsonData);
 			deactivateTitleEdit();				// title edit functionality is not for recipe lists (specific recipe only)
 		}).fail(function(unknown){
+			makeTitleText("fail", "");
 			console.log("*** ajax fail ***");
 			console.log("unknown:", unknown);
 		});
@@ -1070,7 +1085,7 @@ $(document).on('turbolinks:load', function() {
 			if (importEdit == "import") {
 				displayRecipeTitles(jsonData);
 				activateListHeaders();
-				makeTitleText(jsonData, "import");
+				makeTitleText("import", "");
 			}
 			updateNoticeMessage(jsonData);
 		}).fail(function(unknown){
@@ -1237,40 +1252,76 @@ $(document).on('turbolinks:load', function() {
 	}
 
 	// ======= makeTitleText =======
-	function makeTitleText(jsonData, type) {
+	function makeTitleText(searchType, search_params) {
 		console.log("== makeTitleText ==");
 
+		console.log("searchType: ", searchType);
+		console.log("search_params: ", search_params);
+
 		var titleText;
-		var ratingText = "";
-		var ratingObj = jsonData.ratingObj;
 
-		// ratingObj: 1=>{:id=>1, :rating=>[1, "favorite"], :color=>"#03045e"}, 2=>{}, etc.
-		// jsonData.search for "text" type: [title OR ingredients, string to search for] e.g. ["title", "garlic"]
-
-		if (jsonData != "") {
-			if ((type == "text") && (jsonData.search[0] == "title")) {
-				titleText = jsonData.search[1] + " in title";
-			} else if ((type == "text") && (jsonData.search[0] == "ingredients")) {
-				titleText = jsonData.search[1] + " in ingredients";
-			} else if (type == "category") {
-				titleText =  jsonData.search + " recipes";
-			} else if (type == "nationality") {
-				titleText = jsonData.search + " recipes";
-			} else if (type == "rating") {
-				// ratingText = ratingText + ratingObj[jsonData.search].rating[0];
-				// ratingText = ratingText + ": ";
-				ratingText = ratingText + ratingObj[jsonData.search].rating[1];
-				titleText = ratingText + " recipes";
-			} else if (type == "myRecipes") {
-				titleText = "My Database Recipes";
-			} else if (type == "allRecipes") {
-				titleText = "All Shared Database Recipes";
-			}
-		} else {
-			titleText = "Please enter a search value";
-			$('#output').html("");
+		switch (searchType) {
+			case "text":
+				if (search_params[0] == "title") {
+					titleText = search_params[1] + " in title";
+				} else if (search_params[0] == "ingredients") {
+					titleText = search_params[1] + " as an ingredient";
+				}
+				break;
+			case "recipes":
+				if (search_params == "my") {
+					titleText = "My Database Recipes";
+				} else if (search_params == "all") {
+					titleText = "All Shared Database Recipes";
+				}
+				break;
+			case "rating":
+				titleText =  search_params + " recipes";
+				break;
+			case "category":
+				titleText =  search_params + " recipes";
+				break;
+			case "nationality":
+				titleText =  search_params + " recipes";
+				break;
+			case "fail":
+				titleText = "";
+				$('#output').html("<p>There was an error with your request.  Please contact the site administrator.");
+				break;
 		}
+
 		$('#outputTitle').text(titleText);
+
+		// var titleText;
+		// var ratingText = "";
+		// var ratingObj = jsonData.ratingObj;
+		// var searchType = jsonData.search_type;
+		//
+		// // ratingObj: 1=>{:id=>1, :rating=>[1, "favorite"], :color=>"#03045e"}, 2=>{}, etc.
+		// // jsonData.search for "text" type: [title OR ingredients, string to search for] e.g. ["title", "garlic"]
+		//
+		// if (jsonData != "") {
+		// 	if ((searchType == "text") && (jsonData.search_params[0] == "title")) {
+		// 		titleText = jsonData.search_params + " in title";
+		// 	} else if ((searchType == "text") && (jsonData.search_params[0] == "ingredients")) {
+		// 		titleText = jsonData.search_params[1] + " in ingredients";
+		// 	} else if (searchType == "category") {
+		// 		titleText =  jsonData.search_params + " recipes";
+		// 	} else if (searchType == "nationality") {
+		// 		titleText = jsonData.search_params + " recipes";
+		// 	} else if (searchType == "rating") {
+		// 		ratingText = ratingText + ratingObj[jsonData.search_params].rating[1];
+		// 		titleText = ratingText + " recipes";
+		// 	} else if (searchType == "my") {
+		// 		titleText = "My Database Recipes";
+		// 	} else if (searchType == "all") {
+		// 		titleText = "All Shared Database Recipes";
+		// 	}
+		// } else {
+		// 	titleText = "Please enter a search value";
+		// 	$('#output').html("");
+		// }
+		// $('#outputTitle').text(titleText);
 	}
 
 	// ======= activateListHeaders =======

@@ -16,6 +16,6 @@ class Users::SessionsController < Devise::SessionsController
 	def destroy
 		puts "\n******* devise: destroy *******"
 		super
-		cookies.delete :click_trail
+		cookies.delete :json_click_trail
 	end
 end

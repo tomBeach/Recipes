@@ -45,16 +45,34 @@ class HomeController < ApplicationController
     # ======= ======= ======= SEARCH ======= ======= =======
     # ======= ======= ======= SEARCH ======= ======= =======
 
-	# ======= my_recipes =======
-	def my_recipes
-		puts "\n******* my_recipes *******"
-		get_recipe_data("myRecipes", "")
-	end
+	# # ======= my_recipes =======
+	# def my_recipes
+	# 	puts "\n******* my_recipes *******"
+	# 	get_recipe_data("recipes_my", "")
+	# end
+	#
+	# # ======= all_recipes =======
+	# def all_recipes
+	# 	puts "\n******* all_recipes *******"
+	# 	get_recipe_data("recipes_all", "")
+	# end
 
-	# ======= all_recipes =======
-	def all_recipes
-		puts "\n******* all_recipes *******"
-		get_recipe_data("allRecipes", "")
+	# # ======= search_ingredient =======
+    # def search_ingredient
+    #     puts "\n******* search_ingredient *******"
+	# 	get_recipe_data("ingredients", params[:_json].downcase)
+	# end
+	#
+	# # ======= search_title =======
+    # def search_title
+    #     puts "\n******* search_title *******"
+	# 	get_recipe_data("titles", params[:_json].downcase)
+	# end
+
+	# ======= search_recipes =======
+	def search_recipes
+		puts "\n******* search_recipes *******"
+		get_recipe_data("recipes", params[:_json])
 	end
 
 	# ======= search_text =======
@@ -62,18 +80,6 @@ class HomeController < ApplicationController
         puts "\n******* search_text *******"
 		# == params[:_json] structure: [searchString, searchText]
 		get_recipe_data("text", params[:_json])
-	end
-
-	# ======= search_ingredient =======
-    def search_ingredient
-        puts "\n******* search_ingredient *******"
-		get_recipe_data("ingredients", params[:_json].downcase)
-	end
-
-	# ======= search_title =======
-    def search_title
-        puts "\n******* search_title *******"
-		get_recipe_data("titles", params[:_json].downcase)
 	end
 
 	# ======= search_rating =======
@@ -101,102 +107,118 @@ class HomeController < ApplicationController
 	end
 
 	# ======= get_recipe_data =======
-    def get_recipe_data(search_type, search_term)
+    def get_recipe_data(search_type, search_params)
         puts "\n******* get_recipe_data *******"
 
 		rating_obj = make_rating_object
 		category_obj = make_category_object
 		nationality_obj = make_nationality_object
 
+		# # == all recipes designated for sharing (function to be added)
+		# elsif search_type == "recipes_all"
+		# 	recipes = Recipe.where(:shared => true).order(:updated_at).reverse_order
+		# 	recipe_data = make_recipe_array(recipes, search_type, search_params)
+		# 	recipe_array = recipe_data[0]
+		# 	message = recipe_data[1]
+		#
+		# # == recipes belonging to user
+		# elsif search_type == "recipes_my"
+		# 	recipes = Recipe.where("user_id" => current_user[:id]).order(:updated_at).reverse_order
+		# 	recipe_data = make_recipe_array(recipes, search_type, search_params)
+		# 	recipe_array = recipe_data[0]
+		# 	message = recipe_data[1]
+
 		# == get recently imported (or existing) recipes
 		if search_type == "import"
 
-			# search_term structure for "import": [recipe_id1, recipe_id2, recipe_id3 ... message]
-			message = search_term[search_term.length-1]
-			search_term.pop()	# remove message so array contains recipe ids only
-			recipes = Recipe.where(id: search_term).order(:updated_at).reverse_order
-			search_term = "import"
-			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			# search_params structure for "import": [recipe_id1, recipe_id2, recipe_id3 ... message]
+			message = search_params[search_params.length-1]
+			search_params.pop()	# remove message so array contains recipe ids only
+			recipes = Recipe.where(id: search_params).order(:updated_at).reverse_order
+			search_params = "import"
+			recipe_data = make_recipe_array(recipes, search_type, search_params)
 			recipe_array = recipe_data[0]
 
 		# == all recipes designated for sharing (function to be added)
-		elsif search_type == "allRecipes"
-			recipes = Recipe.where(:shared => true).order(:updated_at).reverse_order
-			recipe_data = make_recipe_array(recipes, search_type, search_term)
-			recipe_array = recipe_data[0]
-			message = recipe_data[1]
+		elsif search_type == "recipes"
 
-		# == recipes belonging to user
-		elsif search_type == "myRecipes"
-			recipes = Recipe.where("user_id" => current_user[:id]).order(:updated_at).reverse_order
-			recipe_data = make_recipe_array(recipes, search_type, search_term)
-			recipe_array = recipe_data[0]
-			message = recipe_data[1]
+			if search_params == "my"
+				recipes = Recipe.where("user_id" => current_user[:id]).order(:updated_at).reverse_order
+				recipe_data = make_recipe_array(recipes, search_type, search_params)
+				recipe_array = recipe_data[0]
+				message = recipe_data[1]
+
+			elsif search_params == "all"
+				recipes = Recipe.where(:shared => true).order(:updated_at).reverse_order
+				recipe_data = make_recipe_array(recipes, search_type, search_params)
+				recipe_array = recipe_data[0]
+				message = recipe_data[1]
+			end
 
 		elsif search_type == "text"
 
-			# == search for search_term in title
-			if search_term[0] == "title"
-				recipes = Recipe.where("lower(title) LIKE ?", "%" + search_term[1] + "%").order(:updated_at).reverse_order
-				recipe_data = make_recipe_array(recipes, search_term[0], search_term[1])
+			# == search for search_params in title
+			if search_params[0] == "title"
+				recipes = Recipe.where("lower(title) LIKE ?", "%" + search_params[1] + "%").order(:updated_at).reverse_order
+				recipe_data = make_recipe_array(recipes, search_params[0], search_params[1])
 				recipe_array = recipe_data[0]
 				message = recipe_data[1]
 
 			# == get all shared and user-owned recipes; search ingredients in make_recipe_array function
-			elsif search_term[0] == "ingredients"
+			elsif search_params[0] == "ingredients"
 				recipes = Recipe.where(:shared => true).order(:updated_at).reverse_order
-				recipe_data = make_recipe_array(recipes, search_term[0], search_term[1])
+				recipe_data = make_recipe_array(recipes, search_params[0], search_params[1])
 				recipe_array = recipe_data[0]
 				message = recipe_data[1]
 			end
 
 		# == search by rating
 		elsif search_type == "rating"
-			recipes = Recipe.where(:rating_id => search_term, :shared => true).order(:updated_at).reverse_order
-			rating_id = search_term.to_i
+			recipes = Recipe.where(:rating_id => search_params, :shared => true).order(:updated_at).reverse_order
+			rating_id = search_params.to_i
 			rating = rating_obj[rating_id][:rating]
-			rating_text = rating[0].to_s + "/" + rating[1]
-			recipe_data = make_recipe_array(recipes, search_type, rating_text)
+			search_params = rating[0].to_s + "/" + rating[1]
+			recipe_data = make_recipe_array(recipes, search_type, search_params)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 
 		# == search by category
 		elsif search_type == "category"
-			recipes = Recipe.where(:category_id => search_term, :shared => true).order(:updated_at).reverse_order
-			search_term = Category.where(:id => search_term).first[:category]		# convert category_id to category text
-			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			recipes = Recipe.where(:category_id => search_params, :shared => true).order(:updated_at).reverse_order
+			search_params = Category.where(:id => search_params).first[:category]		# convert category_id to category text
+			recipe_data = make_recipe_array(recipes, search_type, search_params)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 
 		# == search by nationality
 		elsif search_type == "nationality"
-			recipes = Recipe.where(:nationality_id => search_term, :shared => true).order(:updated_at).reverse_order
-			search_term = Nationality.where(:id => search_term).first[:nationality]	# convert nationality_id to nationality text
-			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			recipes = Recipe.where(:nationality_id => search_params, :shared => true).order(:updated_at).reverse_order
+			search_params = Nationality.where(:id => search_params).first[:nationality]	# convert nationality_id to nationality text
+			recipe_data = make_recipe_array(recipes, search_type, search_params)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 
 		elsif search_type == "selected"
-			puts "\n *** search_term.inspect: #{search_term.inspect}"
-			recipes = Recipe.where(id: search_term).order(:updated_at).reverse_order
+			puts "\n *** search_params.inspect: #{search_params.inspect}"
+			recipes = Recipe.where(id: search_params).order(:updated_at).reverse_order
 			puts "recipes.inspect: #{recipes.inspect}"
-			recipe_data = make_recipe_array(recipes, search_type, search_term)
+			recipe_data = make_recipe_array(recipes, search_type, search_params)
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 		end
 
 		respond_to do |format|
 			format.json {
-				render json: {:message => message, :search => search_term, :ratingObj => rating_obj, :categoryObj => category_obj, :nationalityObj => nationality_obj, :recipeArray => recipe_array}
+				render json: {:message => message, :search_type => search_type, :search_params => search_params, :ratingObj => rating_obj, :categoryObj => category_obj, :nationalityObj => nationality_obj, :recipeArray => recipe_array}
 			}
 		end
 	end
 
 	# ======= make_recipe_array =======
-	def make_recipe_array(recipes, search_type, search_term)
+	def make_recipe_array(recipes, search_type, search_params)
 		puts "\n******* make_recipe_array *******"
 		puts "search_type: #{search_type}"
-		puts "search_term: #{search_term}"
+		puts "search_params: #{search_params}"
 
 		recipe_array = []
 		recipe_count = 0
@@ -209,7 +231,7 @@ class HomeController < ApplicationController
 
 				user_rating = nil
 				if search_type == "ingredients"
-					target_ingredients = next_recipe.ingredients.where("ingredient LIKE ?", "%" + search_term + "%")
+					target_ingredients = next_recipe.ingredients.where("ingredient LIKE ?", "%" + search_params + "%")
 					if target_ingredients.length > 0
 
 						user_rating_check = UserRating.where(:recipe_id => next_recipe[:id], :user_id => current_user[:id])
@@ -258,19 +280,19 @@ class HomeController < ApplicationController
 		end
 
 		if search_type != "import"
-			message = make_message_text(search_type, search_term, recipe_count)
+			message = make_message_text(search_type, search_params, recipe_count)
 		end
 		return [recipe_array, message]
 	end
 
 	# ======= make_message_text =======
-    def make_message_text(search_type, search_term, recipe_count)
+    def make_message_text(search_type, search_params, recipe_count)
         puts "\n******* make_message_text *******"
 		puts "search_type: #{search_type}"
-		puts "search_term: #{search_term}"
+		puts "search_params: #{search_params}"
 		puts "recipe_count: #{recipe_count}"
 
-		if search_type == "myRecipes"
+		if search_type == "recipes_my"
 			if recipe_count == 0
 				message = "Sorry.  No recipes belonging to you were retrieved.  Try importing a new one!"
 			elsif recipe_count == 1
@@ -278,7 +300,7 @@ class HomeController < ApplicationController
 			elsif recipe_count > 0
 				message = "Here are the " + recipe_count.to_s + " recipes belonging to you."
 			end
-		elsif search_type == "allRecipes"
+		elsif search_type == "recipes_all"
 			if recipe_count == 0
 				message = "No recipes were retrieved from the database."
 			elsif recipe_count > 0
@@ -286,43 +308,43 @@ class HomeController < ApplicationController
 			end
 		elsif search_type == "ingredients"
 			if recipe_count == 0
-				message = "No shared recipes were found with " + search_term + " as an ingredient."
+				message = "No shared recipes were found with " + search_params + " as an ingredient."
 			elsif recipe_count == 1
-				message = recipe_count.to_s + " shared recipe was found with " + search_term + " as an ingredient."
+				message = recipe_count.to_s + " shared recipe was found with " + search_params + " as an ingredient."
 			elsif recipe_count > 1
-				message = recipe_count.to_s + " shared recipes were found with " + search_term + " as an ingredient."
+				message = recipe_count.to_s + " shared recipes were found with " + search_params + " as an ingredient."
 			end
 		elsif search_type == "title"
 			if recipe_count == 0
-				message = "No shared recipes were found with " + search_term + " in the title."
+				message = "No shared recipes were found with " + search_params + " in the title."
 			elsif recipe_count == 1
-				message = recipe_count.to_s + " shared recipe was found with " + search_term + " in the title."
+				message = recipe_count.to_s + " shared recipe was found with " + search_params + " in the title."
 			elsif recipe_count > 1
-				message = recipe_count.to_s + " shared recipes were found with " + search_term + " in the title."
+				message = recipe_count.to_s + " shared recipes were found with " + search_params + " in the title."
 			end
 		elsif search_type == "rating"
 			if recipe_count == 0
-				message = "No shared recipes rated as " + search_term + " were found."
+				message = "No shared recipes rated as " + search_params + " were found."
 			elsif recipe_count == 1
-				message = recipe_count.to_s + " shared recipe rated as " + search_term + " was found."
+				message = recipe_count.to_s + " shared recipe rated as " + search_params + " was found."
 			elsif recipe_count > 1
-				message = recipe_count.to_s + " shared recipes rated as " + search_term + " were found."
+				message = recipe_count.to_s + " shared recipes rated as " + search_params + " were found."
 			end
 		elsif search_type == "category"
 			if recipe_count == 0
-				message = "No shared " + search_term + " recipes were found."
+				message = "No shared " + search_params + " recipes were found."
 			elsif recipe_count == 1
-				message = recipe_count.to_s + " " + search_term + " shared recipe was found."
+				message = recipe_count.to_s + " " + search_params + " shared recipe was found."
 			elsif recipe_count > 1
-				message = recipe_count.to_s + " " + search_term + " shared recipes were found."
+				message = recipe_count.to_s + " " + search_params + " shared recipes were found."
 			end
 		elsif search_type == "nationality"
 			if recipe_count == 0
-				message = "No shared " + search_term + " recipes were found."
+				message = "No shared " + search_params + " recipes were found."
 			elsif recipe_count == 1
-				message = recipe_count.to_s + " " + search_term + " shared recipe was found."
+				message = recipe_count.to_s + " " + search_params + " shared recipe was found."
 			elsif recipe_count > 1
-				message = recipe_count.to_s + " " + search_term + " shared recipes were found."
+				message = recipe_count.to_s + " " + search_params + " shared recipes were found."
 			end
 		elsif search_type == "selected"
 			if recipe_count == 0
