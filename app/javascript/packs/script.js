@@ -1,8 +1,6 @@
 $(document).on('turbolinks:load', function() {
     console.log("== turbolinks:load ==");
 
-	console.log("window.Cookies: ", window.Cookies);
-
     // ======= check pathname =======
     var pathname = window.location.pathname;
 	var pathParts = pathname.split("/");
@@ -39,12 +37,14 @@ $(document).on('turbolinks:load', function() {
 
 
 	// ======= initialize variables =======
-	var recipesArray = [];		// will contain any imported recipe file data
-	var backBtnFlag = false;	// controls whether to add page to navigationArray
-	var noShowFlag = false;		// false: allows for popup display (noShow unchecked)
-	var editFlag = false;		// stays false until recipe data is changed
-	var click_trail, json_click_trail;
+	var click_trail, json_click_trail;	// init local and stored versions
+	// var showRecipeFlag = false;			// used to preserve click-trail when viewing selected recipe
+	var backBtnFlag = false;			// controls whether to add page to navigationArray
+	var noShowFlag = false;				// false: allows for popup display (noShow unchecked)
+	var editFlag = false;				// stays false until recipe data is changed
+	var recipesArray = [];				// will contain any imported recipe file data
 	var navLinksArray = ["homeBtn", "import", "exportLink", "type_recipe", "ratings", "categories", "nationalities", "profile"];
+	// console.log("showRecipeFlag (init): ", showRecipeFlag)
 
 
 	// ======= all pages =======
@@ -83,6 +83,10 @@ $(document).on('turbolinks:load', function() {
 	// ======= show recipe =======
 	} else {
 		if (pathParts[1] == "show_recipe") {
+
+			showRecipeFlag = true;
+			console.log("*** show_recipe ***");
+			console.log("click_trail: ", click_trail);
 
 			// == add local placeholder for new or delete designation
 			var ingredientsData = $('#ingredientsData').data().ingredients;
@@ -168,9 +172,7 @@ $(document).on('turbolinks:load', function() {
 			if ($.inArray(prevClick, navLinksArray) >= 0) {
 				window.location.href = $(prevClickEl).attr('href');
 			} else {
-				if (prevText != "") {
-					$('#searchInput').val(prevText);					// restores searched value to input field
-				}
+				$('#searchInput').val(prevText);						// restores searched value to input field
 				$(prevClickEl).click();
 			}
 			e.stopPropagation();
@@ -187,13 +189,13 @@ $(document).on('turbolinks:load', function() {
 
 		// == modify click_trail
 		if (searchLinkArray == "backBtn") {
-			if (click_trail.length > 1) {
+			if ((click_trail.length > 1) && (showRecipeFlag == false)) {
 				click_trail.pop();
 			}
+			showRecipeFlag = false;
 		} else {
 			click_trail.push(searchLinkArray);
 		}
-		console.log("click_trail: ", click_trail);
 
 		// == save modified json_click_trail to cookies
 		json_click_trail = JSON.stringify(click_trail);
@@ -227,6 +229,7 @@ $(document).on('turbolinks:load', function() {
 				switch (searchType) {
 					case "recipes":
 						url = "/search_recipes";
+						$('#searchInput').val("");
 						break;
 					case "text":
 						url = "/search_text";
@@ -235,12 +238,15 @@ $(document).on('turbolinks:load', function() {
 						break;
 					case "rating":
 						url = "/search_rating";
+						$('#searchInput').val("");
 						break;
 					case "category":
 						url = "/search_category";
+						$('#searchInput').val("");
 						break;
 					case "nationality":
 						url = "/search_nationality";
+						$('#searchInput').val("");
 						break;
 				}
 
@@ -309,7 +315,6 @@ $(document).on('turbolinks:load', function() {
 		// ***** refactoring *****
 		$('.editSelect').change(function(e) {
 			console.log("== change: editSelect ==");
-			console.log("$(this): ", $(this));
 			e.preventDefault();
 			editFlag = true;
 
@@ -382,7 +387,7 @@ $(document).on('turbolinks:load', function() {
 
 		// == allow return key entry for new ingredients or instructions
 		$('body').on('keyup', function(e) {
-			console.log("== keyup: saveNewLine ==");
+			// console.log("== keyup: saveNewLine ==");
 			if ((e.keyCode === 13) && ($(':focus').attr('id') === 'newIngr')) {
 				saveNewLine("ingrSave");
 			} else if ((e.keyCode === 13) && ($(':focus').attr('id') === 'newInst')) {
@@ -428,7 +433,7 @@ $(document).on('turbolinks:load', function() {
 		$('#instAdd').css('background-color', 'Plum');
 
 		$('#instAdd, #ingrAdd').hover(function() {
-			console.log("== hover ==");
+			// console.log("== hover ==");
 			$(this).css("color", "red");
 			$(this).css("background-color", "navy");
 		},
@@ -1255,9 +1260,6 @@ $(document).on('turbolinks:load', function() {
 	function makeTitleText(searchType, search_params) {
 		console.log("== makeTitleText ==");
 
-		console.log("searchType: ", searchType);
-		console.log("search_params: ", search_params);
-
 		var titleText;
 
 		switch (searchType) {
@@ -1291,37 +1293,6 @@ $(document).on('turbolinks:load', function() {
 		}
 
 		$('#outputTitle').text(titleText);
-
-		// var titleText;
-		// var ratingText = "";
-		// var ratingObj = jsonData.ratingObj;
-		// var searchType = jsonData.search_type;
-		//
-		// // ratingObj: 1=>{:id=>1, :rating=>[1, "favorite"], :color=>"#03045e"}, 2=>{}, etc.
-		// // jsonData.search for "text" type: [title OR ingredients, string to search for] e.g. ["title", "garlic"]
-		//
-		// if (jsonData != "") {
-		// 	if ((searchType == "text") && (jsonData.search_params[0] == "title")) {
-		// 		titleText = jsonData.search_params + " in title";
-		// 	} else if ((searchType == "text") && (jsonData.search_params[0] == "ingredients")) {
-		// 		titleText = jsonData.search_params[1] + " in ingredients";
-		// 	} else if (searchType == "category") {
-		// 		titleText =  jsonData.search_params + " recipes";
-		// 	} else if (searchType == "nationality") {
-		// 		titleText = jsonData.search_params + " recipes";
-		// 	} else if (searchType == "rating") {
-		// 		ratingText = ratingText + ratingObj[jsonData.search_params].rating[1];
-		// 		titleText = ratingText + " recipes";
-		// 	} else if (searchType == "my") {
-		// 		titleText = "My Database Recipes";
-		// 	} else if (searchType == "all") {
-		// 		titleText = "All Shared Database Recipes";
-		// 	}
-		// } else {
-		// 	titleText = "Please enter a search value";
-		// 	$('#output').html("");
-		// }
-		// $('#outputTitle').text(titleText);
 	}
 
 	// ======= activateListHeaders =======
