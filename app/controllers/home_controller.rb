@@ -45,30 +45,6 @@ class HomeController < ApplicationController
     # ======= ======= ======= SEARCH ======= ======= =======
     # ======= ======= ======= SEARCH ======= ======= =======
 
-	# # ======= my_recipes =======
-	# def my_recipes
-	# 	puts "\n******* my_recipes *******"
-	# 	get_recipe_data("recipes_my", "")
-	# end
-	#
-	# # ======= all_recipes =======
-	# def all_recipes
-	# 	puts "\n******* all_recipes *******"
-	# 	get_recipe_data("recipes_all", "")
-	# end
-
-	# # ======= search_ingredient =======
-    # def search_ingredient
-    #     puts "\n******* search_ingredient *******"
-	# 	get_recipe_data("ingredients", params[:_json].downcase)
-	# end
-	#
-	# # ======= search_title =======
-    # def search_title
-    #     puts "\n******* search_title *******"
-	# 	get_recipe_data("titles", params[:_json].downcase)
-	# end
-
 	# ======= search_recipes =======
 	def search_recipes
 		puts "\n******* search_recipes *******"
