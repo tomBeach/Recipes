@@ -90,20 +90,6 @@ class HomeController < ApplicationController
 		category_obj = make_category_object
 		nationality_obj = make_nationality_object
 
-		# # == all recipes designated for sharing (function to be added)
-		# elsif search_type == "recipes_all"
-		# 	recipes = Recipe.where(:shared => true).order(:updated_at).reverse_order
-		# 	recipe_data = make_recipe_array(recipes, search_type, search_params)
-		# 	recipe_array = recipe_data[0]
-		# 	message = recipe_data[1]
-		#
-		# # == recipes belonging to user
-		# elsif search_type == "recipes_my"
-		# 	recipes = Recipe.where("user_id" => current_user[:id]).order(:updated_at).reverse_order
-		# 	recipe_data = make_recipe_array(recipes, search_type, search_params)
-		# 	recipe_array = recipe_data[0]
-		# 	message = recipe_data[1]
-
 		# == get recently imported (or existing) recipes
 		if search_type == "import"
 
@@ -362,6 +348,9 @@ class HomeController < ApplicationController
 
 		# == get selected recipe and user rating
 		@recipe = Recipe.find(params[:id])
+		puts "@recipe: #{@recipe.inspect}"
+		puts "@recipe.ingredients: #{@recipe.ingredients.inspect}"
+		puts "@recipe.instructions: #{@recipe.instructions.inspect}"
 
 		# ======= selected user rating =======
 		user_rating = UserRating.where(:user_id => current_user[:id], :recipe_id => @recipe[:id]).first
@@ -681,6 +670,7 @@ class HomeController < ApplicationController
 					recipe_id = @recipe.id
 					import_data_array.push(recipe_id)
 
+					# == imported ingredients are in components (quantity, units, ingredients) and must be assembled  
 					ingredients.each_with_index do |next_ingredient, index|
 						next_ingredient = next_ingredient.permit(:quantity, :units, :ingredient)
 						quantity = next_ingredient['quantity']
@@ -698,6 +688,9 @@ class HomeController < ApplicationController
 						end
 						ingredient = (quantity + " " + units + " " + ingredient).strip
 						# puts "ingredient: #{ingredient}"
+						if sequence === nil
+							sequence = 0
+						end
 						@ingredient = Ingredient.create(:recipe_id => recipe_id, :ingredient => ingredient, :sequence => sequence)
 
 						if @ingredient.save
@@ -711,6 +704,9 @@ class HomeController < ApplicationController
 					instructions.each_with_index do |next_instruction, index|
 						instruction = next_instruction['instruction']
 						sequence = index + 1
+						if sequence === nil
+							sequence = 0
+						end
 						@instruction = Instruction.create(:recipe_id => recipe_id, :instruction => instruction, :sequence => sequence)
 						if @instruction.save
 							puts "Instruction SAVED"
