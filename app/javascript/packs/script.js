@@ -1758,62 +1758,70 @@ $(document).on('turbolinks:load', function() {
 		var recipeHtml = "";
 		var recipeText = "";
 
-		for (var i = 0; i < recipeArray.length; i++) {
-			nextRecipe = recipeArray[i];
-			nextTitle = recipeArray[i].title;
-			nextIngredients = recipeArray[i].ingredients;
-			nextInstructions = recipeArray[i].instructions;
+		// == display "format failure" message
+		if (recipeArray.length < 1) {
+			recipeHtml = recipeHtml + "<p>Your recipe file may be missing the 'ingredients' of 'instructions' lines.</p>"
+			recipeHtml = recipeHtml + "<p>Check the file to make sure it fits the format suggested on the Home page.</p>"
 
-			// == recipe title
-			recipeHtml = recipeHtml + "<div class='recipeBox1'>";
-			recipeHtml = recipeHtml + "<p class='recipeTitle'>" + nextTitle + "</p>";
-			recipeText = recipeText + nextTitle + "\n\n";
+		// == display file as interpreted by file reader
+		} else {
+			for (var i = 0; i < recipeArray.length; i++) {
+				nextRecipe = recipeArray[i];
+				nextTitle = recipeArray[i].title;
+				nextIngredients = recipeArray[i].ingredients;
+				nextInstructions = recipeArray[i].instructions;
 
-			if (i === 0) {
-				recipeHtml = recipeHtml + "<div class='saveBtn' id='fileSaveBtn'> Save </div>";
-			}
-			recipeHtml = recipeHtml + "</div>";
+				// == recipe title
+				recipeHtml = recipeHtml + "<div class='recipeBox1'>";
+				recipeHtml = recipeHtml + "<p class='recipeTitle'>" + nextTitle + "</p>";
+				recipeText = recipeText + nextTitle + "\n\n";
 
-			// == ingredients label
-			recipeHtml = recipeHtml + "<div class='newRecipeBox'>";
-			recipeHtml = recipeHtml + "<p class='newRecipeLabel'>ingredients</p>";
-			recipeText = recipeText + "ingredients\n";
-
-			// == ingredients lines: ingredientObj = {quantity:___, units:___, ingredient:___};
-			for (var j = 0; j < nextIngredients.length; j++) {
-				nextQuantity = nextIngredients[j].quantity;
-				nextUnits = nextIngredients[j].units;
-				nextIngredient = nextIngredients[j].ingredient;
-
-				// == eliminate ingredients without quantities/units
-				if (nextQuantity == null) {
-					nextQuantity = "";
+				if (i === 0) {
+					recipeHtml = recipeHtml + "<div class='saveBtn' id='fileSaveBtn'> Save </div>";
 				}
-				if (nextUnits == null) {
-					nextUnits = "";
+				recipeHtml = recipeHtml + "</div>";
+
+				// == ingredients label
+				recipeHtml = recipeHtml + "<div class='newRecipeBox'>";
+				recipeHtml = recipeHtml + "<p class='newRecipeLabel'>ingredients</p>";
+				recipeText = recipeText + "ingredients\n";
+
+				// == ingredients lines: ingredientObj = {quantity:___, units:___, ingredient:___};
+				for (var j = 0; j < nextIngredients.length; j++) {
+					nextQuantity = nextIngredients[j].quantity;
+					nextUnits = nextIngredients[j].units;
+					nextIngredient = nextIngredients[j].ingredient;
+
+					// == eliminate ingredients without quantities/units
+					if (nextQuantity == null) {
+						nextQuantity = "";
+					}
+					if (nextUnits == null) {
+						nextUnits = "";
+					}
+
+					nextText = (nextQuantity + " " + nextUnits + " " + nextIngredient).trim()
+					nextHtml = "<p class='newIngredient'>" + nextText + "</p>";
+					recipeHtml = recipeHtml + nextHtml;
+					recipeText = recipeText + nextText + "\n";
 				}
 
-				nextText = (nextQuantity + " " + nextUnits + " " + nextIngredient).trim()
-				nextHtml = "<p class='newIngredient'>" + nextText + "</p>";
-				recipeHtml = recipeHtml + nextHtml;
-				recipeText = recipeText + nextText + "\n";
-			}
+				recipeHtml = recipeHtml + "<p class='newRecipeLabel'>instructions</p>";
+				recipeText = recipeText + "\n\n";
+				recipeText = recipeText + "instructions\n";
 
-			recipeHtml = recipeHtml + "<p class='newRecipeLabel'>instructions</p>";
-			recipeText = recipeText + "\n\n";
-			recipeText = recipeText + "instructions\n";
-
-			// instructionObj = {instruction:___, duration:___, durUnits:___};
-			for (var k = 0; k < nextInstructions.length; k++) {
-				nextInstruction = nextInstructions[k].instruction;
-				nextDuration = nextInstructions[k].duration;
-				nextDurUnits = nextInstructions[k].durUnits;
-				nextHtml = "<p class='newInstruction'>" + nextInstruction + "</p>";
-				recipeHtml = recipeHtml + nextHtml;
-				recipeText = recipeText + nextInstruction + "\n";
+				// instructionObj = {instruction:___, duration:___, durUnits:___};
+				for (var k = 0; k < nextInstructions.length; k++) {
+					nextInstruction = nextInstructions[k].instruction;
+					nextDuration = nextInstructions[k].duration;
+					nextDurUnits = nextInstructions[k].durUnits;
+					nextHtml = "<p class='newInstruction'>" + nextInstruction + "</p>";
+					recipeHtml = recipeHtml + nextHtml;
+					recipeText = recipeText + nextInstruction + "\n";
+				}
+				recipeHtml = recipeHtml + "</div>"
+				recipeText = recipeText + "\n\n\n";
 			}
-			recipeHtml = recipeHtml + "</div>"
-			recipeText = recipeText + "\n\n\n";
 		}
 
 		$('#output').html(recipeHtml);
