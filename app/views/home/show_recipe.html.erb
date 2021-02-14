@@ -56,11 +56,15 @@
 		<%= select_tag "category_edit_select", options_for_select(@category_ids, @category_id), class: "editSelect", remote: true %>
 		<%= select_tag "nationality_edit_select", options_for_select(@nationality_ids, @nationality_id), class: "editSelect", remote: true %>
 		<% puts "@recipe.shared: #{@recipe.shared}" %>
-		<p class="label">shared</p>
-		<% if @recipe.shared === true %>
-			<input type="checkbox" id="shared" name="shared" class="recipeShare" value="<%= @recipe.shared %>" checked>
+		<% if @recipe.user_id === current_user[:id] %>
+			<p class="label">shared</p>
+			<% if @recipe.shared === true %>
+				<input type="checkbox" id="shared" name="shared" class="recipeShare" value="<%= @recipe.shared %>" checked>
+			<% else %>
+				<input type="checkbox" id="shared" name="shared" class="recipeShare" value="<%= @recipe.shared %>">
+			<% end %>
 		<% else %>
-			<input type="checkbox" id="shared" name="shared" class="recipeShare" value="<%= @recipe.shared %>">
+			<p class="label">&nbsp;</p>
 		<% end %>
 		<%= link_to "Delete", "delete_recipe/" + @recipe[:id].to_s, id: "deleteRecipe", class: "active", remote: true %>
 	</div>

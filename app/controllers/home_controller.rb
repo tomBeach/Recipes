@@ -431,19 +431,6 @@ class HomeController < ApplicationController
     # ======= ======= ======= EDIT ======= ======= =======
     # ======= ======= ======= EDIT ======= ======= =======
 
-	# ======= calc_average_rating =======
-    def calc_average_rating(which_recipe_id, new_rating_id)
-        puts "\n******* calc_average_rating *******"
-		rating_avg = UserRating.where(:recipe_id => which_recipe_id).average(:rating_id)
-		puts "\nrating_avg: #{rating_avg}"
-		if rating_avg
-			puts "*** FOUND RATINGS ***"
-			rating_avg = rating_avg.round()
-		end
-		puts "\nrating_avg: #{rating_avg}"
-		return rating_avg
-	end
-
 	# ======= save_recipe_edits =======
     def save_recipe_edits
         puts "\n******* save_recipe_edits *******"
@@ -625,6 +612,20 @@ class HomeController < ApplicationController
 		end
     end
 
+	# ======= calc_average_rating =======
+    def calc_average_rating(which_recipe_id, new_rating_id)
+        puts "\n******* calc_average_rating *******"
+		rating_avg = UserRating.where(:recipe_id => which_recipe_id).average(:rating_id)
+		if rating_avg
+			puts "*** EXISTING RATINGS ***"
+			rating_avg = rating_avg.round()
+		else
+			rating_avg = new_rating_id
+		end
+		puts "\nrating_avg: #{rating_avg}"
+		return rating_avg
+	end
+
 	# ======= ======= ======= RECIPE FILES ======= ======= =======
     # ======= ======= ======= RECIPE FILES ======= ======= =======
     # ======= ======= ======= RECIPE FILES ======= ======= =======
@@ -670,7 +671,7 @@ class HomeController < ApplicationController
 					recipe_id = @recipe.id
 					import_data_array.push(recipe_id)
 
-					# == imported ingredients are in components (quantity, units, ingredients) and must be assembled  
+					# == imported ingredients are in components (quantity, units, ingredients) and must be assembled
 					ingredients.each_with_index do |next_ingredient, index|
 						next_ingredient = next_ingredient.permit(:quantity, :units, :ingredient)
 						quantity = next_ingredient['quantity']
