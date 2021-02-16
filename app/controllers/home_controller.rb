@@ -509,6 +509,8 @@ class HomeController < ApplicationController
 			deleteIngredientCount = 0
 	        params[:ingredients].each_with_index do |next_ingredient, index|
 	            ingredient_id = next_ingredient[:id]
+
+				# == cover for frontend error
 				if next_ingredient[:sequence] == nil
 					puts "*** MISSING SEQUENCE: " + ingredient_id.to_s
 					next_ingredient[:sequence] = index
@@ -542,6 +544,12 @@ class HomeController < ApplicationController
 			deleteInstructionCount = 0
 	        params[:instructions].each do |next_instruction|
 	            instruction_id = next_instruction[:id]
+
+				# == cover for frontend error
+				if next_instruction[:sequence] == nil
+					puts "*** MISSING SEQUENCE: " + instruction_id.to_s
+					next_instruction[:sequence] = index
+				end
 
 				# == identify if ingredient is new
 				if next_instruction[:new_delete] == "NEW"
@@ -687,11 +695,10 @@ class HomeController < ApplicationController
 						if ingredient == nil
 							ingredient = ""
 						end
-						ingredient = (quantity + " " + units + " " + ingredient).strip
-						# puts "ingredient: #{ingredient}"
 						if sequence === nil
 							sequence = 0
 						end
+						ingredient = (quantity + " " + units + " " + ingredient).strip
 						@ingredient = Ingredient.create(:recipe_id => recipe_id, :ingredient => ingredient, :sequence => sequence)
 
 						if @ingredient.save

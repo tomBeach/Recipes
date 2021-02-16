@@ -69,10 +69,6 @@ $(document).on('turbolinks:load', function() {
 		activateTitleBtns();			// title headers can sort on column (alphabetic, numeric, time)
 		activateEditMenu();				// event listeners for individual recipe classification (e.g. nationality, etc.)
 
-		// ======= init unedited sort order =======
-		var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
-		var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
-
 		// == initially hide classify/share functions to enable title entry text box
 		$('#rating_edit_select').hide();
 		$('#category_edit_select').hide();
@@ -111,10 +107,6 @@ $(document).on('turbolinks:load', function() {
 			$('#categoryData').data().prev_categoryid = $('#categoryData').data().categoryid;
 			$('#nationalityData').data().prev_nationalityid = $('#nationalityData').data().nationalityid;
 
-			// ======= init unedited sort order =======
-			var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
-			var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
-
 		// ======= classification functions =======
 		} else if ((pathParts[1] == "ratings") || (pathParts[1] == "categories") || (pathParts[1] == "nationalities")) {
 
@@ -124,9 +116,9 @@ $(document).on('turbolinks:load', function() {
 	}
 
 
-	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
-	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
-	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
+	// ======= ======= ======= NAV HISTORY (BACK BUTTON) ======= ======= =======
+	// ======= ======= ======= NAV HISTORY (BACK BUTTON) ======= ======= =======
+	// ======= ======= ======= NAV HISTORY (BACK BUTTON) ======= ======= =======
 
 	// ======= activateBackBtn =======
 	function activateBackBtn() {
@@ -176,6 +168,8 @@ $(document).on('turbolinks:load', function() {
 	function updateClickTrail(searchLinkArray) {
 		console.log("== updateClickTrail ==");
 
+		// searchLinkArray structure: [searchRequest, searchText] (e.g. ["text_title", "garlic"], [rating_1, ""])
+
 		// == get current json_click_trail from cookies
 		json_click_trail = Cookies.get("json_click_trail");
 		click_trail = JSON.parse(json_click_trail);
@@ -206,6 +200,11 @@ $(document).on('turbolinks:load', function() {
 			click_trail = updateClickTrail([whichLink, ""]);
 		});
 	}
+
+
+	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
+	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
+	// ======= ======= ======= RECIPE SEARCH MENU ======= ======= =======
 
 	// ======= activateSearchMenu =======			[ROUTER]
     function activateSearchMenu() {
@@ -399,12 +398,7 @@ $(document).on('turbolinks:load', function() {
 		currentText = $(this).text();
 
 		// == hide classification elements to enable text editing html
-		$('#rating_edit_select').hide();
-		$('#category_edit_select').hide();
-		$('#nationality_edit_select').hide();
-		$('#deleteRecipe').hide();
-		$('#shared').hide();
-		$('.label').hide();
+		$('.editOption').hide();
 
 		// == create textbox and button controls for revised title
 		var inputHtml = "<input type='text' id='editTitleText' name='editTitleText' value='" + currentText + "'>";
@@ -496,12 +490,7 @@ $(document).on('turbolinks:load', function() {
 		$('#editTitleText').replaceWith(saveHtml);
 		$('.saveBtn, .cancelBtn').remove();
 
-		$('#rating_edit_select').show();
-		$('#category_edit_select').show();
-		$('#nationality_edit_select').show();
-		$('#deleteRecipe').show();
-		$('#shared').show();
-		$('.label').show();
+		$('.editOption').show();
 
 		// == restore line hilites and click behavior
 		$('#outputTitle').on('mouseover', hiliteLink);
@@ -537,7 +526,7 @@ $(document).on('turbolinks:load', function() {
     function activateSortableLists() {
 		console.log("== activateSortableLists ==");
 
-		// ======= ingredients =======
+		// ======= sortable ingredients =======
 		$('#ingredients').sortable({
 			start: function (event, ui) {
 				console.log("== start ==");
@@ -549,14 +538,13 @@ $(document).on('turbolinks:load', function() {
 			},
 			stop: function (event, ui) {
 				console.log("== stop ==");
-				editFlag = true;							// indicates that a change has been registered
-				activateSaveCancel();						// ingredient moved: enable save/cancel buttons
-				self.updateItemPositions(ui.item);			// ui.item is container div for ingredient sequence/text
-				self.updateItemSequences("ingr");
+				editFlag = true;								// indicates that a change has been registered
+				activateSaveCancel();							// ingredient moved: enable save/cancel buttons
+				updateItemPositions(ui.item, "ingredients");	// ui.item is container div for instruction sequence/text
 			}
 		}).disableSelection();
 
-		// ======= instructions =======
+		// ======= sortable instructions =======
 		$('#instructions').sortable({
 			start: function (event, ui) {
 				console.log("== start ==");
@@ -568,84 +556,56 @@ $(document).on('turbolinks:load', function() {
 			},
 			stop: function (event, ui) {
 				console.log("== stop ==");
-				editFlag = true;							// indicates that a change has been registered
-				activateSaveCancel();						// instruction moved: enable save/cancel buttons
-				updateItemPositions(ui.item);				// ui.item is container div for instruction sequence/text
-				updateItemSequences("inst");
+				editFlag = true;								// indicates that a change has been registered
+				activateSaveCancel();							// instruction moved: enable save/cancel buttons
+				updateItemPositions(ui.item, "instructions");	// ui.item is container div for instruction sequence/text
 			}
 		}).disableSelection();
 
-		// ======= init unedited sort order =======
-		var ingredientsInOrder = $("#ingredients").sortable("toArray");		// ingredient element ids
-		var instructionsInOrder = $("#instructions").sortable("toArray");	// instruction element ids
-
 		// ======= update sort order =======
-		updateItemPositions = function($item) {
+		updateItemPositions = function($item, ingrOrInst) {
 			console.log("== updateItemPositions ==");
 
 			editFlag = true;								// indicates that a change has been registered
-			var startIndex = $item.data("startindex") + 1;
-			var newIndex = $item.index() + 1;
+			var itemResultArray = [];
 
-			// ======= update sort arrays =======
-			if (newIndex != startIndex) {
-				ingredientsInOrder = $("#ingredients").sortable("toArray");
-				instructionsInOrder = $("#instructions").sortable("toArray");
-			}
-		}
-
-		// ======= update sequence numbers =======
-		updateItemSequences = function(ingrOrInst) {
-			console.log("== updateItemSequences ==");
-			console.log("ingrOrInst: ", ingrOrInst);
-
-			var nextIngredientId, nextIngredientEl, nextInstructionId, nextInstructionEl;
-
-			// == update ingredient sequence display for new order
-			if (ingrOrInst == "ingr") {
-				var sortedListItems = ingredientsInOrder;
-				var localDataItems = $('#ingredientsData').data().ingredients;
+			// ======= init unedited sort order =======
+			if (ingrOrInst === "ingredients") {
+				var itemSortArray = $("#ingredients").sortable("toArray");		// ingredient element ids
+				var itemDataArray = $('#ingredientsData').data().ingredients;
 			} else {
-				var sortedListItems = instructionsInOrder;
-				var localDataItems = $('#instructionsData').data().instructions;
+				var itemSortArray = $("#instructions").sortable("toArray");		// ingredient element ids
+				var itemDataArray = $('#instructionsData').data().instructions;
 			}
-			console.log("sortedListItems: ", sortedListItems);
-			console.log("localDataItems: ", localDataItems);
 
-			// == cycle through item list and renumber sequences
-			for (var i = 0; i < sortedListItems.length; i++) {
-				nextItemId = sortedListItems[i];
-				nextItemNum = nextItemId.split("_")[1];				// extract db id from element id ("element_XX")
-				nextItemEl = $('#' + nextItemId)[0];
-				nextItemSeq = $(nextItemEl).children()[0];			// sequence number element is first child
-				nextItemSeq.innerHTML = (i + 1).toString();			// set new element sequence number
-
-				// == cycle through local database data to update sequence numbers
-				for (var j = 0; j < localDataItems.length; j++) {
-					checkItemId = localDataItems[j].id;
-
-					// == existing item (id is the id integer from database)
-					if (!isNaN(checkItemId)) {
-						if (checkItemId == nextItemNum) {
-							if (ingrOrInst == "ingr") {
-								$('#ingredientsData').data().ingredients[j].sequence = i + 1;
-							} else {
-								$('#instructionsData').data().instructions[j].sequence = i + 1;
-							}
-						}
-
-					// == new item (id integer "XX" determined from count of items; format: NEW_XX)
+			itemSortArray.forEach(function(elementId) {
+				var found = false;
+				var itemId = elementId.split("_")[1];
+				itemDataArray = itemDataArray.filter(function(item) {
+					if (!found && item.id == itemId) {
+						itemResultArray.push(item);
+						found = true;
+						return false;
 					} else {
-						checkItemNum = checkItemId.split("_")[1];
-						if (checkItemNum == nextItemNum) {
-							if (ingrOrInst == "ingr") {
-								$('#ingredientsData').data().ingredients[j].sequence = i + 1;
-							} else {
-								$('#instructionsData').data().instructions[j].sequence = i + 1;
-							}
-						}
+						return true;
 					}
-				}
+				})
+			});
+
+			if (ingrOrInst === "ingredients") {
+				$('#ingredientsData').data().ingredients = itemResultArray;
+				itemResultArray.forEach(function(nextItem, index) {
+					nextItem.sequence = index + 1;
+					var sequenceEl = $('#' + 'ingrLine_' + nextItem.id).children()[0];
+					sequenceEl.innerHTML = (index + 1).toString();
+				});
+			} else {
+				$('#instructionsData').data().instructions = itemResultArray;
+				itemResultArray.forEach(function(nextItem, index) {
+					nextItem.sequence = index + 1;
+					var sequenceEl = $('#' + 'instLine_' + nextItem.id).children()[0];
+					sequenceEl.innerHTML = (index + 1).toString();
+				});
 			}
 		}
 	}
@@ -711,30 +671,30 @@ $(document).on('turbolinks:load', function() {
 		var ingrOrInst = currentId.split("_")[0];	// determine if line is ingredient or instruction
 
 		// == get database record stored in local div (data value)
-		var ingredientsData = $('#ingredientsData').data();
-		var instructionsData = $('#instructionsData').data();
+		// var ingredientsData = $('#ingredientsData').data();
+		// var instructionsData = $('#instructionsData').data();
 		var newText = $('#' + currentId).val();
 
 		// == save ingredient changes to local data
 		if (ingrOrInst == "ingredient") {
-			for (var i = 0; i < ingredientsData.ingredients.length; i++) {
-				nextId = ingredientsData.ingredients[i].id;
-				nextSequence = parseInt($('#ingrSeq_' + nextId).text());
-				ingredientsData.ingredients[i].sequence = nextSequence;
+			for (var i = 0; i < $('#ingredientsData').data().ingredients.length; i++) {
+				nextId = $('#ingredientsData').data().ingredients[i].id;
+				// nextSequence = parseInt($('#ingrSeq_' + nextId).text());
+				// ingredientsData.ingredients[i].sequence = nextSequence;
 				if (nextId == itemId) {
-					ingredientsData.ingredients[i].ingredient = newText;
+					$('#ingredientsData').data().ingredients[i].ingredient = newText;
 					break;
 				}
 			}
 
 		// == save instruction changes to local data
 		} else if (ingrOrInst == "instruction") {
-			for (var i = 0; i < instructionsData.instructions.length; i++) {
-				nextId = instructionsData.instructions[i].id;
-				nextSequence = parseInt($('#instSeq_' + nextId).text());
-				instructionsData.instructions[i].sequence = nextSequence;
+			for (var i = 0; i < $('#instructionsData').data().instructions.length; i++) {
+				nextId = $('#instructionsData').data().instructions[i].id;
+				// nextSequence = parseInt($('#instSeq_' + nextId).text());
+				// instructionsData.instructions[i].sequence = nextSequence;
 				if (nextId == itemId) {
-					instructionsData.instructions[i].instruction = newText;
+					$('#instructionsData').data().instructions[i].instruction = newText;
 					break;
 				}
 			}
@@ -766,13 +726,13 @@ $(document).on('turbolinks:load', function() {
 		if (ingrOrInst == "ingredient") {
 			var sequenceElement = $('#ingrSeq_' + itemId);
 			var ingredientsData = $('#ingredientsData').data().ingredients;
-			ingredientsInOrder = $("#ingredients").sortable("toArray");			// ingredient element ids
+			ingrSortArray = $("#ingredients").sortable("toArray");			// ingredient element ids
 			for (var i = 0; i < ingredientsData.length; i++) {
 				nextItem = ingredientsData[i];
 				if (nextItem.id == itemId) {
 					var sortableDeleteItem = "ingrLine_" + itemId;
-					var deleteItemIndex = ingredientsInOrder.indexOf(sortableDeleteItem);
-					ingredientsInOrder.splice(deleteItemIndex, 1);				// remove item id from inOrder list
+					var deleteItemIndex = ingrSortArray.indexOf(sortableDeleteItem);
+					ingrSortArray.splice(deleteItemIndex, 1);				// remove item id from inOrder list
 					ingredientsData[i].new_delete = "DELETE";					// flag item for delete
 					$('#ingrLine_' + itemId).remove();
 				}
@@ -782,17 +742,17 @@ $(document).on('turbolinks:load', function() {
 		} else if (ingrOrInst == "instruction") {
 			var sequenceElement = $('#instSeq_' + itemId);
 			var instructionsData = $('#instructionsData').data().instructions;
-			instructionsInOrder = $("#instructions").sortable("toArray");		// instruction element ids
-			console.log("instructionsInOrder1: ", instructionsInOrder);
+			instSortArray = $("#instructions").sortable("toArray");		// instruction element ids
+			console.log("instSortArray1: ", instSortArray);
 			for (var i = 0; i < instructionsData.length; i++) {
 				nextItem = instructionsData[i];
 				if (nextItem.id == itemId) {
 					var sortableDeleteItem = "instLine_" + itemId;
-					var deleteItemIndex = instructionsInOrder.indexOf(sortableDeleteItem);
-					instructionsInOrder.splice(deleteItemIndex, 1);				// remove item id from inOrder list
+					var deleteItemIndex = instSortArray.indexOf(sortableDeleteItem);
+					instSortArray.splice(deleteItemIndex, 1);				// remove item id from inOrder list
 					instructionsData[i].new_delete = "DELETE";					// flag item for delete
 					$('#instLine_' + itemId).remove();
-					console.log("instructionsInOrder2: ", instructionsInOrder);
+					console.log("instSortArray2: ", instSortArray);
 				}
 			}
 			updateItemSequences("inst");
@@ -935,17 +895,17 @@ $(document).on('turbolinks:load', function() {
 				updateHtml = updateHtml + "<p class='instruction' id='instruction_" + newSequence + "'>" + newText + "</p>";
 				updateHtml = updateHtml + "</div>";
 				$('#instructions').append(updateHtml);
-				console.log("newSequence: ", newSequence);
-				console.log("hiliteLink: ", hiliteLink);
 				$('#instruction_' + newSequence).on('mouseover', hiliteLink);
 				$('#instruction_' + newSequence).on('mouseout', restoreLink);
 				$('#instruction_' + newSequence).on('click', editRecipeLine);
 			}
+			console.log("newSequence: ", newSequence);
+			console.log("hiliteLink: ", hiliteLink);
 
 			// == remove previously existing buttons if any
 			$('.newRecipeLine').remove();
 			if (pathname != "/type_recipe") {
-				displayPopup("newLine", lineType);
+				displayPopup("newLine", lineType);		// wsrn user that new item is at bottom of list
 			}
 		} else {
 			displayPopup("noText", lineType);
@@ -1046,7 +1006,7 @@ $(document).on('turbolinks:load', function() {
 		};
 
 		//== return saved data to database
-		saveRecipeData(recipeData, "edit");
+		uploadRecipeData(recipeData, "edit");
 	}
 
 	// ======= cancelRecipeEdits =======
@@ -1055,9 +1015,9 @@ $(document).on('turbolinks:load', function() {
 		location.reload();
 	}
 
-	// ======= saveRecipeData =======
-	function saveRecipeData(recipeData, importEdit) {
-		console.log("== saveRecipeData ==");
+	// ======= uploadRecipeData =======
+	function uploadRecipeData(recipeData, importEdit) {
+		console.log("== uploadRecipeData ==");
 
 		if (importEdit == "import") {
 			var url = "/save_recipe_file";
@@ -1853,7 +1813,7 @@ $(document).on('turbolinks:load', function() {
 			$('#fileSaveBtn').click(function(e) {
 				console.log("== click: fileSaveBtn ==");
 				e.preventDefault();
-				saveRecipeData(recipeArray, "import");
+				uploadRecipeData(recipeArray, "import");
 				e.stopPropagation();
 			});
 

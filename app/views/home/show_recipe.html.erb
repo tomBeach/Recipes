@@ -52,21 +52,21 @@
 		<% puts "@rating_ids: #{@rating_ids}" %>
 		<% puts "@rating_id: #{@rating_id}" %>
 
-		<%= select_tag "rating_edit_select", options_for_select(@rating_ids, @rating_id), class: "editSelect", remote: true %>
-		<%= select_tag "category_edit_select", options_for_select(@category_ids, @category_id), class: "editSelect", remote: true %>
-		<%= select_tag "nationality_edit_select", options_for_select(@nationality_ids, @nationality_id), class: "editSelect", remote: true %>
+		<%= select_tag "rating_edit_select", options_for_select(@rating_ids, @rating_id), class: "editSelect editOption", remote: true %>
+		<%= select_tag "category_edit_select", options_for_select(@category_ids, @category_id), class: "editSelect editOption", remote: true %>
+		<%= select_tag "nationality_edit_select", options_for_select(@nationality_ids, @nationality_id), class: "editSelect editOption", remote: true %>
 		<% puts "@recipe.shared: #{@recipe.shared}" %>
 		<% if @recipe.user_id === current_user[:id] %>
-			<p class="label">shared</p>
+			<p class="label editOption">shared</p>
 			<% if @recipe.shared === true %>
-				<input type="checkbox" id="shared" name="shared" class="recipeShare" value="<%= @recipe.shared %>" checked>
+				<input type="checkbox" id="shared" name="shared" class="recipeShare editOption" value="<%= @recipe.shared %>" checked>
 			<% else %>
-				<input type="checkbox" id="shared" name="shared" class="recipeShare" value="<%= @recipe.shared %>">
+				<input type="checkbox" id="shared" name="shared" class="recipeShare editOption" value="<%= @recipe.shared %>">
 			<% end %>
 		<% else %>
-			<p class="label">&nbsp;</p>
+			<p class="label editOption">&nbsp;</p>
 		<% end %>
-		<%= link_to "Delete", "delete_recipe/" + @recipe[:id].to_s, id: "deleteRecipe", class: "active", remote: true %>
+		<%= link_to "Delete", "delete_recipe/" + @recipe[:id].to_s, id: "deleteRecipe", class: "active editOption", remote: true %>
 	</div>
 
 	<!-- ======= recipe edits [hidden] ======= -->
