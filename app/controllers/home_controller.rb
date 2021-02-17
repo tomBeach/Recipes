@@ -511,16 +511,20 @@ class HomeController < ApplicationController
 	            ingredient_id = next_ingredient[:id]
 
 				# == cover for frontend error
-				if next_ingredient[:sequence] == nil
-					puts "*** MISSING SEQUENCE: " + ingredient_id.to_s
-					next_ingredient[:sequence] = index
-				end
+				# if next_ingredient[:sequence] == nil
+				# 	puts "*** MISSING SEQUENCE: " + ingredient_id.to_s
+				# 	next_ingredient[:sequence] = index
+				# end
 
 				# == identify if ingredient is new
 				if next_ingredient[:new_delete] == "NEW"
 					puts "*** NEW INGREDIENT ***"
 					Ingredient.create(:recipe_id => params[:recipe_id], :ingredient => next_ingredient[:ingredient], :sequence => next_ingredient[:sequence])
 					addIngredientCount = addIngredientCount + 1
+
+				# == local new ingredient deleted locally before save => ignore
+				elsif next_ingredient[:new_delete] == "IGNORE"
+					puts "*** IGNORE INGREDIENT ***"
 
 				# == identify if ingredient is flagged for delete
 				elsif next_ingredient[:new_delete] == "DELETE"
@@ -546,15 +550,16 @@ class HomeController < ApplicationController
 	            instruction_id = next_instruction[:id]
 
 				# == cover for frontend error
-				if next_instruction[:sequence] == nil
-					puts "*** MISSING SEQUENCE: " + instruction_id.to_s
-					next_instruction[:sequence] = index
-				end
+				# if next_instruction[:sequence] == nil
+				# 	puts "*** MISSING SEQUENCE: " + instruction_id.to_s
+				# 	next_instruction[:sequence] = index
+				# end
 
 				# == identify if ingredient is new
 				if next_instruction[:new_delete] == "NEW"
 					puts "*** NEW INSTRUCTION ***"
 					Instruction.create(:recipe_id => params[:recipe_id], :instruction => next_instruction[:instruction], :sequence => next_instruction[:sequence])
+					addInstructionCount = addInstructionCount + 1
 
 				# == identify if instruction is flagged for delete
 				elsif next_instruction[:new_delete] == "DELETE"
@@ -562,6 +567,10 @@ class HomeController < ApplicationController
 					instruction = Instruction.find(instruction_id)
 					instruction.destroy
 					deleteInstructionCount = deleteInstructionCount + 1
+
+				# == local new ingredient deleted locally before save => ignore
+				elsif next_instruction[:new_delete] == "IGNORE"
+					puts "*** IGNORE INSTRUCTION ***"
 
 				# == update existing instruction text and sequence
 				else
