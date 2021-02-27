@@ -190,6 +190,7 @@ class HomeController < ApplicationController
 
 		if recipes.length > 0
 			recipes.each do |next_recipe|
+				puts "next_recipe.inspect: #{next_recipe.inspect}"
 
 				user_rating = nil
 				if search_type == "ingredients"
@@ -203,6 +204,7 @@ class HomeController < ApplicationController
 
 						recipe_data = {
 							id: next_recipe.id,
+							update: next_recipe.updated_at.strftime("%b-%d-%y"),
 							shared: next_recipe.shared,
 							rating_id: next_recipe.rating_id,
 							category_id: next_recipe.category_id,
@@ -225,6 +227,7 @@ class HomeController < ApplicationController
 
 					recipe_data = {
 						id: next_recipe.id,
+						update: next_recipe.updated_at.strftime("%b-%d-%y"),
 						shared: next_recipe.shared,
 						rating_id: next_recipe.rating_id,
 						category_id: next_recipe.category_id,
@@ -510,12 +513,6 @@ class HomeController < ApplicationController
 	        params[:ingredients].each_with_index do |next_ingredient, index|
 	            ingredient_id = next_ingredient[:id]
 
-				# == cover for frontend error
-				# if next_ingredient[:sequence] == nil
-				# 	puts "*** MISSING SEQUENCE: " + ingredient_id.to_s
-				# 	next_ingredient[:sequence] = index
-				# end
-
 				# == identify if ingredient is new
 				if next_ingredient[:new_delete] == "NEW"
 					puts "*** NEW INGREDIENT ***"
@@ -548,12 +545,6 @@ class HomeController < ApplicationController
 			deleteInstructionCount = 0
 	        params[:instructions].each do |next_instruction|
 	            instruction_id = next_instruction[:id]
-
-				# == cover for frontend error
-				# if next_instruction[:sequence] == nil
-				# 	puts "*** MISSING SEQUENCE: " + instruction_id.to_s
-				# 	next_instruction[:sequence] = index
-				# end
 
 				# == identify if ingredient is new
 				if next_instruction[:new_delete] == "NEW"

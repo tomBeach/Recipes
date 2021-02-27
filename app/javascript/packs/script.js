@@ -298,7 +298,7 @@ $(document).on('turbolinks:load', function() {
 		var textColor;
 		var currentText, currentId;
 
-		// ***** refactoring *****
+		// == detect changes in classify items (rating, category, nationality)
 		$('.editSelect').change(function(e) {
 			console.log("== change: editSelect ==");
 			e.preventDefault();
@@ -306,7 +306,7 @@ $(document).on('turbolinks:load', function() {
 
 			var classifyType = $(this).attr('id').split('_')[0];	// rating, category of nationality from first element id segment
 
-			// == identify url and search text for selected search type
+			// == save existing values for undo; save new value
 			switch (classifyType) {
 				case "rating":
 					$('#ratingData').data().prev_ratingid = $('#ratingData').data().ratingid;
@@ -501,6 +501,8 @@ $(document).on('turbolinks:load', function() {
 	// ======= revealAddBtns =======
 	function revealAddBtns() {
 		console.log("== revealAddBtns ==");
+
+		// == dynamic behavior for type_recipe view (NOTE: refactor via addClass/removeClass?)
 		$('#ingrAdd').css('color', 'navy');
 		$('#ingrAdd').css('background-color', 'Plum');
 		$('#instAdd').css('color', 'navy');
@@ -615,7 +617,6 @@ $(document).on('turbolinks:load', function() {
 		} else {
 			$('#instructionsData').data().instructions = itemResultArray;		// store new item order in local data
 		}
-
 		console.log("$('#ingredientsData').data().ingredients: ", $('#ingredientsData').data().ingredients);
 		console.log("$('#deleteIngrData').data().ingredients: ", $('#deleteIngrData').data().ingredients);
 		console.log("$('#instructionsData').data().instructions: ", $('#instructionsData').data().instructions);
@@ -654,10 +655,12 @@ $(document).on('turbolinks:load', function() {
 			$('#' + activeEditId).on('click', editRecipeLine);
 		}
 
-		// == replace selected line with edit functionality
+		// == create textarea for new line text entry
 		inputHtml = inputHtml + "<div class='editLineBox'>";
 		inputHtml = inputHtml + "<textarea class='editItem' id='" + currentId + "' name='" + currentId + "'";
 		inputHtml = inputHtml + " cols='40' rows='5'>" + currentText + "</textarea>";
+
+		// == replace selected line with edit functionality
 		var btnsHtml = btnsHtml + "<div class='editBtnsBox'>";
 		var btnsHtml = btnsHtml + "<div class='saveBtn'>save</div>";
 		var btnsHtml = btnsHtml + "<div class='cancelBtn'>cancel</div>";
@@ -706,7 +709,7 @@ $(document).on('turbolinks:load', function() {
 			}
 		}
 
-		// == update html string with changes
+		// == remove edit html; restore text display with new text
 		var saveHtml = "<p class='" + ingrOrInst + "' id='" + currentId + "'>" + newText + "</p>";
 		$('.editLineBox').replaceWith(saveHtml);
 
@@ -734,9 +737,9 @@ $(document).on('turbolinks:load', function() {
 				if (nextItem.id == itemId) {
 					var deleteItem = nextItem;
 					if (deleteItem.new_delete == "NEW") {
-						deleteItem.new_delete = "IGNORE";
+						deleteItem.new_delete = "IGNORE";	// added locally but never inserted to database; ignore it
 					} else {
-						deleteItem.new_delete = "DELETE";
+						deleteItem.new_delete = "DELETE";	// deleted locally but still in database; will delete on submit
 					}
 					$('#deleteIngrData').data().ingredients.push(deleteItem);
 					break;
@@ -752,9 +755,9 @@ $(document).on('turbolinks:load', function() {
 				if (nextItem.id == itemId) {
 					var deleteItem = nextItem;
 					if (deleteItem.new_delete == "NEW") {
-						deleteItem.new_delete = "IGNORE";
+						deleteItem.new_delete = "IGNORE";	// added locally but never inserted to database; ignore it
 					} else {
-						deleteItem.new_delete = "DELETE";
+						deleteItem.new_delete = "DELETE";	// deleted locally but still in database; will delete on submit
 					}
 					$('#deleteInstData').data().instructions.push(deleteItem);
 					break;
@@ -1118,6 +1121,7 @@ $(document).on('turbolinks:load', function() {
 		recipeHtml = recipeHtml + "<th id='categoryHeader' class='menuListHeader'>category</th>";
 		recipeHtml = recipeHtml + "<th id='nationalityHeader' class='menuListHeader'>nationality</th>";
 		recipeHtml = recipeHtml + "<th id='titleHeader' class='menuListHeader'>title</th>";
+		recipeHtml = recipeHtml + "<th id='dateHeader' class='menuListHeader'>date</th>";
 		recipeHtml = recipeHtml + "<th id='selectHeader' class='menuListHeader'>select</th>";
 		recipeHtml = recipeHtml + "</tr></thead><tbody>";
 
@@ -1126,6 +1130,7 @@ $(document).on('turbolinks:load', function() {
 			// ======= loop through recipeArray =======
 			for (var k = 0; k < jsonData.recipeArray.length; k++) {
 				nextId = jsonData.recipeArray[k].id;
+				nextDate = jsonData.recipeArray[k].update;
 				nextShared = jsonData.recipeArray[k].shared;
 				nextRatingId = jsonData.recipeArray[k].rating_id;
 				nextUserRatingId = jsonData.recipeArray[k].user_rating_id;
@@ -1185,6 +1190,7 @@ $(document).on('turbolinks:load', function() {
 				recipeHtml = recipeHtml + "<td class='menuListItem recipeLink'>";
 				recipeHtml = recipeHtml + "<a href='/show_recipe/" + nextId + "'>" + nextTitle;
 				recipeHtml = recipeHtml + "</td>";
+				recipeHtml = recipeHtml + "<td class='menuListItem'>" + nextDate + "</td>";
 				recipeHtml = recipeHtml + "<td class='menuListItem selectItem'>";
 				recipeHtml = recipeHtml + "<input type='checkbox' name='selectRecipe' id='selectRecipe_" + nextId + "' />";
 				recipeHtml = recipeHtml + "</td>";
@@ -1268,6 +1274,10 @@ $(document).on('turbolinks:load', function() {
 			console.log("== click: nationalityHeader ==");
 			sortRecipeList(4, 'text');
 		});
+		$('#dateHeader').click(function() {
+			console.log("== click: dateHeader ==");
+			sortRecipeList(6, 'date');
+		});
 		$('#titleHeader').click(function() {
 			console.log("== click: titleHeader ==");
 			sortRecipeList(5, 'text');
@@ -1298,14 +1308,14 @@ $(document).on('turbolinks:load', function() {
 					return order === 'ASC' ? a - b : b - a;
 					break;
 				case 'date':
-					var dateFormat = function(dt) {
-						[m, d, y] = dt.split('/');
+					var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+					var dateFormat = function(dateText) {
+						[m, d, y] = dateText.split('-');
+						m = monthNames.indexOf(m) + 1;
 						return [y, m - 1, d];
 					}
-					// == convert date string to an object
 					a = new Date(...dateFormat(a));
 					b = new Date(...dateFormat(b));
-					// == convert the date object to numbers via getTime()
 					return order === 'ASC' ? a.getTime() - b.getTime() : b.getTime() - a.getTime();
 					break;
 			}
@@ -1316,6 +1326,7 @@ $(document).on('turbolinks:load', function() {
     function activateSelectItem() {
 		console.log("== activateSelectItem ==");
 
+		// == allow user to select specific recipes from list
 		$('.selectItem > input').change(function(e) {
 			console.log("== selectItem: change ==");
 
@@ -1370,7 +1381,6 @@ $(document).on('turbolinks:load', function() {
 			console.log("*** ajax fail ***");
 			console.log("unknown:", unknown);
 		});
-
 	}
 
 
