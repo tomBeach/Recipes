@@ -107,15 +107,12 @@ class HomeController < ApplicationController
 			if search_params == "my"
 				recipes = Recipe.where("user_id" => current_user[:id]).order(:updated_at).reverse_order
 				recipe_data = make_recipe_array(recipes, search_type, search_params)
-				recipe_array = recipe_data[0]
-				message = recipe_data[1]
-
 			elsif search_params == "all"
 				recipes = Recipe.where(:shared => true).order(:updated_at).reverse_order
 				recipe_data = make_recipe_array(recipes, search_type, search_params)
-				recipe_array = recipe_data[0]
-				message = recipe_data[1]
 			end
+			recipe_array = recipe_data[0]
+			message = recipe_data[1]
 
 		elsif search_type == "text"
 
@@ -168,6 +165,7 @@ class HomeController < ApplicationController
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 		end
+		puts "message: #{message}"
 
 		respond_to do |format|
 			format.json {
@@ -256,6 +254,11 @@ class HomeController < ApplicationController
 		puts "search_type: #{search_type}"
 		puts "search_params: #{search_params}"
 		puts "recipe_count: #{recipe_count}"
+
+		if search_type == "recipes"
+			search_type = "recipes" + "_" + search_params
+		end
+		puts "search_type2: #{search_type}"
 
 		if search_type == "recipes_my"
 			if recipe_count == 0
@@ -366,8 +369,13 @@ class HomeController < ApplicationController
 			@recipe.rating_id = 0
 		else
 			rating = Rating.where(:id => user_rating[:rating_id]).first		# user_ratings table contains selected rating_id
-			@rating_id = rating[:id]										# rating id from ratings table
-			@rating_text = rating[:comment]									# rating text ("comment" column) from ratings table
+			if rating == nil
+				@rating_id = 0												# placeholder
+				@rating_text = ""											# placeholder
+			else
+				@rating_id = rating[:id]									# rating id from ratings table
+				@rating_text = rating[:comment]								# rating text ("comment" column) from ratings table
+			end
 			@user_rating_id = user_rating[:id]								# id from user_ratings join table (links user/recipe/rating)
 		end
 
