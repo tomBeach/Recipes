@@ -1,5 +1,6 @@
 $(document).on('turbolinks:load', function() {
     console.log("== turbolinks:load ==");
+	console.log("*** keychain check ***");
 
     // ======= check pathname =======
     var pathname = window.location.pathname;
