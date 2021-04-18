@@ -1,6 +1,5 @@
 $(document).on('turbolinks:load', function() {
     console.log("== turbolinks:load ==");
-	console.log("*** keychain check ***");
 
     // ======= check pathname =======
     var pathname = window.location.pathname;
@@ -1147,6 +1146,7 @@ $(document).on('turbolinks:load', function() {
 					selectedRating = "&nbsp;";
 					ratingText = "&nbsp;";
 					ratingStyle = "";
+					nextRatingId = "9999";
 				}
 
 				// == user rating
@@ -1157,6 +1157,7 @@ $(document).on('turbolinks:load', function() {
 					selectedRating = "&nbsp;";
 					userRatingText = "&nbsp;";
 					userRatingStyle = "";
+					nextUserRatingId = "9999";
 				}
 
 				// == category
@@ -1184,8 +1185,10 @@ $(document).on('turbolinks:load', function() {
 					recipeHtml = recipeHtml + "<p class='sharedLabel'>private</p>";
 				}
 				recipeHtml = recipeHtml + "</td>";
-				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + ratingStyle + ";'>" + ratingText + "</td>";
-				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + userRatingStyle + ";'>" + userRatingText + "</td>";
+				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + ratingStyle + ";'>" + ratingText;
+				recipeHtml = recipeHtml + "<span class='hiddenValue'>" + nextRatingId + "</span></td>";
+				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + userRatingStyle + ";'>" + userRatingText;
+				recipeHtml = recipeHtml + "<span class='hiddenValue'>" + nextUserRatingId + "</span></td>";
 				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + categoryStyle + ";'>" + categoryText + "</td>";
 				recipeHtml = recipeHtml + "<td class='menuListItem' style='" + nationalityStyle + ";'>" + nationalityText + "</td>";
 				recipeHtml = recipeHtml + "<td class='menuListItem recipeLink'>";
@@ -1298,8 +1301,13 @@ $(document).on('turbolinks:load', function() {
 		$('.menuList tbody tr').sort(function(a, b) {
 
 			// == get text value in <td> via columnIndex number
-			a = $(a).find('td:eq(' + columnIndex + ')').text();
-			b = $(b).find('td:eq(' + columnIndex + ')').text();
+			if ((columnIndex === 1) || (columnIndex === 2)) {
+				a = $(a).find('td:eq(' + columnIndex + ') .hiddenValue').text();
+				b = $(b).find('td:eq(' + columnIndex + ') .hiddenValue').text();
+			} else {
+				a = $(a).find('td:eq(' + columnIndex + ')').text();
+				b = $(b).find('td:eq(' + columnIndex + ')').text();
+			}
 
 			switch (columnType) {
 				case 'text':
