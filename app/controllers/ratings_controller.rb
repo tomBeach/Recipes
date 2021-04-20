@@ -49,10 +49,11 @@ before_action :set_rating, only: [:show, :edit, :update, :destroy]
 		puts "rating.inspect: #{rating.inspect}"
 
 		respond_to do |format|
-			if rating.update(:rating => params[:rating])
-				message = params[:rating] + " has been stored as a rating."
+			if rating.update(:comment => okay_params[:rating])
+				message = okay_params[:rating] + " has been stored as a rating."
+				puts "*** UPDATE OK ***"
 			else
-				message = "An error prevented this change: " + params[:rating] + "."
+				message = "An error prevented this change: " + okay_params[:rating] + "."
 			end
 			format.json {
 				render json: {:message => message}

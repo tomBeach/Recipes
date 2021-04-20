@@ -2217,8 +2217,10 @@ $(document).on('turbolinks:load', function() {
 		console.log("== editClassifyText ==");
 		console.log("itemId: ", itemId);
 
-		var currentText = $('#classify_' + itemId).text();
-		console.log("currentText: ", currentText);
+		var currentIdText = $('#classify_' + itemId).text().split(': ');
+		var currentId = currentIdText[0];
+		var currentText = currentIdText[1];
+		console.log("currentId/Text: ", currentId, currentText);
 
 		var inputHtml = "<input type='text' id='editClassify_" + itemId + "' class='editItemText' value='" + currentText + "' >";
 		var btnsHtml = "<div id='saveItem_" + itemId + "' class='saveBtn'> save </div>";
@@ -2236,7 +2238,7 @@ $(document).on('turbolinks:load', function() {
 		$('.cancelBtn').click(function(e) {
 			e.preventDefault();
 			var itemId = $(this).first().attr('id').split("_")[1];
-			cancelEditClassify(itemId, currentText);
+			cancelEditClassify(itemId, currentId + ": " + currentText);
 			e.stopPropagation();
 		});
 	}
