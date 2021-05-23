@@ -1411,7 +1411,7 @@ $(document).on('turbolinks:load', function() {
 			// ======= variables =======
 
 			var nextLine, nextTitleLine;
-			var numberIndex, nextChar;
+			var numberIndex, fractionsIndex, nextChar;
 			var numbersArray, fractionsArray;
 			var quantityStart, quantityEnd, unitStart, unitEnd, ingredientStart;
 			var titleString, quantityString, unitString, ingredientString, ingredient;
@@ -1566,9 +1566,10 @@ $(document).on('turbolinks:load', function() {
 					}
 
 					// == identify whole numbers and fractions (if any)
+					rangeArray = nextLine.match(/[1-9][0-9]*-[1-9][0-9]*/g);
+					hyphensArray = nextLine.match(/[1-9][0-9]*-[a-z][A-Z]*/g);
 					numbersArray = nextLine.match(/\d+/g);
-					hyphensArray = nextLine.match(/[1-9][0-9]*-[1-9][0-9]*/g)
-					fractionsArray = nextLine.match(/[1-9][0-9]*\/[1-9][0-9]*/g)
+					fractionsArray = nextLine.match(/[1-9][0-9]*\/[1-9][0-9]*/g);
 
 
 					// ======= ======= ======= ingredients ======= ======= =======
@@ -1579,41 +1580,34 @@ $(document).on('turbolinks:load', function() {
 					if (ingredientsFlag) {
 						// structure: quantity, units, ingredient
 
+						// ======= size text =======
+						var standardSizeText = checkSizeText(nextLine);
+						if (standardSizeText) {
+							nextLine = standardSizeText;
+						}
+
 						// ======= quantities =======
 						quantityString = "";
 
 						// == ingredient starts with numeric quantity
 						if (numbersArray) {
-							if (fractionsArray) {
 
-								// == quantity contains whole number and fraction
-								if (numbersArray.length > 2) {
-									numberIndex = nextLine.indexOf(numbersArray[0]);
-									if (numbersArray[0].length == 1) {
-										nextChar = nextLine.charAt(numberIndex + 1);
-									} else if (numbersArray[0].length == 2) {
-										nextChar = nextLine.charAt(numberIndex + 2);
-									}
+							// == quantity is a range of numbers
+							if (rangeArray) {
+								quantityString = rangeArray[0];
 
-									// == determine if quantity is fraction only or whole plus fraction
-									if (nextChar == " ") {
-										quantityString = numbersArray[0] + " " + fractionsArray[0];
-									} else if (nextChar == "/") {
-										quantityString = fractionsArray[0];
-									}
-
-								// == quantity is a fraction only
-								} else if (numbersArray.length == 2){
+							// == determine if quantity is fraction only or whole number plus fraction
+							} else if (fractionsArray) {
+								fractionsIndex = nextLine.indexOf(fractionsArray[0]);
+								if ((numbersArray.length > 2) && (fractionsIndex === 2)) {
+									quantityString = numbersArray[0] + " " + fractionsArray[0];
+								} else if (fractionsIndex === 0){
 									quantityString = fractionsArray[0];
-								}
-
-							// == quantity is a number or hyphenated range
-							} else {
-								if (hyphensArray) {
-									quantityString = numbersArray[0] + "-" + numbersArray[1];
 								} else {
 									quantityString = numbersArray[0];
 								}
+							} else {
+								quantityString = numbersArray[0];
 							}
 
 							// ======= units =======
@@ -1627,14 +1621,25 @@ $(document).on('turbolinks:load', function() {
 							// == scan line characters for word following quantity (word ends with space character)
 							for (var k = unitStart; k < nextLine.length; k++) {
 								if (nextLine[k] != " ") {
+									if (nextLine[k+1] == ",") {
+										console.log("*** comma ***");
+										unitString = unitString.substring(0, unitString.length);
+										break;
+									}
 									unitString = unitString + nextLine[k];
 								} else if (nextLine[k] == " ") {
 									break;
 								}
 							}
+							console.log("unitString: ", unitString);
 
 							var standardString = standardUnits(unitString);
 							if (standardString == "ITEM") {
+								var firstUnitChar = unitString.charAt(0);
+								// var unitChars = nextLine.match(/\(/g);
+								// var unitChars = nextLine.match(/-/g);
+								// var unitChars = nextLine.match(/*()*/g);
+								console.log("firstUnitChar: ", firstUnitChar);
 								standardString = unitString;
 							}
 
@@ -1880,6 +1885,24 @@ $(document).on('turbolinks:load', function() {
 	// ======= ======= ======= UTILITIES ======= ======= =======
 	// ======= ======= ======= UTILITIES ======= ======= =======
 
+	// ======= checkSizeText =======
+    function checkSizeText(nextLine) {
+        console.log("== checkSizeText ==");
+		var nextSize, standardSize, sizeIndex;
+		var sizeArray = ["small", "medium", "large", "sm ", "med ", "lg ", "sm)", "med)", "lg)", "scant", "heaping"];
+		for (var i = 0; i < sizeArray.length; i++) {
+			nextSize = sizeArray[i];
+			if (nextLine.includes(nextSize)) {
+				sizeIndex = nextLine.indexOf(nextSize);
+				nextSize = nextSize.split(')')[0].trim();
+				standardSize = standardSizes(nextSize);
+				nextLine = nextLine.replace(nextSize, standardSize);
+				return nextLine;
+			}
+		}
+		return null;
+	}
+
 	// ======= activateFileCancel =======
     function activateFileCancel() {
 		console.log("== activateFileCancel ==");
@@ -2015,6 +2038,23 @@ $(document).on('turbolinks:load', function() {
 		console.log("== updateNoticeMessage ==");
 		var htmlString = jsonData.message;
 		$('#notice').html(htmlString);
+	}
+
+	// ======= standardSizes =======
+    function standardSizes(sizeString) {
+		// console.log("== standardSizes ==");
+		switch(sizeString) {
+			case "sm":
+			sizeString = "small";
+			break;
+			case "med":
+			sizeString = "medium";
+			break;
+			case "lg":
+			sizeString = "large";
+			break;
+		}
+		return sizeString;
 	}
 
 	// ======= standardUnits =======
