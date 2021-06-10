@@ -800,8 +800,8 @@ $(document).on('turbolinks:load', function() {
 		var editHtml = "";
 
 		if (ingrOrInst == "ingrAdd") {
-			var ingrCount = $('#ingredientsData').data().ingredients.length;
-			ingrCount = ingrCount + $('#deleteIngrData').data().ingredients.length + 1;
+			var ingrCount = $('#ingredientsData').data('ingredients').length;
+			ingrCount = ingrCount + $('#deleteIngrData').data('ingredients').length + 1;
 			editHtml = editHtml + "<div id='ingrLine_" + ingrCount + "' class='recipeLine newRecipeLine iu-sortable-handle'>";
 			editHtml = editHtml + "<input type='text' class='newItem' id='newIngr' name='newIngr'>";
 			editHtml = editHtml + "<div class='saveBtn' id='ingrSave'> save </div>";
@@ -810,8 +810,8 @@ $(document).on('turbolinks:load', function() {
 			$('#ingredients').prepend(editHtml);
 			$('#newIngr').focus();
 		} else if (ingrOrInst == "instAdd") {
-			var instCount = $('#instructionsData').data().instructions.length;
-			instCount = instCount + $('#deleteInstData').data().instructions.length + 1;
+			var instCount = $('#instructionsData').data('instructions').length;
+			instCount = instCount + $('#deleteInstData').data('instructions').length + 1;
 			editHtml = editHtml + "<div id='instLine_" + instCount + "' class='recipeLine newRecipeLine iu-sortable-handle'>";
 			editHtml = editHtml + "<input type='text' class='newItem' id='newInst' name='newInst'>";
 			editHtml = editHtml + "<div class='saveBtn' id='instSave'> save </div>";
