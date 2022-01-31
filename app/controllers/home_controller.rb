@@ -165,7 +165,7 @@ class HomeController < ApplicationController
 			recipe_array = recipe_data[0]
 			message = recipe_data[1]
 		end
-		puts "message: #{message}"
+		# puts "message: #{message}"
 
 		respond_to do |format|
 			format.json {
@@ -177,8 +177,8 @@ class HomeController < ApplicationController
 	# ======= make_recipe_array =======
 	def make_recipe_array(recipes, search_type, search_params)
 		puts "\n******* make_recipe_array *******"
-		puts "search_type: #{search_type}"
-		puts "search_params: #{search_params}"
+		# puts "search_type: #{search_type}"
+		# puts "search_params: #{search_params}"
 
 		recipe_array = []
 		recipe_count = 0
@@ -188,7 +188,7 @@ class HomeController < ApplicationController
 
 		if recipes.length > 0
 			recipes.each do |next_recipe|
-				puts "next_recipe.inspect: #{next_recipe.inspect}"
+				# puts "next_recipe.inspect: #{next_recipe.inspect}"
 
 				user_rating = nil
 				if search_type == "ingredients"
@@ -251,14 +251,14 @@ class HomeController < ApplicationController
 	# ======= make_message_text =======
     def make_message_text(search_type, search_params, recipe_count)
         puts "\n******* make_message_text *******"
-		puts "search_type: #{search_type}"
-		puts "search_params: #{search_params}"
-		puts "recipe_count: #{recipe_count}"
+		# puts "search_type: #{search_type}"
+		# puts "search_params: #{search_params}"
+		# puts "recipe_count: #{recipe_count}"
 
 		if search_type == "recipes"
 			search_type = "recipes" + "_" + search_params
 		end
-		puts "search_type2: #{search_type}"
+		# puts "search_type2: #{search_type}"
 
 		if search_type == "recipes_my"
 			if recipe_count == 0
@@ -356,8 +356,8 @@ class HomeController < ApplicationController
 		if params[:id]
 			@recipe = Recipe.find(params[:id])
 			puts "@recipe: #{@recipe.inspect}"
-			puts "@recipe.ingredients: #{@recipe.ingredients.inspect}"
-			puts "@recipe.instructions: #{@recipe.instructions.inspect}"
+			# puts "@recipe.ingredients: #{@recipe.ingredients.inspect}"
+			# puts "@recipe.instructions: #{@recipe.instructions.inspect}"
 
 			# ======= selected user rating =======
 			user_rating = UserRating.where(:user_id => current_user[:id], :recipe_id => @recipe[:id]).first
@@ -404,16 +404,16 @@ class HomeController < ApplicationController
 				@recipe.shared = 0
 			end
 
-			puts "@rating_ids: #{@rating_ids}"
-			puts "@category_ids: #{@category_ids}"
-			puts "@nationality_ids: #{@nationality_ids}"
-			puts "@recipe.rating_id: #{@recipe.rating_id}"
-			puts "@recipe.category_id: #{@recipe.category_id}"
-			puts "@recipe.nationality_id: #{@recipe.nationality_id}"
-			puts "rating_id: #{@rating_id}"
-			puts "rating_text: #{@rating_text}"
-			puts "user_rating_id: #{@user_rating_id}"
-			puts "@recipe.shared: #{@recipe.shared}"
+			# puts "@rating_ids: #{@rating_ids}"
+			# puts "@category_ids: #{@category_ids}"
+			# puts "@nationality_ids: #{@nationality_ids}"
+			# puts "@recipe.rating_id: #{@recipe.rating_id}"
+			# puts "@recipe.category_id: #{@recipe.category_id}"
+			# puts "@recipe.nationality_id: #{@recipe.nationality_id}"
+			# puts "rating_id: #{@rating_id}"
+			# puts "rating_text: #{@rating_text}"
+			# puts "user_rating_id: #{@user_rating_id}"
+			# puts "@recipe.shared: #{@recipe.shared}"
 
 		end
     end
@@ -447,12 +447,12 @@ class HomeController < ApplicationController
 	# ======= save_recipe_edits =======
     def save_recipe_edits
         puts "\n******* save_recipe_edits *******"
-		puts "params[:recipe_id]: #{params[:recipe_id]}"
-		puts "params[:title]: #{params[:title]}"
-		puts "params[:rating_id]: #{params[:rating_id]}"
-		puts "params[:category_id]: #{params[:category_id]}"
-		puts "params[:nationality_id]: #{params[:nationality_id]}"
-		puts "params[:user_rating_id]: #{params[:user_rating_id]}"
+		# puts "params[:recipe_id]: #{params[:recipe_id]}"
+		# puts "params[:title]: #{params[:title]}"
+		# puts "params[:rating_id]: #{params[:rating_id]}"
+		# puts "params[:category_id]: #{params[:category_id]}"
+		# puts "params[:nationality_id]: #{params[:nationality_id]}"
+		# puts "params[:user_rating_id]: #{params[:user_rating_id]}"
 
 		message = ""
 		recipe_fails_array = []
@@ -640,7 +640,7 @@ class HomeController < ApplicationController
 		else
 			rating_avg = new_rating_id
 		end
-		puts "\nrating_avg: #{rating_avg}"
+		# puts "\nrating_avg: #{rating_avg}"
 		return rating_avg
 	end
 
@@ -680,7 +680,7 @@ class HomeController < ApplicationController
 			# == no recipes with same title found
 			if recipe.length == 0
 				puts "NO RECORD"
-				puts "current_user[:id]: #{current_user[:id]}"
+				# puts "current_user[:id]: #{current_user[:id]}"
 				@recipe = Recipe.create(:title => title, :user_id => current_user[:id])
 		        if @recipe.save
 					puts "RECIPE SAVED"
@@ -860,7 +860,7 @@ class HomeController < ApplicationController
 
 		def update_recipe_params
             puts "******* update_recipe_params *******"
-			puts "params.inspect: #{params.inspect}"
+			# puts "params.inspect: #{params.inspect}"
 
 			# param_keys: ["recipe_id", "recipe", "ingredients", "instructions", "controller", "action", "home"]
 			#
