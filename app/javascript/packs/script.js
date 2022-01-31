@@ -278,6 +278,12 @@ $(document).on('turbolinks:load', function() {
 			makeTitleText(jsonData.search_type, jsonData.search_params);
 			updateNoticeMessage(jsonData);
 			deactivateTitleEdit();				// title edit functionality is not for recipe lists (specific recipe only)
+
+			// var pathname = window.location.pathname;
+			// console.log("pathname: ", pathname);
+			// var pathParts = pathname.split("/");
+			// window.location.href = pathParts[0];
+
 		}).fail(function(unknown){
 			makeTitleText("fail", "");
 			console.log("*** ajax fail ***");
@@ -349,8 +355,9 @@ $(document).on('turbolinks:load', function() {
 			console.log("== click: deleteRecipe ==");
 			e.preventDefault();
 			editFlag = false;
-			deleteRecipe($('#recipeId').data().recipeid);
-			e.stopPropagation();
+
+			displayPopup("deleteRecipe", " ");
+
 		});
 	}
 
@@ -1927,6 +1934,27 @@ $(document).on('turbolinks:load', function() {
 			popupHtml = popupHtml + "<p>Click <button class='popupDelete'>Delete</button>";
 			popupHtml = popupHtml + " if you are sure you want to do this.</p>";
 			popupHtml = popupHtml + "<p>Otherwise click Okay below.</p>";
+		} else if (type == "deleteRecipe") {
+			popupHtml = popupHtml + "<p>This will permanently delete the recipe.  Are you sure?.</p>";
+			popupHtml = popupHtml + "<p>If so, <a id='recipeDelete'>permanently delete the recipe</a> here.  Otherwise, </p>";
+			popupHtml = popupHtml + "<p>close this message box by clicking the X above right.</p>";
+
+			noShowFlag = true;
+			console.log("noShowFlag: ", noShowFlag);
+
+			$('#popup-message').html(popupHtml);
+			$('.popup-overlay, .popup-content').addClass('active');
+
+			$('#recipeDelete').off('click');
+			$('#recipeDelete').on('click', function(){
+				console.log("== recipeDelete ==");
+				$('#popup-message').html('');
+				$('.popup-overlay, .popup-content').removeClass('active');
+
+				deleteRecipe($('#recipeId').data().recipeid);
+
+			});
+
 		} else if (type == "mgmt") {
 			popupHtml = popupHtml + "<p>Please enter a value.</p>";
 		} else if (type == "search") {
@@ -1937,9 +1965,9 @@ $(document).on('turbolinks:load', function() {
 			popupHtml = popupHtml + "<p>You haven't saved your edits yet.</p>";
 			popupHtml = popupHtml + "<p>Click <span>Save</span> or <span>Cancel</span> before choosing another function.</p>";
 		} else if (type == "newLine") {
-			popupHtml = popupHtml + "<p>Your new " + data + " is at the bottom of the list.</p>";
-			popupHtml = popupHtml + "<p>Drag it to its proper place in the sequence,</p>";
-			popupHtml = popupHtml + "<p>then click <span>Save</span> or <span>Cancel</span>.</p>";
+			popupHtml = popupHtml + "<p>Your new " + data + " is at the bottom of the list. ";
+			popupHtml = popupHtml + "Drag it to its proper place in the sequence, ";
+			popupHtml = popupHtml + "then click <span>Save</span> or <span>Cancel</span>.</p>";
 			if ($('#showAgain:checked').length > 0) {
 				noShowFlag = true;
 			}
@@ -1955,7 +1983,6 @@ $(document).on('turbolinks:load', function() {
 				$('#popup-message').html('');
 				$('.popup-overlay, .popup-content').removeClass('active');
 			});
-
 		}
 	}
 
@@ -1969,6 +1996,7 @@ $(document).on('turbolinks:load', function() {
 	$('.close').off('click');
 	$('.close').on('click', function() {
 		console.log('== popup: close ==');
+		noShowFlag = true;
 		$('#popup-message').html('');
 		$('.popup-overlay, .popup-content').removeClass('active');
 	});

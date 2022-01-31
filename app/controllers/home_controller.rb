@@ -353,67 +353,69 @@ class HomeController < ApplicationController
 		end
 
 		# == get selected recipe and user rating
-		@recipe = Recipe.find(params[:id])
-		puts "@recipe: #{@recipe.inspect}"
-		puts "@recipe.ingredients: #{@recipe.ingredients.inspect}"
-		puts "@recipe.instructions: #{@recipe.instructions.inspect}"
+		if params[:id]
+			@recipe = Recipe.find(params[:id])
+			puts "@recipe: #{@recipe.inspect}"
+			puts "@recipe.ingredients: #{@recipe.ingredients.inspect}"
+			puts "@recipe.instructions: #{@recipe.instructions.inspect}"
 
-		# ======= selected user rating =======
-		user_rating = UserRating.where(:user_id => current_user[:id], :recipe_id => @recipe[:id]).first
+			# ======= selected user rating =======
+			user_rating = UserRating.where(:user_id => current_user[:id], :recipe_id => @recipe[:id]).first
 
-		if user_rating == nil
-			puts "no rating"
-			@rating_id = 0
-			@rating_text = ""
-			@user_rating_id = 0
-			@recipe.rating_id = 0
-		else
-			rating = Rating.where(:id => user_rating[:rating_id]).first		# user_ratings table contains selected rating_id
-			if rating == nil
-				@rating_id = 0												# placeholder
-				@rating_text = ""											# placeholder
+			if user_rating == nil
+				puts "no rating"
+				@rating_id = 0
+				@rating_text = ""
+				@user_rating_id = 0
+				@recipe.rating_id = 0
 			else
-				@rating_id = rating[:id]									# rating id from ratings table
-				@rating_text = rating[:comment]								# rating text ("comment" column) from ratings table
+				rating = Rating.where(:id => user_rating[:rating_id]).first		# user_ratings table contains selected rating_id
+				if rating == nil
+					@rating_id = 0												# placeholder
+					@rating_text = ""											# placeholder
+				else
+					@rating_id = rating[:id]									# rating id from ratings table
+					@rating_text = rating[:comment]								# rating text ("comment" column) from ratings table
+				end
+				@user_rating_id = user_rating[:id]								# id from user_ratings join table (links user/recipe/rating)
 			end
-			@user_rating_id = user_rating[:id]								# id from user_ratings join table (links user/recipe/rating)
+
+			# ======= selected category =======
+			if @recipe.category_id == nil
+				puts "no category"
+				@category_id = 0
+				@recipe.category_id = 0
+			else
+				@category_id = @recipe.category_id
+			end
+
+			# ======= selected nationality =======
+			if @recipe.nationality_id == nil
+				puts "no nationality"
+				@nationality_id = 0
+				@recipe.nationality_id = 0
+			else
+				@nationality_id = @recipe.nationality_id
+			end
+
+			# ======= shared option =======
+			if @recipe.shared == nil
+				puts "not shared"
+				@recipe.shared = 0
+			end
+
+			puts "@rating_ids: #{@rating_ids}"
+			puts "@category_ids: #{@category_ids}"
+			puts "@nationality_ids: #{@nationality_ids}"
+			puts "@recipe.rating_id: #{@recipe.rating_id}"
+			puts "@recipe.category_id: #{@recipe.category_id}"
+			puts "@recipe.nationality_id: #{@recipe.nationality_id}"
+			puts "rating_id: #{@rating_id}"
+			puts "rating_text: #{@rating_text}"
+			puts "user_rating_id: #{@user_rating_id}"
+			puts "@recipe.shared: #{@recipe.shared}"
+
 		end
-
-		# ======= selected category =======
-		if @recipe.category_id == nil
-			puts "no category"
-			@category_id = 0
-			@recipe.category_id = 0
-		else
-			@category_id = @recipe.category_id
-		end
-
-		# ======= selected nationality =======
-		if @recipe.nationality_id == nil
-			puts "no nationality"
-			@nationality_id = 0
-			@recipe.nationality_id = 0
-		else
-			@nationality_id = @recipe.nationality_id
-		end
-
-		# ======= shared option =======
-		if @recipe.shared == nil
-			puts "not shared"
-			@recipe.shared = 0
-		end
-
-		puts "@rating_ids: #{@rating_ids}"
-		puts "@category_ids: #{@category_ids}"
-		puts "@nationality_ids: #{@nationality_ids}"
-		puts "@recipe.rating_id: #{@recipe.rating_id}"
-		puts "@recipe.category_id: #{@recipe.category_id}"
-		puts "@recipe.nationality_id: #{@recipe.nationality_id}"
-		puts "rating_id: #{@rating_id}"
-		puts "rating_text: #{@rating_text}"
-		puts "user_rating_id: #{@user_rating_id}"
-		puts "@recipe.shared: #{@recipe.shared}"
-
     end
 
 	# ======= delete_recipe =======
